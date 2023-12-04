@@ -47,4 +47,3 @@ kafka:
     replication-factor: 1
     consumer:
       group-id: exchange-service
-      auto-offset-reset: latest

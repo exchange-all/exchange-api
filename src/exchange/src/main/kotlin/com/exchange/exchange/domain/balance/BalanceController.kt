@@ -25,6 +25,18 @@ class BalanceController(
 ) {
 
     @Operation(
+        summary = "Create balance",
+        description = "Create a new balance",
+    )
+    @PostMapping("/create")
+    suspend fun createBalance(
+        @CurrentUser currentUser: UserEntity,
+        @RequestBody @Valid createBalanceRequest: CreateBalanceRequest,
+    ): Response<BalanceCreated> {
+        return this.balanceService.createBalance(currentUser, createBalanceRequest)
+    }
+
+    @Operation(
         summary = "Deposit balance",
         description = "Create a new deposit balance",
     )
@@ -32,7 +44,7 @@ class BalanceController(
     suspend fun deposit(
         @CurrentUser currentUser: UserEntity,
         @RequestBody @Valid depositRequest: DepositRequest,
-    ): Response<DepositEvent> {
+    ): Response<BalanceDeposited> {
         return this.balanceService.deposit(currentUser, depositRequest)
     }
 
@@ -44,7 +56,7 @@ class BalanceController(
     suspend fun withdraw(
         @CurrentUser currentUser: UserEntity,
         @RequestBody @Valid withdrawRequest: WithdrawRequest,
-    ): Response<WithdrawEvent> {
+    ): Response<BalanceWithdrawn> {
         return this.balanceService.withdraw(currentUser, withdrawRequest)
     }
 }

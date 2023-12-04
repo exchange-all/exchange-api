@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository
 class BalanceInMemoryRepository : MemoryRepositoryRollback<BalanceEntity, UUID> {
   override val data: MutableMap<UUID, BalanceEntity> = HashMap()
   override val segments: ThreadLocal<MutableMap<UUID, BalanceEntity?>> =
-      ThreadLocal.withInitial { null }
+    ThreadLocal.withInitial { null }
 
-  // user_id -> balance_id
-  private val userIdIndex: MutableMap<UUID, UUID> = HashMap()
+  // user_id -> Set<balance_id>
+  private val userIdIndex: MutableMap<UUID, Set<UUID>> = HashMap()
 
   // user_id + currency -> balance_id
   private val userIdCurrencyIndex: MutableMap<Pair<UUID, String>, UUID> = HashMap()
@@ -23,7 +23,8 @@ class BalanceInMemoryRepository : MemoryRepositoryRollback<BalanceEntity, UUID> 
   fun upsert(balance: BalanceEntity) {
     prepareSegment(balance)
     data[balance.id] = balance
-    userIdIndex[balance.userId] = balance.id
+    userIdIndex[balance.userId] =
+      userIdIndex[balance.userId]?.plus(balance.id) ?: mutableSetOf(balance.id)
     userIdCurrencyIndex[Pair(balance.userId, balance.currency)] = balance.id
   }
 
@@ -31,9 +32,9 @@ class BalanceInMemoryRepository : MemoryRepositoryRollback<BalanceEntity, UUID> 
     return data[id]
   }
 
-  fun findByUserId(userId: UUID): BalanceEntity? {
-    val id = userIdIndex[userId]
-    return data[id]
+  fun findByUserId(userId: UUID): List<BalanceEntity>? {
+    val ids = userIdIndex[userId]
+    return ids?.mapNotNull { data[it] } ?: emptyList()
   }
 
   fun findByUserIdAndCurrency(userId: UUID, currency: String): BalanceEntity? {

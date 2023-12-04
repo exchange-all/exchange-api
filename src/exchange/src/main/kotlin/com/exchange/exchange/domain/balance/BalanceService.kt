@@ -19,15 +19,36 @@ import java.util.*
  */
 @Service
 class BalanceService(
-    @Value("\${kafka.order-book.request-topic}")
-    private val topic: String,
+    @Value("\${kafka.order-book.request-topic}") private val topic: String,
     private val template: ReplyingKafkaTemplate<String, Any, Response<*>>,
 ) {
+
+    suspend fun createBalance(
+        currentUser: UserEntity,
+        createBalanceRequest: CreateBalanceRequest,
+    ): Response<BalanceCreated> {
+        val record = ProducerRecord<String, Any>(
+            this.topic, UUID.randomUUID().toString(), CreateBalanceCommand(
+                currentUser.id!!,
+                createBalanceRequest.currencyId,
+            )
+        )
+        record.headers().add("type", CommandType.CREATE_BALANCE.name.toByteArray())
+
+        val eventResult = this.template.sendAndReceive(record).await()
+        return Response(
+            eventResult.value().success,
+            jacksonObjectMapper().convertValue(
+                eventResult.value().data, BalanceCreated::class.java
+            ),
+            eventResult.value().errors,
+        )
+    }
 
     suspend fun deposit(
         currentUser: UserEntity,
         depositRequest: DepositRequest,
-    ): Response<DepositEvent> {
+    ): Response<BalanceDeposited> {
         val record = ProducerRecord<String, Any>(
             this.topic, UUID.randomUUID().toString(), DepositCommand(
                 currentUser.id!!,
@@ -35,14 +56,13 @@ class BalanceService(
                 depositRequest.amount,
             )
         )
-        record.headers().add("type", CommandType.DEPOSIT.name.toByteArray())
+        record.headers().add("type", CommandType.DEPOSIT_BALANCE.name.toByteArray())
 
         val eventResult = this.template.sendAndReceive(record).await()
         return Response(
             eventResult.value().success,
             jacksonObjectMapper().convertValue(
-                eventResult.value().data,
-                DepositEvent::class.java
+                eventResult.value().data, BalanceDeposited::class.java
             ),
             eventResult.value().errors,
         )
@@ -51,7 +71,7 @@ class BalanceService(
     suspend fun withdraw(
         currentUser: UserEntity,
         withdrawRequest: WithdrawRequest,
-    ): Response<WithdrawEvent> {
+    ): Response<BalanceWithdrawn> {
         val record = ProducerRecord<String, Any>(
             this.topic, UUID.randomUUID().toString(), WithdrawCommand(
                 currentUser.id!!,
@@ -59,14 +79,13 @@ class BalanceService(
                 withdrawRequest.amount,
             )
         )
-        record.headers().add("type", CommandType.WITHDRAW.name.toByteArray())
+        record.headers().add("type", CommandType.WITHDRAW_BALANCE.name.toByteArray())
 
         val eventResult = this.template.sendAndReceive(record).await()
         return Response(
             eventResult.value().success,
             jacksonObjectMapper().convertValue(
-                eventResult.value().data,
-                WithdrawEvent::class.java
+                eventResult.value().data, BalanceWithdrawn::class.java
             ),
             eventResult.value().errors,
         )

@@ -9,6 +9,10 @@ import java.math.BigDecimal
  * @author uuhnaut69
  *
  */
+data class CreateBalanceCommand(
+    val userId: String,
+    val currencyId: String,
+) : Command()
 
 data class DepositCommand(
     val userId: String,

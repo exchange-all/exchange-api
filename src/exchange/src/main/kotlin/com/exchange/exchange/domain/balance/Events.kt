@@ -8,10 +8,14 @@ import com.exchange.exchange.core.Event
  * @author uuhnaut69
  *
  */
-data class DepositEvent(
+data class BalanceCreated(
     override val aggregateId: String,
 ) : Event()
 
-data class WithdrawEvent(
+data class BalanceDeposited(
+    override val aggregateId: String,
+) : Event()
+
+data class BalanceWithdrawn(
     override val aggregateId: String,
 ) : Event()

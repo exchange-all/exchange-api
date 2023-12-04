@@ -7,6 +7,7 @@ package com.exchange.exchange.core
  *
  */
 enum class CommandType {
-    DEPOSIT,
-    WITHDRAW
+    CREATE_BALANCE,
+    DEPOSIT_BALANCE,
+    WITHDRAW_BALANCE,
 }

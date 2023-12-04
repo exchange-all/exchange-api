@@ -1,0 +1,13 @@
+---
+spring.application.name: orderbook-business-processor
+server:
+  port: 8085
+---
+spring:
+  profiles:
+    include:
+      - kafka
+      - database
+---
+schedule:
+  sync-database-interval: 1000

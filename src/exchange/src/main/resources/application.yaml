@@ -1,0 +1,50 @@
+server:
+  port: 8888
+  shutdown: graceful
+  compression:
+    enabled: true
+---
+spring:
+  application:
+    name: exchange-service
+---
+# Api documentation configuration
+springdoc:
+  swagger-ui:
+    path: /swagger
+    display-request-duration: true
+    default-models-expand-depth: -1
+    default-model-expand-depth: 100
+---
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://root:root@localhost:27017/exchange?authSource=admin
+---
+# Kafka base configuration
+spring:
+  kafka:
+    bootstrap-servers: localhost:19092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      isolation-level: read_committed
+      properties:
+        spring.json.trusted.packages: '*'
+    admin:
+      auto-create: true
+---
+# Kafka in-out topic to another microservice
+kafka:
+  order-book:
+    request-topic: order-book-request
+    reply-topic: order-book-reply
+    partition-count: 1
+    replication-factor: 1
+    consumer:
+      group-id: exchange-service
+      auto-offset-reset: latest

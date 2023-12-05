@@ -20,12 +20,13 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Configuration
 class OutboundListener(
-    private val outboundHandler: EventOutboundHandler,
-    private val offsetRepository: OffsetRepository,
-    private val balanceRepository: BalanceRepository,
-    private val orderRepository: OrderRepository
+  private val outboundHandler: EventOutboundHandler,
+  private val offsetRepository: OffsetRepository,
+  private val balanceRepository: BalanceRepository,
+  private val orderRepository: OrderRepository
 ) {
-  @Value("\${order-book.topic}") private lateinit var orderBookTopic: String
+  @Value("\${order-book.topic}")
+  private lateinit var orderBookTopic: String
   private val syncDatabaseExecutor = Executors.newSingleThreadExecutor()
 
   /**
@@ -50,7 +51,7 @@ class OutboundListener(
     if (data.isEmpty()) return
 
     SpringContext.getBean(OutboundListener::class.java)
-        .persist(offset, data.filterIsInstance<SuccessResponse>())
+      .persist(offset, data.filterIsInstance<SuccessResponse>())
 
     response(data)
   }
@@ -75,12 +76,12 @@ class OutboundListener(
    */
   private fun persistOffset(offset: Long) {
     val offsetEntity =
-        OffsetEntity().apply {
-          this.id = "ORDER_BOOK"
-          this.offset = offset
-          this.partition = 0
-          this.topic = orderBookTopic
-        }
+      OffsetEntity().apply {
+        this.id = "ORDER_BOOK"
+        this.offset = offset
+        this.partition = 0
+        this.topic = orderBookTopic
+      }
     offsetRepository.save(offsetEntity)
   }
 
@@ -91,9 +92,9 @@ class OutboundListener(
    */
   private fun persistBalance(data: List<SuccessResponse>) {
     data
-        .map { it.data }
-        .filterIsInstance<BalanceEntity>()
-        .let { if (it.isNotEmpty()) balanceRepository.saveAll(it) }
+      .map { it.data }
+      .filterIsInstance<BalanceEntity>().associateBy { it.id }
+      .let { if (it.isNotEmpty()) balanceRepository.saveAll(it.values) }
   }
 
   /**
@@ -103,9 +104,9 @@ class OutboundListener(
    */
   private fun persistOrder(data: List<SuccessResponse>) {
     data
-        .map { it.data }
-        .filterIsInstance<OrderEntity>()
-        .let { if (it.isNotEmpty()) orderRepository.saveAll(it) }
+      .map { it.data }
+      .filterIsInstance<OrderEntity>().associateBy { it.id }
+      .let { if (it.isNotEmpty()) orderRepository.saveAll(it.values) }
   }
 
   /**

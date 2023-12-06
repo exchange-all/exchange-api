@@ -20,7 +20,7 @@ class Bootstrap(
   @EventListener(ApplicationReadyEvent::class)
   fun bootstrap() {
     migrateData.initData()
-    orderBookDataManager.loadData()
+    orderBookDataManager.restoreData()
     Thread(eventInboundHandler::pollingMessage).start()
   }
 }

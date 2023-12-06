@@ -13,7 +13,7 @@ class OrderBookDataManager(
     private val balanceMemoryRepository: BalanceInMemoryRepository,
     private val balanceRepository: BalanceRepository
 ) {
-  fun loadData() {
+  fun restoreData() {
     val balances = balanceRepository.findAll()
     balances.forEach { balanceMemoryRepository.upsert(it) }
   }

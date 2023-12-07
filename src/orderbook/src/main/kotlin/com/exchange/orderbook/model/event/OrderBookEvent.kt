@@ -1,7 +1,6 @@
 package com.exchange.orderbook.model.event
 
 import java.math.BigDecimal
-import java.util.*
 
 /**
  * @author thaivc
@@ -30,7 +29,8 @@ class WithdrawBalanceEvent(
 class AskLimitOrderEvent(
   override val id: String,
   val userId: String,
-  val currency: String,
+  val baseCurrency: String,
+  val quoteCurrency: String,
   val price: BigDecimal,
   val amount: BigDecimal
 ) : IEvent {}
@@ -38,14 +38,16 @@ class AskLimitOrderEvent(
 class AskMarketOrderEvent(
   override val id: String,
   val userId: String,
-  val currency: String,
+  val baseCurrency: String,
+  val quoteCurrency: String,
   val amount: BigDecimal
 ) : IEvent {}
 
 class BidLimitOrderEvent(
   override val id: String,
   val userId: String,
-  val currency: String,
+  val baseCurrency: String,
+  val quoteCurrency: String,
   val price: BigDecimal,
   val amount: BigDecimal
 ) : IEvent {}
@@ -53,6 +55,7 @@ class BidLimitOrderEvent(
 class BidMarketOrderEvent(
   override val id: String,
   val userId: String,
-  val currency: String,
+  val baseCurrency: String,
+  val quoteCurrency: String,
   val amount: BigDecimal
 ) : IEvent {}

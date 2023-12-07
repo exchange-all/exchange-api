@@ -18,6 +18,7 @@ repositories {
 	mavenCentral()
 }
 val coroutinesVersion = "1.7.3"
+val junitVersion = "5.10.1"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
@@ -27,11 +28,12 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.micrometer:micrometer-tracing-bridge-brave")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 	implementation("org.springframework.kafka:spring-kafka")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
 }
 
 tasks.withType<KotlinCompile> {

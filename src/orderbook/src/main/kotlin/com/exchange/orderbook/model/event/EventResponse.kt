@@ -1,26 +1,27 @@
 package com.exchange.orderbook.model.event
 
+import com.exchange.orderbook.model.entity.BalanceEntity
 import com.exchange.orderbook.model.entity.Cloneable
-import org.springframework.http.HttpStatus
+import com.exchange.orderbook.model.entity.OrderEntity
+import java.math.BigDecimal
 
 /**
  * @author thaivc
  * @since 2023
  */
+
+interface SnapshotSupport {
+}
+
 open class EventResponse {
   var id: String? = null
-  var status: Int? = null
-  lateinit var event: IEvent
 
   companion object {
     fun ok(event: IEvent, data: Cloneable): SuccessResponse {
       return SuccessResponse().apply {
         this.id = event.id
         this.event = event
-
-        /** always clone data to avoid any changing */
-        this.data = data.clone()
-        this.status = HttpStatus.OK.value()
+        this.data = data
       }
     }
 
@@ -29,16 +30,25 @@ open class EventResponse {
         this.id = event.id
         this.event = event
         this.error = error
-        this.status = HttpStatus.NOT_ACCEPTABLE.value()
       }
     }
   }
 }
 
-class SuccessResponse() : EventResponse() {
+class SuccessResponse() : EventResponse(), SnapshotSupport {
+  lateinit var event: IEvent
   lateinit var data: Cloneable
 }
 
 class FailResponse() : EventResponse() {
+  lateinit var event: IEvent
   lateinit var error: String
+}
+
+class TradingResult : EventResponse(), SnapshotSupport {
+  lateinit var remainOrder: OrderEntity
+  lateinit var baseBalance: BalanceEntity
+  lateinit var quoteBalance: BalanceEntity
+  lateinit var tradedAmount: BigDecimal
+  lateinit var tradedPrice: BigDecimal
 }

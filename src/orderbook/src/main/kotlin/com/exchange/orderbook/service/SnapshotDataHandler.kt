@@ -3,7 +3,9 @@ package com.exchange.orderbook.service
 import com.exchange.orderbook.SpringContext
 import com.exchange.orderbook.model.entity.BalanceEntity
 import com.exchange.orderbook.model.entity.OrderEntity
+import com.exchange.orderbook.model.event.SnapshotSupport
 import com.exchange.orderbook.model.event.SuccessResponse
+import com.exchange.orderbook.model.event.TradingResult
 import com.exchange.orderbook.repository.disk.BalanceRepository
 import com.exchange.orderbook.repository.disk.OffsetRepository
 import com.exchange.orderbook.repository.disk.OrderRepository
@@ -36,16 +38,28 @@ class SnapshotDataHandler(
     snapshotDataQueue.execute { SpringContext.getBean(SnapshotDataHandler::class.java).persist() }
   }
 
-  fun enqueue(offset: Long, data: List<SuccessResponse>) {
+  fun enqueue(offset: Long, data: List<SnapshotSupport>) {
     snapshotDataQueue.execute { dequeue(offset, data) }
   }
 
-  fun dequeue(offset: Long, data: List<SuccessResponse>) {
+  fun dequeue(offset: Long, data: List<SnapshotSupport>) {
     this.offset = offset + 1
-    balance = balance.plus(data.filter { it.data is BalanceEntity }.map { it.data as BalanceEntity }
-      .associateBy { it.id })
-    order.plus(data.filter { it.data is OrderEntity }.map { it.data as OrderEntity }
-      .associateBy { it.id })
+    data.forEach {
+      when (it) {
+        is SuccessResponse -> {
+          when (it.data) {
+            is BalanceEntity -> balance.plus((it.data as BalanceEntity).id to it.data)
+            is OrderEntity -> order.plus((it.data as OrderEntity).id to it.data)
+          }
+        }
+
+        is TradingResult -> {
+          balance.plus(it.baseBalance.id to it.baseBalance)
+          balance.plus(it.quoteBalance.id to it.quoteBalance)
+          order = order.plus(it.remainOrder.id to it.remainOrder)
+        }
+      }
+    }
   }
 
   /**

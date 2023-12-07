@@ -1,7 +1,7 @@
 package com.exchange.orderbook
 
 import com.exchange.orderbook.service.EventInboundHandler
-import com.exchange.orderbook.service.OrderBookDataManager
+import com.exchange.orderbook.service.DataManager
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component
 class Bootstrap(
     private val eventInboundHandler: EventInboundHandler,
     private val migrateData: MigrateData,
-    private val orderBookDataManager: OrderBookDataManager
+    private val dataManager: DataManager
 ) {
 
   @EventListener(ApplicationReadyEvent::class)
   fun bootstrap() {
     migrateData.initData()
-    orderBookDataManager.restoreData()
+    dataManager.restoreData()
     Thread(eventInboundHandler::pollingMessage).start()
   }
 }

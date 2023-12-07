@@ -1,7 +1,7 @@
 package com.exchange.orderbook.service
 
 import com.exchange.orderbook.model.event.EventResponse
-import com.exchange.orderbook.model.event.SuccessResponse
+import com.exchange.orderbook.model.event.SnapshotSupport
 import org.springframework.stereotype.Component
 import java.util.concurrent.Executors
 
@@ -37,7 +37,7 @@ class OutboundListener(
   fun dequeue(offset: Long, data: List<EventResponse>) {
     if (data.isEmpty()) return
 
-    snapshotDataHandler.enqueue(offset, data.filterIsInstance<SuccessResponse>())
+    snapshotDataHandler.enqueue(offset, data.filterIsInstance<SnapshotSupport>())
     outboundHandler.publishEvent(data)
   }
 }

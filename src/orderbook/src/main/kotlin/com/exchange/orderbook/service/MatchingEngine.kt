@@ -83,8 +83,8 @@ class MatchingEngine(
         val askSell = askOrderHead.availableAmount
         val bidBuy = bidOrderHead.availableAmount
 
-        if (askSell > bidBuy) {
-          handleAskOverBid(
+        when {
+          (askSell > bidBuy) -> handleAskOverBid(
             askOrders,
             bidOrders,
             askOrderHead,
@@ -92,8 +92,8 @@ class MatchingEngine(
             tradingPair,
             tradingResults
           )
-        } else if (askSell < bidBuy) {
-          handleBidOverAsk(
+
+          (askSell < bidBuy) -> handleBidOverAsk(
             askOrders,
             bidOrders,
             askOrderHead,
@@ -101,8 +101,8 @@ class MatchingEngine(
             tradingPair,
             tradingResults
           )
-        } else {
-          handleAskEqualsBid(
+
+          else -> handleAskEqualsBid(
             askOrders,
             bidOrders,
             askOrderHead,
@@ -112,7 +112,6 @@ class MatchingEngine(
           )
         }
       }
-
       // check and remove asks head
       if (askOrders.isEmpty()) {
         tradingPair.sellOrders.remove(askMinPrice)

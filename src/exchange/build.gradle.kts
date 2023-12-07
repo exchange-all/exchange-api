@@ -26,8 +26,10 @@ repositories {
 }
 
 dependencies {
+    // Coroutines support
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
+    // Core dependencies
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -37,23 +39,34 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+
+    // Kafka
     implementation("org.springframework.kafka:spring-kafka")
 
+    // Session security
     implementation("org.springframework.session:spring-session-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("org.springframework.session:spring-session-core")
 
+    // MongoDB
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    // Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.security:spring-security-test")
 
+    // Swagger UI for Spring WebFlux
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.2.0")
+
+    // Cloud events dependencies
+    implementation("io.cloudevents:cloudevents-spring:2.5.0")
+    implementation("io.cloudevents:cloudevents-kafka:2.5.0")
+    implementation("io.cloudevents:cloudevents-json-jackson:2.5.0")
 }
 
 tasks.withType<KotlinCompile> {

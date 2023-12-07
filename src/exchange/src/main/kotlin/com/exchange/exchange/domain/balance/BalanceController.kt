@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *
@@ -21,42 +20,42 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/balances")
 class BalanceController(
-    private val balanceService: BalanceService,
+        private val balanceService: BalanceService,
 ) {
 
     @Operation(
-        summary = "Create balance",
-        description = "Create a new balance",
+            summary = "Create balance",
+            description = "Create a new balance",
     )
     @PostMapping("/create")
     suspend fun createBalance(
-        @CurrentUser currentUser: UserEntity,
-        @RequestBody @Valid createBalanceRequest: CreateBalanceRequest,
-    ): Response<BalanceCreated> {
+            @CurrentUser currentUser: UserEntity,
+            @RequestBody @Valid createBalanceRequest: CreateBalanceRequest,
+    ): Response<CreateBalanceResponse> {
         return this.balanceService.createBalance(currentUser, createBalanceRequest)
     }
 
     @Operation(
-        summary = "Deposit balance",
-        description = "Create a new deposit balance",
+            summary = "Deposit balance",
+            description = "Create a new deposit balance",
     )
     @PostMapping("/deposit")
-    suspend fun deposit(
-        @CurrentUser currentUser: UserEntity,
-        @RequestBody @Valid depositRequest: DepositRequest,
-    ): Response<BalanceDeposited> {
-        return this.balanceService.deposit(currentUser, depositRequest)
+    suspend fun depositBalance(
+            @CurrentUser currentUser: UserEntity,
+            @RequestBody @Valid depositRequest: DepositRequest,
+    ): Response<DepositResponse> {
+        return this.balanceService.depositBalance(currentUser, depositRequest)
     }
 
     @Operation(
-        summary = "Withdraw balance",
-        description = "Create a new withdraw balance",
+            summary = "Withdraw balance",
+            description = "Create a new withdraw balance",
     )
     @PostMapping("/withdraw")
-    suspend fun withdraw(
-        @CurrentUser currentUser: UserEntity,
-        @RequestBody @Valid withdrawRequest: WithdrawRequest,
-    ): Response<BalanceWithdrawn> {
-        return this.balanceService.withdraw(currentUser, withdrawRequest)
+    suspend fun withdrawBalance(
+            @CurrentUser currentUser: UserEntity,
+            @RequestBody @Valid withdrawRequest: WithdrawRequest,
+    ): Response<WithdrawResponse> {
+        return this.balanceService.withdrawBalance(currentUser, withdrawRequest)
     }
 }

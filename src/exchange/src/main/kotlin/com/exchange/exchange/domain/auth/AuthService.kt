@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *
@@ -18,7 +17,7 @@ class AuthService {
 
     @Autowired
     fun setAuthServiceProviderMap(
-        authServiceProviderMap: Map<String, AuthServiceProvider>,
+            authServiceProviderMap: Map<String, AuthServiceProvider>,
     ) {
         this.authServiceProviderMap.putAll(authServiceProviderMap)
     }
@@ -31,7 +30,7 @@ class AuthService {
     suspend fun register(request: RegisterRequest) {
         when (request) {
             is RegisterWithEmailRequest -> this.authServiceProviderMap["emailAndPasswordAuthServiceProvider"]?.register(
-                request
+                    request
             )
 
             else -> throw UnauthorizedException()
@@ -48,7 +47,7 @@ class AuthService {
         return when (request) {
             is LoginWithEmailRequest -> {
                 this.authServiceProviderMap["emailAndPasswordAuthServiceProvider"]?.login(
-                    request
+                        request
                 ) ?: throw UnauthorizedException()
             }
 

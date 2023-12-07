@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.time.Instant
 
 /**
- * exchange-all
+
  *
  * @author uuhnaut69
  *
@@ -45,9 +45,9 @@ class UserEntity : UserDetails {
 
     companion object {
         fun newUser(
-            email: String,
-            password: String,
-            roles: List<Role>,
+                email: String,
+                password: String,
+                roles: List<Role>,
         ): UserEntity {
             return UserEntity().apply {
                 this.email = email

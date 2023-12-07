@@ -3,7 +3,6 @@ package com.exchange.exchange.security
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *

@@ -3,7 +3,6 @@ package com.exchange.exchange.domain.auth
 import com.exchange.exchange.domain.user.UserEntity
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *

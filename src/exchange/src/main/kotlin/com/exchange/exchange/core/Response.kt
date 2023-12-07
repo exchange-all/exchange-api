@@ -1,15 +1,14 @@
 package com.exchange.exchange.core
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *
  */
 data class Response<T>(
-    val success: Boolean,
-    val data: T? = null,
-    val errors: List<ErrorResponse> = mutableListOf(),
+        val success: Boolean,
+        val data: T? = null,
+        val errors: List<String>? = null,
 ) {
     companion object {
         fun success(): Response<Unit> {
@@ -20,14 +19,8 @@ data class Response<T>(
             return Response(true, data)
         }
 
-        fun errors(errors: List<ErrorResponse>): Response<Unit> {
+        fun errors(errors: List<String>): Response<Unit> {
             return Response(false, errors = errors)
         }
     }
 }
-
-data class ErrorResponse(
-    val errorName: String,
-    val message: String,
-    val constraints: Map<String, Any>? = null,
-)

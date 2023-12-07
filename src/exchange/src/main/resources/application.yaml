@@ -28,13 +28,16 @@ spring:
     bootstrap-servers: localhost:19092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: io.cloudevents.kafka.CloudEventSerializer
+      properties:
+        spring.json.add.type.headers: false
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: io.cloudevents.kafka.CloudEventDeserializer
       isolation-level: read_committed
       properties:
         spring.json.trusted.packages: '*'
+        spring.json.use.type.headers: false
     admin:
       auto-create: true
 ---

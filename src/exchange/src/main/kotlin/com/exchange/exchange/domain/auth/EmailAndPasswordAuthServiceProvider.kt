@@ -14,20 +14,19 @@ import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *
  */
 @Service("emailAndPasswordAuthServiceProvider")
 class EmailAndPasswordAuthServiceProvider(
-    private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
+        private val userRepository: UserRepository,
+        private val passwordEncoder: PasswordEncoder,
 ) : AuthServiceProvider {
 
     companion object {
         private val LOGGER =
-            LoggerFactory.getLogger(EmailAndPasswordAuthServiceProvider::class.java)
+                LoggerFactory.getLogger(EmailAndPasswordAuthServiceProvider::class.java)
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -52,7 +51,7 @@ class EmailAndPasswordAuthServiceProvider(
     override suspend fun login(loginRequest: LoginRequest): UserEntity {
         val localRegisterRequest = loginRequest as LoginWithEmailRequest
         val userEntity = this.userRepository.findByEmailIgnoreCase(
-            localRegisterRequest.email
+                localRegisterRequest.email
         ).awaitSingleOrNull() ?: throw UnauthorizedException("USER_NOT_FOUND_ERROR")
 
         if (!passwordEncoder.matches(localRegisterRequest.password, userEntity.password)) {
@@ -64,9 +63,9 @@ class EmailAndPasswordAuthServiceProvider(
 
     private fun convertToUserEntity(request: RegisterWithEmailRequest): UserEntity {
         return UserEntity.newUser(
-            request.email.trimIndent().lowercase(),
-            passwordEncoder.encode(request.password),
-            listOf(Role.ROLE_USER)
+                request.email.trimIndent().lowercase(),
+                passwordEncoder.encode(request.password),
+                listOf(Role.ROLE_USER)
         )
     }
 

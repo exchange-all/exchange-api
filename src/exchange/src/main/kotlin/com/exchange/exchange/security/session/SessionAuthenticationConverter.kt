@@ -8,7 +8,6 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *
@@ -21,9 +20,9 @@ class SessionAuthenticationConverter : ServerAuthenticationConverter {
             Mono.empty()
         }.map {
             UsernamePasswordAuthenticationToken(
-                it,
-                null,
-                it?.authorities ?: listOf()
+                    it,
+                    null,
+                    it?.authorities ?: listOf()
             )
         }
     }

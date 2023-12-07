@@ -16,7 +16,6 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.awaitSession
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *
@@ -25,12 +24,12 @@ import org.springframework.web.server.awaitSession
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
-    private val authService: AuthService,
+        private val authService: AuthService,
 ) {
 
     @Operation(
-        summary = "Register new user with email and password",
-        description = "Register new user with email and password",
+            summary = "Register new user with email and password",
+            description = "Register new user with email and password",
     )
     @PostMapping("/register-with-email")
     suspend fun register(@RequestBody @Valid request: RegisterWithEmailRequest): Response<Unit> {
@@ -39,13 +38,13 @@ class AuthController(
     }
 
     @Operation(
-        summary = "Login with email and password",
-        description = "Login with email and password",
+            summary = "Login with email and password",
+            description = "Login with email and password",
     )
     @PostMapping("/login-with-email")
     suspend fun loginWithEmail(
-        @RequestBody @Valid loginWithEmailRequest: LoginWithEmailRequest,
-        serverWebExchange: ServerWebExchange,
+            @RequestBody @Valid loginWithEmailRequest: LoginWithEmailRequest,
+            serverWebExchange: ServerWebExchange,
     ): Response<Unit> {
         val userEntity = this.authService.login(loginWithEmailRequest)
 
@@ -58,13 +57,13 @@ class AuthController(
     }
 
     @Operation(
-        summary = "Logout session",
-        description = "Logout session",
+            summary = "Logout session",
+            description = "Logout session",
     )
     @PostMapping("/logout")
     suspend fun logout(
-        @CurrentUser userEntity: UserEntity,
-        serverWebExchange: ServerWebExchange,
+            @CurrentUser userEntity: UserEntity,
+            serverWebExchange: ServerWebExchange,
     ): Response<Unit> {
         serverWebExchange.awaitSession().invalidate().awaitSingleOrNull()
         return Response.success()

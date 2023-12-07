@@ -5,8 +5,7 @@ package com.exchange.exchange.core
  * @author uuhnaut69
  *
  */
-interface CommandType {
+interface EventType {
 
     val type: String
-
 }

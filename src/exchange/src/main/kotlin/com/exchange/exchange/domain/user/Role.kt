@@ -1,7 +1,7 @@
 package com.exchange.exchange.domain.user
 
 /**
- * exchange-all
+
  *
  * @author uuhnaut69
  *

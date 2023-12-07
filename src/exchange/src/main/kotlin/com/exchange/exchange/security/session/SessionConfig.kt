@@ -12,7 +12,6 @@ import org.springframework.security.jackson2.SecurityJackson2Modules
 
 
 /**
- * exchange-all
  *
  * @author uuhnaut69
  *
@@ -33,7 +32,7 @@ class SessionConfig : BeanClassLoaderAware {
      */
     private fun objectMapper(): ObjectMapper {
         val mapper = jacksonObjectMapper()
-            .registerModules(JavaTimeModule())
+                .registerModules(JavaTimeModule())
         mapper.registerModules(SecurityJackson2Modules.getModules(loader))
         return mapper
     }

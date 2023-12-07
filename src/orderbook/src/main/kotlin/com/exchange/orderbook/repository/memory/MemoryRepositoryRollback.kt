@@ -1,5 +1,6 @@
 package com.exchange.orderbook.repository.memory
 
+import com.exchange.orderbook.model.entity.Cloneable
 import com.exchange.orderbook.model.entity.Identifiable
 import java.io.Serializable
 
@@ -7,8 +8,10 @@ import java.io.Serializable
  * @author thaivc
  * @since 2023
  */
-interface MemoryRepositoryRollback<ENTITY: Identifiable<ID>, ID: Serializable>: MemoryRepository {
-  val segments: ThreadLocal<MutableMap<ID, ENTITY?>>
+interface MemoryRepositoryRollback<ENTITY, ID : Serializable> :
+  MemoryRepository where ENTITY : Identifiable<ID>, ENTITY : Cloneable {
+
+  val segments: ThreadLocal<MutableMap<ID, Cloneable?>>
   val data: MutableMap<ID, ENTITY>
 
   fun prepareSegment(entity: ENTITY) {
@@ -17,7 +20,7 @@ interface MemoryRepositoryRollback<ENTITY: Identifiable<ID>, ID: Serializable>: 
       if (segments.get() == null) {
         segments.set(mutableMapOf())
       }
-      segments.get().putIfAbsent(entity.id, data[entity.id])
+      segments.get().putIfAbsent(entity.id, data[entity.id]?.clone())
     }
   }
 
@@ -27,7 +30,7 @@ interface MemoryRepositoryRollback<ENTITY: Identifiable<ID>, ID: Serializable>: 
         // case: rollback insert
         data.remove(k)
       } else {
-        data[k] = v
+        data[k] = v as ENTITY
       }
     }
   }

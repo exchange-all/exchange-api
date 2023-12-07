@@ -16,5 +16,3 @@ order-book:
   consume-poll-size: 10000
   consume-poll-duration: 100
 ---
-
-

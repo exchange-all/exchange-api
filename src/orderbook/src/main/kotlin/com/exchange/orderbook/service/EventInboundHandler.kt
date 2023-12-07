@@ -2,12 +2,11 @@ package com.exchange.orderbook.service
 
 import com.exchange.orderbook.model.event.IEvent
 import com.exchange.orderbook.repository.disk.OffsetRepository
-import com.exchange.orderbook.repository.memory.MemoryTransactionManager
-import java.time.Duration
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 /**
  * @author thaivc
@@ -31,14 +30,8 @@ class EventInboundHandler(
       it.seek(topicPartition, offsetEntity?.offset ?: 0)
       while (true) {
         val records = it.poll(Duration.ofMillis(consumePollDuration))
-        try {
-          MemoryTransactionManager.newTxn {
-            coreEngine.consumeEvents(records)
-            it.commitSync()
-          }
-        } catch (e: Exception) {
-          it.seek(topicPartition, offsetEntity?.offset ?: 0)
-        }
+        coreEngine.consumeEvents(records)
+        it.commitSync()
       }
     }
   }

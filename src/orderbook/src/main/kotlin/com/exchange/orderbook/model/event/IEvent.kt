@@ -1,7 +1,5 @@
 package com.exchange.orderbook.model.event
 
-import java.util.UUID
-
 /**
  * @author thaivc
  * @since 2023

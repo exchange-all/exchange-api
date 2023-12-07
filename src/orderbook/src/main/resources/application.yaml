@@ -10,4 +10,4 @@ spring:
       - database
 ---
 schedule:
-  sync-database-interval: 1000
+  sync-database-interval: 500

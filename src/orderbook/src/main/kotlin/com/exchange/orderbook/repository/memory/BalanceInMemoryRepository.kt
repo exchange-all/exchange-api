@@ -1,8 +1,9 @@
 package com.exchange.orderbook.repository.memory
 
 import com.exchange.orderbook.model.entity.BalanceEntity
-import java.util.*
+import com.exchange.orderbook.model.entity.Cloneable
 import org.springframework.stereotype.Repository
+import java.util.*
 
 /**
  * @author thaivc
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class BalanceInMemoryRepository : MemoryRepositoryRollback<BalanceEntity, UUID> {
   override val data: MutableMap<UUID, BalanceEntity> = HashMap()
-  override val segments: ThreadLocal<MutableMap<UUID, BalanceEntity?>> =
+  override val segments: ThreadLocal<MutableMap<UUID, Cloneable?>> =
     ThreadLocal.withInitial { null }
 
   // user_id -> Set<balance_id>

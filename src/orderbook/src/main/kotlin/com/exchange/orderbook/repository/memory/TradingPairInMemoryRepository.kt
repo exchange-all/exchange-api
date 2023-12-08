@@ -11,16 +11,16 @@ import java.util.*
  */
 @Repository
 class TradingPairInMemoryRepository {
-    val data: MutableMap<UUID, TradingPairEntity> = HashMap()
+    val data: MutableMap<String, TradingPairEntity> = HashMap()
 
-    val pairMap: MutableMap<String, UUID> = HashMap()
+    val pairMap: MutableMap<String, String> = HashMap()
 
     fun upsert(item: TradingPairEntity) {
         data[item.id] = item
         pairMap[currencyPair(item.baseCurrency, item.quoteCurrency)] = item.id
     }
 
-    fun findById(id: UUID): TradingPairEntity? {
+    fun findById(id: String): TradingPairEntity? {
         return data[id]
     }
 

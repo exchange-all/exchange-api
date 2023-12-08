@@ -1,7 +1,9 @@
 package com.exchange.orderbook.service
 
+import com.exchange.orderbook.model.Tuple
 import com.exchange.orderbook.model.event.EventResponse
 import com.exchange.orderbook.model.event.SnapshotSupport
+import org.apache.kafka.common.header.Headers
 import org.springframework.stereotype.Component
 import java.util.concurrent.Executors
 
@@ -23,7 +25,7 @@ class OutboundListener(
      * @param offset
      * @param data
      */
-    fun enqueue(offset: Long, data: List<EventResponse>) {
+    fun enqueue(offset: Long, data: List<Tuple<EventResponse, Headers>>) {
         outboundListenerQueue.execute { dequeue(offset, data) }
     }
 
@@ -34,10 +36,10 @@ class OutboundListener(
      * @param data
      *
      */
-    fun dequeue(offset: Long, data: List<EventResponse>) {
+    fun dequeue(offset: Long, data: List<Tuple<EventResponse, Headers>>) {
         if (data.isEmpty()) return
 
-        snapshotDataHandler.enqueue(offset, data.filterIsInstance<SnapshotSupport>())
+        snapshotDataHandler.enqueue(offset, data.map { it.first }.filterIsInstance<SnapshotSupport>())
         outboundHandler.publishEvent(data)
     }
 }

@@ -3,18 +3,17 @@ package com.exchange.orderbook.model.entity
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.math.BigDecimal
-import java.util.*
 
 /**
  * @author thaivc
  * @since 2023
  */
 @Document("orders")
-class OrderEntity : Identifiable<UUID>, Cloneable {
+class OrderEntity : Identifiable<String>, Cloneable {
     @Id
-    override lateinit var id: UUID
-    lateinit var userId: UUID
-    lateinit var tradingPairId: UUID
+    override lateinit var id: String
+    lateinit var userId: String
+    lateinit var tradingPairId: String
     lateinit var amount: BigDecimal
     lateinit var availableAmount: BigDecimal
     lateinit var price: BigDecimal
@@ -36,9 +35,9 @@ class OrderEntity : Identifiable<UUID>, Cloneable {
 
     companion object {
         fun sell(
-            id: UUID,
-            userId: UUID,
-            tradingPairId: UUID,
+            id: String,
+            userId: String,
+            tradingPairId: String,
             amount: BigDecimal,
             price: BigDecimal,
             offset: Long
@@ -57,9 +56,9 @@ class OrderEntity : Identifiable<UUID>, Cloneable {
         }
 
         fun buy(
-            id: UUID,
-            userId: UUID,
-            tradingPairId: UUID,
+            id: String,
+            userId: String,
+            tradingPairId: String,
             amount: BigDecimal,
             price: BigDecimal,
             offset: Long

@@ -3,18 +3,17 @@ package com.exchange.orderbook.model.entity
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.math.BigDecimal
-import java.util.*
 
 /**
  * @author thaivc
  * @since 2023
  */
 @Document("balances")
-class BalanceEntity : Identifiable<UUID>, Cloneable {
+class BalanceEntity : Identifiable<String>, Cloneable {
     @Id
-    override lateinit var id: UUID
+    override lateinit var id: String
 
-    lateinit var userId: UUID
+    lateinit var userId: String
     lateinit var currency: String
     lateinit var availableAmount: BigDecimal
     lateinit var lockAmount: BigDecimal

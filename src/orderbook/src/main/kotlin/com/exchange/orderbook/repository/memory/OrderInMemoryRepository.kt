@@ -10,11 +10,11 @@ import java.util.*
  * @since 2023
  */
 @Repository
-class OrderInMemoryRepository : MemoryRepositoryRollback<OrderEntity, UUID> {
-    override lateinit var segments: ThreadLocal<MutableMap<UUID, Cloneable?>>
-    override lateinit var data: MutableMap<UUID, OrderEntity>
+class OrderInMemoryRepository : MemoryRepositoryRollback<OrderEntity, String> {
+    override lateinit var segments: ThreadLocal<MutableMap<String, Cloneable?>>
+    override lateinit var data: MutableMap<String, OrderEntity>
 
-    fun findById(id: UUID): OrderEntity? {
+    fun findById(id: String): OrderEntity? {
         return data[id]
     }
 

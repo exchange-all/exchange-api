@@ -59,7 +59,7 @@ class MigrateData(
         )
         if (pair == null) {
             tradingPairRepository.save(TradingPairEntity().apply {
-                id = UUID.randomUUID()
+                id = UUID.randomUUID().toString()
                 baseCurrency = base.name
                 quoteCurrency = quote.name
                 minLimit = BigDecimal(limit)

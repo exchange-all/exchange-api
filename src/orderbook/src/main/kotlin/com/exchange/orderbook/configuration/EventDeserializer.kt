@@ -1,5 +1,6 @@
 package com.exchange.orderbook.configuration
 
+import com.exchange.orderbook.model.constants.HeaderType
 import com.exchange.orderbook.model.event.IEvent
 import com.exchange.orderbook.model.event.UnknownEvent
 import com.exchange.orderbook.model.event.typeOf
@@ -14,11 +15,15 @@ import org.apache.kafka.common.serialization.Deserializer
 class EventDeserializer : Deserializer<IEvent> {
 
     override fun deserialize(topic: String?, headers: Headers?, data: ByteArray?): IEvent {
-        val eventType = headers?.headers("type")?.firstOrNull()?.value()?.let {
-            String(it)
-        } ?: return UnknownEvent.DEFAULT
+        try {
+            val eventType = headers?.headers(HeaderType.CE_TYPE)?.firstOrNull()?.value()?.let {
+                String(it)
+            } ?: return UnknownEvent.DEFAULT
 
-        return typeOf(eventType)?.let { jacksonObjectMapper().readValue(data, it) } ?: UnknownEvent.DEFAULT
+            return typeOf(eventType)?.let { jacksonObjectMapper().readValue(data, it) } ?: UnknownEvent.DEFAULT
+        } catch (e: Exception) {
+            return UnknownEvent.DEFAULT
+        }
     }
 
     override fun deserialize(topic: String?, data: ByteArray?): IEvent {

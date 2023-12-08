@@ -62,7 +62,7 @@ class MockKafkaRequestReplyListener {
                         CloudEventUtils.serializeData(
                             ReplyEvent(
                                 depositCommand!!,
-                                BalanceDeposited(depositCommand.accountId)
+                                BalanceDeposited(depositCommand.currency)
                             )
                         )
                     )
@@ -76,7 +76,7 @@ class MockKafkaRequestReplyListener {
                         CloudEventUtils.serializeData(
                             ReplyEvent(
                                 withdrawCommand!!,
-                                BalanceWithdrawn(withdrawCommand.accountId)
+                                BalanceWithdrawn(withdrawCommand.currency)
                             )
                         )
                     )

@@ -3,6 +3,7 @@ package com.exchange.exchange.config
 import com.exchange.exchange.core.CloudEventUtils
 import com.exchange.exchange.core.ReplyEvent
 import com.exchange.exchange.domain.balance.*
+import com.exchange.exchange.domain.orderbook.*
 import io.cloudevents.CloudEvent
 import io.cloudevents.core.builder.CloudEventBuilder
 import org.slf4j.LoggerFactory
@@ -12,6 +13,7 @@ import org.springframework.messaging.Message
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.messaging.support.MessageBuilder
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 import java.net.URI
 import java.util.*
 
@@ -75,6 +77,52 @@ class MockKafkaRequestReplyListener {
                             ReplyEvent(
                                 withdrawCommand!!,
                                 BalanceWithdrawn(withdrawCommand.accountId)
+                            )
+                        )
+                    )
+            }
+
+            OrderBookCommandType.CREATE_ASK_LIMIT_ORDER.type -> {
+                val createAskLimitOrderCommand =
+                    CloudEventUtils.cloudEventToObject(command, CreateAskLimitOrderCommand::class.java)
+                responseEventBuilder.withType(OrderBookEventType.CREATE_ASK_LIMIT_ORDER_SUCCESS.type)
+                    .withData(
+                        CloudEventUtils.serializeData(
+                            ReplyEvent(
+                                createAskLimitOrderCommand!!,
+                                AskLimitOrderCreated(
+                                    UUID.randomUUID().toString(),
+                                    createAskLimitOrderCommand.userId,
+                                    UUID.randomUUID().toString(),
+                                    createAskLimitOrderCommand.amount,
+                                    createAskLimitOrderCommand.amount.plus(BigDecimal.TEN),
+                                    createAskLimitOrderCommand.price,
+                                    "SELL",
+                                    "OPEN",
+                                )
+                            )
+                        )
+                    )
+            }
+
+            OrderBookCommandType.CREATE_BID_LIMIT_ORDER.type -> {
+                val createBidLimitOrderCommand =
+                    CloudEventUtils.cloudEventToObject(command, CreateBidLimitOrderCommand::class.java)
+                responseEventBuilder.withType(OrderBookEventType.CREATE_BID_LIMIT_ORDER_SUCCESS.type)
+                    .withData(
+                        CloudEventUtils.serializeData(
+                            ReplyEvent(
+                                createBidLimitOrderCommand!!,
+                                BidLimitOrderCreated(
+                                    UUID.randomUUID().toString(),
+                                    createBidLimitOrderCommand.userId,
+                                    UUID.randomUUID().toString(),
+                                    createBidLimitOrderCommand.amount,
+                                    createBidLimitOrderCommand.amount.plus(BigDecimal.TEN),
+                                    createBidLimitOrderCommand.price,
+                                    "BUY",
+                                    "OPEN",
+                                )
                             )
                         )
                     )

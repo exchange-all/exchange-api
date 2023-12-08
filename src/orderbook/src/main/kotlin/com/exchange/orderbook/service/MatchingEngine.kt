@@ -135,6 +135,7 @@ class MatchingEngine(
         tradingPair: TradingPair,
         tradingResults: MutableList<TradingResult>
     ) {
+        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
 
         // update ask-order and bid-order
         askOrderHead.availableAmount =
@@ -142,8 +143,6 @@ class MatchingEngine(
         bidOrderHead.availableAmount = BigDecimal.ZERO
 
         bidOrders.remove(bidOrderHead)
-
-        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
     }
 
     private fun handleBidOverAsk(
@@ -154,6 +153,7 @@ class MatchingEngine(
         tradingPair: TradingPair,
         tradingResults: MutableList<TradingResult>
     ) {
+        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
 
         // update ask-order and bid-order
         bidOrderHead.availableAmount =
@@ -161,8 +161,6 @@ class MatchingEngine(
         askOrderHead.availableAmount = BigDecimal.ZERO
 
         askOrders.remove(askOrderHead)
-
-        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
     }
 
     private fun handleAskEqualsBid(
@@ -173,14 +171,14 @@ class MatchingEngine(
         tradingPair: TradingPair,
         tradingResults: MutableList<TradingResult>
     ) {
+        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
+
         // update ask-order and bid-order
         askOrderHead.availableAmount = BigDecimal.ZERO
         bidOrderHead.availableAmount = BigDecimal.ZERO
 
         bidOrders.remove(bidOrderHead)
         askOrders.remove(askOrderHead)
-
-        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
     }
 
     private fun updateBalances(

@@ -19,7 +19,7 @@ data class Response<T>(
             return Response(true, data)
         }
 
-        fun errors(errors: List<String>): Response<Unit> {
+        fun fail(errors: List<String>): Response<Unit> {
             return Response(false, errors = errors)
         }
     }

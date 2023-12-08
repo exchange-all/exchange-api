@@ -48,14 +48,14 @@ class BalanceService(
         val eventResult = this.template.sendAndReceive(record).await()
         return when (eventResult.value().type) {
             BalanceEventType.CREATE_BALANCE_SUCCESS.type -> {
-                val event = CloudEventUtils.getExternalEventData(
+                val event = CloudEventUtils.getReplyEventData(
                         eventResult.value(), BalanceCreated::class.java
                 )
                 Response.success(CreateBalanceResponse(event!!.balanceId))
             }
 
             BalanceEventType.CREATE_BALANCE_FAIL.type -> {
-                throw BadRequestException(CloudEventUtils.getExternalEventError(eventResult.value())!!)
+                throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
             }
 
             else -> throw InternalServerErrorException()
@@ -85,14 +85,14 @@ class BalanceService(
         val eventResult = this.template.sendAndReceive(record).await()
         return when (eventResult.value().type) {
             BalanceEventType.DEPOSIT_BALANCE_SUCCESS.type -> {
-                val event = CloudEventUtils.getExternalEventData(
+                val event = CloudEventUtils.getReplyEventData(
                         eventResult.value(), BalanceDeposited::class.java
                 )
                 Response.success(DepositResponse(event!!.balanceId))
             }
 
             BalanceEventType.DEPOSIT_BALANCE_FAIL.type -> {
-                throw BadRequestException(CloudEventUtils.getExternalEventError(eventResult.value())!!)
+                throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
             }
 
             else -> throw InternalServerErrorException()
@@ -122,14 +122,14 @@ class BalanceService(
         val eventResult = this.template.sendAndReceive(record).await()
         return when (eventResult.value().type) {
             BalanceEventType.WITHDRAW_BALANCE_SUCCESS.type -> {
-                val event = CloudEventUtils.getExternalEventData(
+                val event = CloudEventUtils.getReplyEventData(
                         eventResult.value(), BalanceWithdrawn::class.java
                 )
                 Response.success(WithdrawResponse(event!!.balanceId))
             }
 
             BalanceEventType.WITHDRAW_BALANCE_FAIL.type -> {
-                throw BadRequestException(CloudEventUtils.getExternalEventError(eventResult.value())!!)
+                throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
             }
 
             else -> throw InternalServerErrorException()

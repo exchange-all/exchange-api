@@ -13,16 +13,16 @@ import java.math.BigDecimal
 // --- Request ---
 data class CreateBalanceRequest(
 
-    @Schema(description = "Currency id", example = "656bf22f37f9d256dcd962a2")
-    @NotNull(message = "CURRENCY_ID_NOT_NULL")
-    val currencyId: String,
+    @Schema(description = "Currency", example = "USDT")
+    @NotNull(message = "CURRENCY_NOT_NULL")
+    val currency: String,
 )
 
 data class DepositRequest(
 
-    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
-    @NotNull(message = "BALANCE_ID_NOT_NULL")
-    val accountId: String,
+    @Schema(description = "Currency", example = "USDT")
+    @NotNull(message = "CURRENCY_NOT_NULL")
+    val currency: String,
 
     @NotNull(message = "AMOUNT_NOT_NULL")
     @DecimalMin(
@@ -33,9 +33,9 @@ data class DepositRequest(
 )
 
 data class WithdrawRequest(
-    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
-    @NotNull(message = "BALANCE_ID_NOT_NULL")
-    val accountId: String,
+    @Schema(description = "Currency", example = "USDT")
+    @NotNull(message = "CURRENCY_NOT_NULL")
+    val currency: String,
 
     @NotNull(message = "AMOUNT_NOT_NULL")
     @DecimalMin(
@@ -47,16 +47,16 @@ data class WithdrawRequest(
 
 // --- Response ---
 data class CreateBalanceResponse(
-    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    @Schema(description = "Balance id", example = "4d5558a7-6baa-4530-8e9c-b2c0eaa6c9e4")
     val balanceId: String,
 )
 
 data class DepositResponse(
-    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    @Schema(description = "Balance id", example = "4d5558a7-6baa-4530-8e9c-b2c0eaa6c9e4")
     val balanceId: String,
 )
 
 data class WithdrawResponse(
-    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    @Schema(description = "Balance id", example = "4d5558a7-6baa-4530-8e9c-b2c0eaa6c9e4")
     val balanceId: String,
 )

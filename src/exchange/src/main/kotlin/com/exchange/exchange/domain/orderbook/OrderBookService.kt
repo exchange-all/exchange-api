@@ -42,7 +42,7 @@ class OrderBookService(
             .withData(
                 CloudEventUtils.serializeData(
                     CreateAskLimitOrderCommand(
-                        currentUser.id!!,
+                        currentUser.id,
                         createAskLimitOrderRequest.baseCurrency,
                         createAskLimitOrderRequest.quoteCurrency,
                         createAskLimitOrderRequest.price,
@@ -86,7 +86,7 @@ class OrderBookService(
             .withData(
                 CloudEventUtils.serializeData(
                     CreateBidLimitOrderCommand(
-                        currentUser.id!!,
+                        currentUser.id,
                         createBidLimitOrderRequest.baseCurrency,
                         createBidLimitOrderRequest.quoteCurrency,
                         createBidLimitOrderRequest.price,

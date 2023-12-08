@@ -38,8 +38,8 @@ class BalanceService(
                 CloudEventUtils.serializeData(
                     CreateBalanceCommand(
                         UUID.randomUUID().toString(),
-                        currentUser.id!!,
-                        createBalanceRequest.currencyId,
+                        currentUser.id,
+                        createBalanceRequest.currency,
                     )
                 )
             ).build()
@@ -75,8 +75,8 @@ class BalanceService(
                 CloudEventUtils.serializeData(
                     DepositCommand(
                         UUID.randomUUID().toString(),
-                        currentUser.id!!,
-                        depositRequest.accountId,
+                        currentUser.id,
+                        depositRequest.currency,
                         depositRequest.amount,
                     )
                 )
@@ -113,8 +113,8 @@ class BalanceService(
                 CloudEventUtils.serializeData(
                     WithdrawCommand(
                         UUID.randomUUID().toString(),
-                        currentUser.id!!,
-                        withdrawRequest.accountId,
+                        currentUser.id,
+                        withdrawRequest.currency,
                         withdrawRequest.amount,
                     )
                 )

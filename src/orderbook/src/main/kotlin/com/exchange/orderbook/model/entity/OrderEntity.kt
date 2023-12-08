@@ -15,11 +15,7 @@ class OrderEntity : Identifiable<UUID>, Cloneable {
   override lateinit var id: UUID
   lateinit var userId: UUID
   lateinit var tradingPairId: UUID
-
-  // The initial amount of the order that user wants to trade
-  // amount = quantity * price
   lateinit var amount: BigDecimal
-
   lateinit var availableAmount: BigDecimal
   lateinit var price: BigDecimal
   lateinit var type: OrderType

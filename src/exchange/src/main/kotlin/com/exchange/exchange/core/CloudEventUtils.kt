@@ -1,6 +1,5 @@
 package com.exchange.exchange.core
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.cloudevents.CloudEvent
 import io.cloudevents.core.CloudEventUtils.mapData
 import io.cloudevents.jackson.PojoCloudEventDataMapper
@@ -16,30 +15,28 @@ object CloudEventUtils {
     const val EVENT_SOURCE = "exchange-service"
 
     fun serializeData(data: Any): ByteArray {
-        return jacksonObjectMapper().writeValueAsBytes(data)
+        return ObjectMapper.instance.writeValueAsBytes(data)
     }
 
     fun <T> cloudEventToObject(cloudEvent: CloudEvent, clazz: Class<T>): T? {
         val cloudEventData = mapData(
-            cloudEvent, PojoCloudEventDataMapper.from(jacksonObjectMapper(), clazz)
+            cloudEvent, PojoCloudEventDataMapper.from(ObjectMapper.instance, clazz)
         )
         return cloudEventData?.value
     }
 
     fun <T> getReplyEventData(cloudEvent: CloudEvent, clazz: Class<T>): T? {
         val cloudEventData = mapData(
-            cloudEvent,
-            PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
+            cloudEvent, PojoCloudEventDataMapper.from(ObjectMapper.instance, ReplyEvent::class.java)
         )
         return cloudEventData?.value?.data?.let {
-            jacksonObjectMapper().convertValue(it, clazz)
+            ObjectMapper.instance.convertValue(it, clazz)
         }
     }
 
     fun getReplyEventError(cloudEvent: CloudEvent): String? {
         val cloudEventData = mapData(
-            cloudEvent,
-            PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
+            cloudEvent, PojoCloudEventDataMapper.from(ObjectMapper.instance, ReplyEvent::class.java)
         )
         return cloudEventData?.value?.error
     }

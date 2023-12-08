@@ -1,11 +1,11 @@
 package com.exchange.exchange.domain.orderbook
 
 import com.exchange.exchange.core.CloudEventUtils
+import com.exchange.exchange.core.ObjectMapper
 import com.exchange.exchange.core.Response
 import com.exchange.exchange.domain.user.UserEntity
 import com.exchange.exchange.exception.BadRequestException
 import com.exchange.exchange.exception.InternalServerErrorException
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.cloudevents.CloudEvent
 import io.cloudevents.core.builder.CloudEventBuilder
 import kotlinx.coroutines.future.await
@@ -60,7 +60,7 @@ class OrderBookService(
                     eventResult.value(), AskLimitOrderCreated::class.java
                 )
                 Response.success(
-                    jacksonObjectMapper().convertValue(
+                    ObjectMapper.instance.convertValue(
                         event!!,
                         AskLimitOrderResponse::class.java
                     )
@@ -104,7 +104,7 @@ class OrderBookService(
                     eventResult.value(), BidLimitOrderCreated::class.java
                 )
                 Response.success(
-                    jacksonObjectMapper().convertValue(
+                    ObjectMapper.instance.convertValue(
                         event!!,
                         BidLimitOrderResponse::class.java
                     )

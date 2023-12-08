@@ -47,6 +47,7 @@ class MockKafkaRequestReplyListener {
                     .withData(
                         CloudEventUtils.serializeData(
                             ReplyEvent(
+                                UUID.randomUUID().toString(),
                                 createCommand!!,
                                 BalanceCreated(UUID.randomUUID().toString())
                             )
@@ -61,6 +62,7 @@ class MockKafkaRequestReplyListener {
                     .withData(
                         CloudEventUtils.serializeData(
                             ReplyEvent(
+                                UUID.randomUUID().toString(),
                                 depositCommand!!,
                                 BalanceDeposited(depositCommand.currency)
                             )
@@ -75,6 +77,7 @@ class MockKafkaRequestReplyListener {
                     .withData(
                         CloudEventUtils.serializeData(
                             ReplyEvent(
+                                UUID.randomUUID().toString(),
                                 withdrawCommand!!,
                                 BalanceWithdrawn(withdrawCommand.currency)
                             )
@@ -89,6 +92,7 @@ class MockKafkaRequestReplyListener {
                     .withData(
                         CloudEventUtils.serializeData(
                             ReplyEvent(
+                                UUID.randomUUID().toString(),
                                 createAskLimitOrderCommand!!,
                                 AskLimitOrderCreated(
                                     UUID.randomUUID().toString(),
@@ -112,6 +116,7 @@ class MockKafkaRequestReplyListener {
                     .withData(
                         CloudEventUtils.serializeData(
                             ReplyEvent(
+                                UUID.randomUUID().toString(),
                                 createBidLimitOrderCommand!!,
                                 BidLimitOrderCreated(
                                     UUID.randomUUID().toString(),

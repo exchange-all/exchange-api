@@ -11,7 +11,7 @@ class EventResponseType {
         }
 
         fun fail(type: String): String {
-            return "${type}_FAIL"
+            return "${type}_FAILED"
         }
 
         const val TRADING_RESULT = "TRADING_RESULT"

@@ -9,18 +9,21 @@ import java.math.BigDecimal
  *
  */
 data class CreateBalanceCommand(
+    val id: String,
     val userId: String,
-    val currencyId: String,
+    val currency: String,
 ) : Command()
 
 data class DepositCommand(
+    val id: String,
     val userId: String,
-    val accountId: String,
+    val currency: String,
     val amount: BigDecimal,
 ) : Command()
 
 data class WithdrawCommand(
+    val id: String,
     val userId: String,
-    val accountId: String,
+    val currency: String,
     val amount: BigDecimal,
 ) : Command()

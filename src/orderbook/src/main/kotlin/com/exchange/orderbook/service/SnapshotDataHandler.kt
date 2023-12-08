@@ -29,8 +29,8 @@ class SnapshotDataHandler(
     private val snapshotDataQueue = Executors.newSingleThreadExecutor()
 
     private var offset: Long? = null
-    private var balance: Map<UUID, BalanceEntity> = HashMap()
-    private var order: Map<UUID, OrderEntity> = HashMap()
+    private var balance: Map<String, BalanceEntity> = HashMap()
+    private var order: Map<String, OrderEntity> = HashMap()
 
     @Scheduled(fixedDelayString = "\${schedule.sync-database-interval}")
     fun scheduleSnapshot() {

@@ -1,5 +1,6 @@
 package com.exchange.orderbook.service
 
+import com.exchange.orderbook.model.Tuple
 import com.exchange.orderbook.model.constants.MessageError
 import com.exchange.orderbook.model.entity.BalanceEntity
 import com.exchange.orderbook.model.entity.OrderEntity
@@ -11,7 +12,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.util.*
 
 /**
  * @author thaivc
@@ -61,11 +61,11 @@ class CoreEngine(
                 // handle request
                 val result = handlers[record.value()::class.java]?.invoke(record.value())
                     ?: EventResponse.fail(record.value(), MessageError.EVENT_NOT_FOUND)
-                val results = mutableListOf(result)
+                val results = mutableListOf(Tuple(result, record.headers()))
 
                 // get trading result if any
                 if (tradingResults.get() != null) {
-                    results.addAll(tradingResults.get())
+                    results.addAll(tradingResults.get().map { Tuple(it, null) })
                     tradingResults.remove()
                 }
                 consumerRecord.remove()
@@ -77,16 +77,14 @@ class CoreEngine(
     private fun onCreateBalanceEvent(e: IEvent): EventResponse {
         val event = e as CreateBalanceEvent
         val balance =
-            balanceInMemoryRepository.findByUserIdAndCurrency(
-                UUID.fromString(event.userId), event.currency
-            )
+            balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.currency)
         if (balance != null) {
             return EventResponse.fail(event, MessageError.BALANCE_EXISTED)
         }
         val entity =
             BalanceEntity().apply {
-                id = UUID.fromString(event.id)
-                userId = UUID.fromString(event.userId)
+                id = event.id
+                userId = event.userId
                 currency = event.currency
                 availableAmount = BigDecimal.ZERO
                 lockAmount = BigDecimal.ZERO
@@ -98,9 +96,7 @@ class CoreEngine(
     private fun onDepositBalanceEvent(e: IEvent): EventResponse {
         val event = e as DepositBalanceEvent
         val balance =
-            balanceInMemoryRepository.findByUserIdAndCurrency(
-                UUID.fromString(event.userId), event.currency
-            )
+            balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.currency)
                 ?: return EventResponse.fail(event, MessageError.BALANCE_NOT_FOUND)
 
         balance.availableAmount = balance.availableAmount.add(event.amount)
@@ -111,9 +107,7 @@ class CoreEngine(
     private fun onWithdrawBalanceEvent(e: IEvent): EventResponse {
         val event = e as WithdrawBalanceEvent
         val balance =
-            balanceInMemoryRepository.findByUserIdAndCurrency(
-                UUID.fromString(event.userId), event.currency
-            )
+            balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.currency)
                 ?: return EventResponse.fail(event, MessageError.BALANCE_NOT_FOUND)
 
         balance.availableAmount = balance.availableAmount.subtract(event.amount)
@@ -131,7 +125,7 @@ class CoreEngine(
 
         // handle asks
         val balance = balanceInMemoryRepository.findByUserIdAndCurrency(
-            UUID.fromString(event.userId),
+            event.userId,
             event.baseCurrency
         )
             ?: return EventResponse.fail(event, MessageError.BALANCE_NOT_FOUND)
@@ -145,8 +139,8 @@ class CoreEngine(
         balance.lockAmount = balance.lockAmount.plus(totalSell)
 
         val order = OrderEntity.sell(
-            UUID.fromString(event.id),
-            UUID.fromString(event.userId),
+            event.id,
+            event.userId,
             tradingPair.id,
             event.amount,
             event.price,
@@ -169,10 +163,7 @@ class CoreEngine(
                 ?: return EventResponse.fail(event, MessageError.TRADING_PAIR_NOT_FOUND)
 
         // handle bids
-        val balance = balanceInMemoryRepository.findByUserIdAndCurrency(
-            UUID.fromString(event.userId),
-            event.quoteCurrency
-        )
+        val balance = balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.quoteCurrency)
             ?: return EventResponse.fail(event, MessageError.BALANCE_NOT_FOUND)
 
         val totalBuy = event.amount.multiply(event.price)
@@ -183,8 +174,8 @@ class CoreEngine(
         balance.lockAmount = balance.lockAmount.plus(totalBuy)
 
         val order = OrderEntity.buy(
-            UUID.fromString(event.id),
-            UUID.fromString(event.userId),
+            event.id,
+            event.userId,
             tradingPair.id,
             event.amount,
             event.price,

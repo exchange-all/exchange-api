@@ -11,8 +11,8 @@ spring.kafka:
 
 ---
 order-book:
-  topic: order-book.topic
-  reply-topic: order-book.reply-topic
+  topic: order-book-request
+  reply-topic: order-book-reply
   consume-poll-size: 10000
   consume-poll-duration: 100
 ---

@@ -37,8 +37,9 @@ class BalanceService(
             .withData(
                 CloudEventUtils.serializeData(
                     CreateBalanceCommand(
-                        currentUser.id!!,
-                        createBalanceRequest.currencyId,
+                        UUID.randomUUID().toString(),
+                        currentUser.id,
+                        createBalanceRequest.currency,
                     )
                 )
             ).build()
@@ -51,7 +52,7 @@ class BalanceService(
                 val event = CloudEventUtils.getReplyEventData(
                     eventResult.value(), BalanceCreated::class.java
                 )
-                Response.success(CreateBalanceResponse(event!!.balanceId))
+                Response.success(CreateBalanceResponse(event!!.id))
             }
 
             BalanceEventType.CREATE_BALANCE_FAILED.type -> {
@@ -73,8 +74,9 @@ class BalanceService(
             .withData(
                 CloudEventUtils.serializeData(
                     DepositCommand(
-                        currentUser.id!!,
-                        depositRequest.accountId,
+                        UUID.randomUUID().toString(),
+                        currentUser.id,
+                        depositRequest.currency,
                         depositRequest.amount,
                     )
                 )
@@ -88,7 +90,7 @@ class BalanceService(
                 val event = CloudEventUtils.getReplyEventData(
                     eventResult.value(), BalanceDeposited::class.java
                 )
-                Response.success(DepositResponse(event!!.balanceId))
+                Response.success(DepositResponse(event!!.id))
             }
 
             BalanceEventType.DEPOSIT_BALANCE_FAILED.type -> {
@@ -110,8 +112,9 @@ class BalanceService(
             .withData(
                 CloudEventUtils.serializeData(
                     WithdrawCommand(
-                        currentUser.id!!,
-                        withdrawRequest.accountId,
+                        UUID.randomUUID().toString(),
+                        currentUser.id,
+                        withdrawRequest.currency,
                         withdrawRequest.amount,
                     )
                 )
@@ -125,7 +128,7 @@ class BalanceService(
                 val event = CloudEventUtils.getReplyEventData(
                     eventResult.value(), BalanceWithdrawn::class.java
                 )
-                Response.success(WithdrawResponse(event!!.balanceId))
+                Response.success(WithdrawResponse(event!!.id))
             }
 
             BalanceEventType.WITHDRAW_BALANCE_FAILED.type -> {

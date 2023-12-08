@@ -3,6 +3,7 @@ package com.exchange.orderbook.service
 import com.exchange.orderbook.model.TradingPair
 import com.exchange.orderbook.model.currencyPair
 import com.exchange.orderbook.model.entity.OrderEntity
+import com.exchange.orderbook.model.entity.Status
 import com.exchange.orderbook.model.event.TradingResult
 import com.exchange.orderbook.repository.memory.BalanceInMemoryRepository
 import com.exchange.orderbook.repository.memory.OrderInMemoryRepository
@@ -31,7 +32,7 @@ class MatchingEngine(
      * Load orders to memory
      */
     fun restoreData(orders: List<OrderEntity>) {
-        orders.forEach {
+        orders.filter { it.status != Status.CLOSED }.forEach {
             val pair = tradingPairInMemoryRepository.findById(it.tradingPairId)
             if (pair != null) {
                 tradingPairs.putIfAbsent(
@@ -141,6 +142,7 @@ class MatchingEngine(
         askOrderHead.availableAmount =
             askOrderHead.availableAmount.subtract(bidOrderHead.availableAmount)
         bidOrderHead.availableAmount = BigDecimal.ZERO
+        bidOrderHead.status = Status.CLOSED
 
         bidOrders.remove(bidOrderHead)
     }
@@ -159,6 +161,7 @@ class MatchingEngine(
         bidOrderHead.availableAmount =
             bidOrderHead.availableAmount.subtract(askOrderHead.availableAmount)
         askOrderHead.availableAmount = BigDecimal.ZERO
+        askOrderHead.status = Status.CLOSED
 
         askOrders.remove(askOrderHead)
     }
@@ -176,6 +179,8 @@ class MatchingEngine(
         // update ask-order and bid-order
         askOrderHead.availableAmount = BigDecimal.ZERO
         bidOrderHead.availableAmount = BigDecimal.ZERO
+        askOrderHead.status = Status.CLOSED
+        bidOrderHead.status = Status.CLOSED
 
         bidOrders.remove(bidOrderHead)
         askOrders.remove(askOrderHead)

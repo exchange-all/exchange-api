@@ -54,7 +54,7 @@ class BalanceService(
                 Response.success(CreateBalanceResponse(event!!.balanceId))
             }
 
-            BalanceEventType.CREATE_BALANCE_FAIL.type -> {
+            BalanceEventType.CREATE_BALANCE_FAILED.type -> {
                 throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
             }
 
@@ -91,7 +91,7 @@ class BalanceService(
                 Response.success(DepositResponse(event!!.balanceId))
             }
 
-            BalanceEventType.DEPOSIT_BALANCE_FAIL.type -> {
+            BalanceEventType.DEPOSIT_BALANCE_FAILED.type -> {
                 throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
             }
 
@@ -128,7 +128,7 @@ class BalanceService(
                 Response.success(WithdrawResponse(event!!.balanceId))
             }
 
-            BalanceEventType.WITHDRAW_BALANCE_FAIL.type -> {
+            BalanceEventType.WITHDRAW_BALANCE_FAILED.type -> {
                 throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
             }
 

@@ -20,9 +20,9 @@ class SessionAuthenticationConverter : ServerAuthenticationConverter {
             Mono.empty()
         }.map {
             UsernamePasswordAuthenticationToken(
-                    it,
-                    null,
-                    it?.authorities ?: listOf()
+                it,
+                null,
+                it?.authorities ?: listOf()
             )
         }
     }

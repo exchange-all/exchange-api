@@ -32,7 +32,7 @@ class SessionConfig : BeanClassLoaderAware {
      */
     private fun objectMapper(): ObjectMapper {
         val mapper = jacksonObjectMapper()
-                .registerModules(JavaTimeModule())
+            .registerModules(JavaTimeModule())
         mapper.registerModules(SecurityJackson2Modules.getModules(loader))
         return mapper
     }

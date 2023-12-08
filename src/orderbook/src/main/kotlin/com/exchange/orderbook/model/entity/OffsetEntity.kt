@@ -9,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document("offsets")
 class OffsetEntity {
 
-  lateinit var id: String
-  lateinit var topic: String
-  var partition: Int = 0
-  var offset: Long = 0
+    lateinit var id: String
+    lateinit var topic: String
+    var partition: Int = 0
+    var offset: Long = 0
 }

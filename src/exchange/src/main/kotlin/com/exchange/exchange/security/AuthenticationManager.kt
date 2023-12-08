@@ -18,9 +18,9 @@ class AuthenticationManager : ReactiveAuthenticationManager {
         val userEntity = authentication.principal as UserEntity
 
         if (userEntity.isEnabled.not()
-                || userEntity.isAccountNonLocked.not()
-                || userEntity.isAccountNonExpired.not()
-                || userEntity.isCredentialsNonExpired.not()
+            || userEntity.isAccountNonLocked.not()
+            || userEntity.isAccountNonExpired.not()
+            || userEntity.isCredentialsNonExpired.not()
         ) {
             return Mono.error { UnauthorizedException() }
         }

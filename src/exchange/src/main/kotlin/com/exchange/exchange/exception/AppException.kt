@@ -6,13 +6,13 @@ package com.exchange.exchange.exception
  *
  */
 class BadRequestException(
-        override val message: String = "BAD_REQUEST_ERROR",
+    override val message: String = "BAD_REQUEST_ERROR",
 ) : RuntimeException()
 
 class UnauthorizedException(
-        override val message: String = "UNAUTHORIZED_ERROR",
+    override val message: String = "UNAUTHORIZED_ERROR",
 ) : RuntimeException()
 
 class InternalServerErrorException(
-        override val message: String = "INTERNAL_SERVER_ERROR",
+    override val message: String = "INTERNAL_SERVER_ERROR",
 ) : RuntimeException()

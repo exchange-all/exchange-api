@@ -31,8 +31,8 @@ class SecurityConfig {
 
     @Bean
     fun securityWebFilterChain(
-            http: ServerHttpSecurity,
-            authenticationManager: AuthenticationManager,
+        http: ServerHttpSecurity,
+        authenticationManager: AuthenticationManager,
     ): SecurityWebFilterChain {
         // @formatter:off
         return http.apply {
@@ -80,7 +80,7 @@ class SecurityConfig {
     fun sessionAuthenticationFilter(authenticationManager: AuthenticationManager): AuthenticationWebFilter {
         val authenticationWebFilter = AuthenticationWebFilter(authenticationManager)
         authenticationWebFilter.setServerAuthenticationConverter(
-                SessionAuthenticationConverter()
+            SessionAuthenticationConverter()
         )
         return authenticationWebFilter
     }

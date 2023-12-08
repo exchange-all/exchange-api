@@ -8,7 +8,7 @@ import com.exchange.exchange.core.CommandType
  *
  */
 enum class BalanceCommandType(
-        override val type: String,
+    override val type: String,
 ) : CommandType {
     // -- Create balance context
     CREATE_BALANCE("CREATE_BALANCE"),

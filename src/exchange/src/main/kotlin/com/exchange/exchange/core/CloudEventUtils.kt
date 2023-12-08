@@ -21,15 +21,15 @@ object CloudEventUtils {
 
     fun <T> cloudEventToObject(cloudEvent: CloudEvent, clazz: Class<T>): T? {
         val cloudEventData = mapData(
-                cloudEvent, PojoCloudEventDataMapper.from(jacksonObjectMapper(), clazz)
+            cloudEvent, PojoCloudEventDataMapper.from(jacksonObjectMapper(), clazz)
         )
         return cloudEventData?.value
     }
 
     fun <T> getReplyEventData(cloudEvent: CloudEvent, clazz: Class<T>): T? {
         val cloudEventData = mapData(
-                cloudEvent,
-                PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
+            cloudEvent,
+            PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
         )
         return cloudEventData?.value?.data?.let {
             jacksonObjectMapper().convertValue(it, clazz)
@@ -38,8 +38,8 @@ object CloudEventUtils {
 
     fun getReplyEventError(cloudEvent: CloudEvent): String? {
         val cloudEventData = mapData(
-                cloudEvent,
-                PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
+            cloudEvent,
+            PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
         )
         return cloudEventData?.value?.error
     }

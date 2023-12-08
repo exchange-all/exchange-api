@@ -13,15 +13,16 @@ import org.springframework.stereotype.Service
 @Service
 class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Any>) {
 
-  @Value("\${order-book.reply-topic}") private lateinit var replyOrderBookTopic: String
+    @Value("\${order-book.reply-topic}")
+    private lateinit var replyOrderBookTopic: String
 
-  fun publishEvent(responses: List<EventResponse>) {
-    responses
-        .map {
-          ProducerRecord<String, Any>(replyOrderBookTopic, it.id, it).apply {
-            headers().add("type", it::class.java.simpleName.toByteArray())
-          }
-        }
-        .forEach { kafkaTemplate.send(it) }
-  }
+    fun publishEvent(responses: List<EventResponse>) {
+        responses
+            .map {
+                ProducerRecord<String, Any>(replyOrderBookTopic, it.id, it).apply {
+                    headers().add("type", it::class.java.simpleName.toByteArray())
+                }
+            }
+            .forEach { kafkaTemplate.send(it) }
+    }
 }

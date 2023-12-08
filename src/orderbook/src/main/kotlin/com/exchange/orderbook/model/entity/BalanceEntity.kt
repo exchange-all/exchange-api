@@ -11,20 +11,20 @@ import java.util.*
  */
 @Document("balances")
 class BalanceEntity : Identifiable<UUID>, Cloneable {
-  @Id
-  override lateinit var id: UUID
+    @Id
+    override lateinit var id: UUID
 
-  lateinit var userId: UUID
-  lateinit var currency: String
-  lateinit var availableAmount: BigDecimal
-  lateinit var lockAmount: BigDecimal
-  override fun clone(): BalanceEntity {
-    val cloned = BalanceEntity()
-    cloned.id = this.id
-    cloned.userId = this.userId
-    cloned.currency = this.currency
-    cloned.availableAmount = this.availableAmount
-    cloned.lockAmount = this.lockAmount
-    return cloned
-  }
+    lateinit var userId: UUID
+    lateinit var currency: String
+    lateinit var availableAmount: BigDecimal
+    lateinit var lockAmount: BigDecimal
+    override fun clone(): BalanceEntity {
+        val cloned = BalanceEntity()
+        cloned.id = this.id
+        cloned.userId = this.userId
+        cloned.currency = this.currency
+        cloned.availableAmount = this.availableAmount
+        cloned.lockAmount = this.lockAmount
+        return cloned
+    }
 }

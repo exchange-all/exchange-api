@@ -9,5 +9,5 @@ import java.util.*
  * @since 2023
  */
 interface TradingPairRepository : MongoRepository<TradingPairEntity, UUID> {
-  fun findFirstByBaseCurrencyAndQuoteCurrency(baseCurrency: String, quoteCurrency: String): TradingPairEntity?
+    fun findFirstByBaseCurrencyAndQuoteCurrency(baseCurrency: String, quoteCurrency: String): TradingPairEntity?
 }

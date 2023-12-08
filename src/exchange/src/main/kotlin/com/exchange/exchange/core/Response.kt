@@ -6,9 +6,9 @@ package com.exchange.exchange.core
  *
  */
 data class Response<T>(
-        val success: Boolean,
-        val data: T? = null,
-        val errors: List<String>? = null,
+    val success: Boolean,
+    val data: T? = null,
+    val errors: List<String>? = null,
 ) {
     companion object {
         fun success(): Response<Unit> {

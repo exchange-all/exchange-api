@@ -18,21 +18,24 @@ class EventInboundHandler(
     private val orderBookConsumerProvider: (Int) -> KafkaConsumer<String, IEvent>,
     private val coreEngine: CoreEngine
 ) {
-  @Value("\${order-book.topic}") private lateinit var orderBookTopic: String
-  @Value("\${order-book.consume-poll-size}") private var consumePollSize: Int = 10_000
-  @Value("\${order-book.consume-poll-duration}") private var consumePollDuration: Long = 50
+    @Value("\${order-book.topic}")
+    private lateinit var orderBookTopic: String
+    @Value("\${order-book.consume-poll-size}")
+    private var consumePollSize: Int = 10_000
+    @Value("\${order-book.consume-poll-duration}")
+    private var consumePollDuration: Long = 50
 
-  fun pollingMessage() {
-    val offsetEntity = offsetRepository.getOrderBookOffset()
-    orderBookConsumerProvider(consumePollSize).use {
-      val topicPartition = TopicPartition(orderBookTopic, offsetEntity?.partition ?: 0)
-      it.assign(listOf(topicPartition))
-      it.seek(topicPartition, offsetEntity?.offset ?: 0)
-      while (true) {
-        val records = it.poll(Duration.ofMillis(consumePollDuration))
-        coreEngine.consumeEvents(records)
-        it.commitSync()
-      }
+    fun pollingMessage() {
+        val offsetEntity = offsetRepository.getOrderBookOffset()
+        orderBookConsumerProvider(consumePollSize).use {
+            val topicPartition = TopicPartition(orderBookTopic, offsetEntity?.partition ?: 0)
+            it.assign(listOf(topicPartition))
+            it.seek(topicPartition, offsetEntity?.offset ?: 0)
+            while (true) {
+                val records = it.poll(Duration.ofMillis(consumePollDuration))
+                coreEngine.consumeEvents(records)
+                it.commitSync()
+            }
+        }
     }
-  }
 }

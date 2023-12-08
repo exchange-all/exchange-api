@@ -7,7 +7,7 @@ package com.exchange.exchange.core
  *
  */
 class ReplyEvent(
-        val event: Any,
-        val data: Any?,
-        val error: String? = null,
+    val event: Any,
+    val data: Any?,
+    val error: String? = null,
 )

@@ -5,7 +5,7 @@ package com.exchange.orderbook.model.event
  * @since 2023
  */
 class UnknownEvent(override val id: String = "unknown") : IEvent {
-  companion object {
-    val DEFAULT = UnknownEvent()
-  }
+    companion object {
+        val DEFAULT = UnknownEvent()
+    }
 }

@@ -11,33 +11,33 @@ import java.util.concurrent.Executors
  */
 @Component
 class OutboundListener(
-  private val outboundHandler: EventOutboundHandler,
-  private val snapshotDataHandler: SnapshotDataHandler
+    private val outboundHandler: EventOutboundHandler,
+    private val snapshotDataHandler: SnapshotDataHandler
 ) {
 
-  private val outboundListenerQueue = Executors.newSingleThreadExecutor()
+    private val outboundListenerQueue = Executors.newSingleThreadExecutor()
 
-  /**
-   * Enqueue data to be processed asynchronously.
-   *
-   * @param offset
-   * @param data
-   */
-  fun enqueue(offset: Long, data: List<EventResponse>) {
-    outboundListenerQueue.execute { dequeue(offset, data) }
-  }
+    /**
+     * Enqueue data to be processed asynchronously.
+     *
+     * @param offset
+     * @param data
+     */
+    fun enqueue(offset: Long, data: List<EventResponse>) {
+        outboundListenerQueue.execute { dequeue(offset, data) }
+    }
 
-  /**
-   * Dequeue data to be processed synchronously. Persist data to database and publish to kafka.
-   *
-   * @param offset
-   * @param data
-   *
-   */
-  fun dequeue(offset: Long, data: List<EventResponse>) {
-    if (data.isEmpty()) return
+    /**
+     * Dequeue data to be processed synchronously. Persist data to database and publish to kafka.
+     *
+     * @param offset
+     * @param data
+     *
+     */
+    fun dequeue(offset: Long, data: List<EventResponse>) {
+        if (data.isEmpty()) return
 
-    snapshotDataHandler.enqueue(offset, data.filterIsInstance<SnapshotSupport>())
-    outboundHandler.publishEvent(data)
-  }
+        snapshotDataHandler.enqueue(offset, data.filterIsInstance<SnapshotSupport>())
+        outboundHandler.publishEvent(data)
+    }
 }

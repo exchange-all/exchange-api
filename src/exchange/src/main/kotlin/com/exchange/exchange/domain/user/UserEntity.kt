@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.Instant
+import java.util.*
 
 /**
 
@@ -20,7 +21,7 @@ import java.time.Instant
 class UserEntity : UserDetails {
 
     @Id
-    var id: String? = null
+    lateinit var id: String
 
     @Indexed(unique = true)
     lateinit var email: String
@@ -50,6 +51,7 @@ class UserEntity : UserDetails {
             roles: List<Role>,
         ): UserEntity {
             return UserEntity().apply {
+                this.id = UUID.randomUUID().toString()
                 this.email = email
                 this.password = password
                 this.roles = roles

@@ -1,7 +1,7 @@
 package com.exchange.exchange.config
 
 import com.exchange.exchange.core.CloudEventUtils
-import com.exchange.exchange.core.ExternalEvent
+import com.exchange.exchange.core.ReplyEvent
 import com.exchange.exchange.domain.balance.*
 import io.cloudevents.CloudEvent
 import io.cloudevents.core.builder.CloudEventBuilder
@@ -44,7 +44,7 @@ class MockKafkaRequestReplyListener {
                 responseEventBuilder.withType(BalanceEventType.CREATE_BALANCE_SUCCESS.type)
                         .withData(
                                 CloudEventUtils.serializeData(
-                                        ExternalEvent(
+                                        ReplyEvent(
                                                 createCommand!!,
                                                 BalanceCreated(UUID.randomUUID().toString())
                                         )
@@ -58,7 +58,7 @@ class MockKafkaRequestReplyListener {
                 responseEventBuilder.withType(BalanceEventType.DEPOSIT_BALANCE_SUCCESS.type)
                         .withData(
                                 CloudEventUtils.serializeData(
-                                        ExternalEvent(
+                                        ReplyEvent(
                                                 depositCommand!!,
                                                 BalanceDeposited(depositCommand.accountId)
                                         )
@@ -72,7 +72,7 @@ class MockKafkaRequestReplyListener {
                 responseEventBuilder.withType(BalanceEventType.WITHDRAW_BALANCE_SUCCESS.type)
                         .withData(
                                 CloudEventUtils.serializeData(
-                                        ExternalEvent(
+                                        ReplyEvent(
                                                 withdrawCommand!!,
                                                 BalanceWithdrawn(withdrawCommand.accountId)
                                         )

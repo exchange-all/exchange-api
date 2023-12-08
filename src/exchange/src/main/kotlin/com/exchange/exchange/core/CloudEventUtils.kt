@@ -26,20 +26,20 @@ object CloudEventUtils {
         return cloudEventData?.value
     }
 
-    fun <T> getExternalEventData(cloudEvent: CloudEvent, clazz: Class<T>): T? {
+    fun <T> getReplyEventData(cloudEvent: CloudEvent, clazz: Class<T>): T? {
         val cloudEventData = mapData(
                 cloudEvent,
-                PojoCloudEventDataMapper.from(jacksonObjectMapper(), ExternalEvent::class.java)
+                PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
         )
         return cloudEventData?.value?.data?.let {
             jacksonObjectMapper().convertValue(it, clazz)
         }
     }
 
-    fun getExternalEventError(cloudEvent: CloudEvent): String? {
+    fun getReplyEventError(cloudEvent: CloudEvent): String? {
         val cloudEventData = mapData(
                 cloudEvent,
-                PojoCloudEventDataMapper.from(jacksonObjectMapper(), ExternalEvent::class.java)
+                PojoCloudEventDataMapper.from(jacksonObjectMapper(), ReplyEvent::class.java)
         )
         return cloudEventData?.value?.error
     }

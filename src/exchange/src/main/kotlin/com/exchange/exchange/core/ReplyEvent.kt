@@ -6,7 +6,7 @@ package com.exchange.exchange.core
  * @author uuhnaut69
  *
  */
-class ExternalEvent(
+class ReplyEvent(
         val event: Any,
         val data: Any?,
         val error: String? = null,

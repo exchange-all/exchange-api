@@ -14,8 +14,8 @@ import org.springframework.web.server.WebSession
 object SessionUtils {
 
     private val objectMapper = jacksonObjectMapper()
-            .registerModules(JavaTimeModule())
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .registerModules(JavaTimeModule())
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
     /**
      * Serialize user to session

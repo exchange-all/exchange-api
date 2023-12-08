@@ -13,50 +13,50 @@ import java.math.BigDecimal
 // --- Request ---
 data class CreateBalanceRequest(
 
-        @Schema(description = "Currency id", example = "656bf22f37f9d256dcd962a2")
-        @NotNull(message = "CURRENCY_ID_NOT_NULL")
-        val currencyId: String,
+    @Schema(description = "Currency id", example = "656bf22f37f9d256dcd962a2")
+    @NotNull(message = "CURRENCY_ID_NOT_NULL")
+    val currencyId: String,
 )
 
 data class DepositRequest(
 
-        @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
-        @NotNull(message = "BALANCE_ID_NOT_NULL")
-        val accountId: String,
+    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    @NotNull(message = "BALANCE_ID_NOT_NULL")
+    val accountId: String,
 
-        @NotNull(message = "AMOUNT_NOT_NULL")
-        @DecimalMin(
-                value = "0.0", inclusive = false,
-                message = "AMOUNT_MUST_BE_GREATER_THAN_ZERO"
-        )
-        val amount: BigDecimal,
+    @NotNull(message = "AMOUNT_NOT_NULL")
+    @DecimalMin(
+        value = "0.0", inclusive = false,
+        message = "AMOUNT_MUST_BE_GREATER_THAN_ZERO"
+    )
+    val amount: BigDecimal,
 )
 
 data class WithdrawRequest(
-        @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
-        @NotNull(message = "BALANCE_ID_NOT_NULL")
-        val accountId: String,
+    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    @NotNull(message = "BALANCE_ID_NOT_NULL")
+    val accountId: String,
 
-        @NotNull(message = "AMOUNT_NOT_NULL")
-        @DecimalMin(
-                value = "0.0", inclusive = false,
-                message = "AMOUNT_MUST_BE_GREATER_THAN_ZERO"
-        )
-        val amount: BigDecimal,
+    @NotNull(message = "AMOUNT_NOT_NULL")
+    @DecimalMin(
+        value = "0.0", inclusive = false,
+        message = "AMOUNT_MUST_BE_GREATER_THAN_ZERO"
+    )
+    val amount: BigDecimal,
 )
 
 // --- Response ---
 data class CreateBalanceResponse(
-        @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
-        val balanceId: String,
+    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    val balanceId: String,
 )
 
 data class DepositResponse(
-        @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
-        val balanceId: String,
+    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    val balanceId: String,
 )
 
 data class WithdrawResponse(
-        @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
-        val balanceId: String,
+    @Schema(description = "Balance id", example = "656bf22f37f9d256dcd962a2")
+    val balanceId: String,
 )

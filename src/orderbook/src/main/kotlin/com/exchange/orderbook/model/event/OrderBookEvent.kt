@@ -7,55 +7,55 @@ import java.math.BigDecimal
  * @since 2023
  */
 class CreateBalanceEvent(
-  override val id: String,
-  val userId: String,
-  val currency: String
+    override val id: String,
+    val userId: String,
+    val currency: String
 ) : IEvent {}
 
 class DepositBalanceEvent(
-  override val id: String,
-  val userId: String,
-  val currency: String,
-  val amount: BigDecimal
+    override val id: String,
+    val userId: String,
+    val currency: String,
+    val amount: BigDecimal
 ) : IEvent {}
 
 class WithdrawBalanceEvent(
-  override val id: String,
-  val userId: String,
-  val currency: String,
-  val amount: BigDecimal
+    override val id: String,
+    val userId: String,
+    val currency: String,
+    val amount: BigDecimal
 ) : IEvent {}
 
 class AskLimitOrderEvent(
-  override val id: String,
-  val userId: String,
-  val baseCurrency: String,
-  val quoteCurrency: String,
-  val price: BigDecimal,
-  val amount: BigDecimal
+    override val id: String,
+    val userId: String,
+    val baseCurrency: String,
+    val quoteCurrency: String,
+    val price: BigDecimal,
+    val amount: BigDecimal
 ) : IEvent {}
 
 class AskMarketOrderEvent(
-  override val id: String,
-  val userId: String,
-  val baseCurrency: String,
-  val quoteCurrency: String,
-  val amount: BigDecimal
+    override val id: String,
+    val userId: String,
+    val baseCurrency: String,
+    val quoteCurrency: String,
+    val amount: BigDecimal
 ) : IEvent {}
 
 class BidLimitOrderEvent(
-  override val id: String,
-  val userId: String,
-  val baseCurrency: String,
-  val quoteCurrency: String,
-  val price: BigDecimal,
-  val amount: BigDecimal
+    override val id: String,
+    val userId: String,
+    val baseCurrency: String,
+    val quoteCurrency: String,
+    val price: BigDecimal,
+    val amount: BigDecimal
 ) : IEvent {}
 
 class BidMarketOrderEvent(
-  override val id: String,
-  val userId: String,
-  val baseCurrency: String,
-  val quoteCurrency: String,
-  val amount: BigDecimal
+    override val id: String,
+    val userId: String,
+    val baseCurrency: String,
+    val quoteCurrency: String,
+    val amount: BigDecimal
 ) : IEvent {}

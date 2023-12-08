@@ -12,11 +12,11 @@ import java.util.*
  */
 @Document("trading_pairs")
 @CompoundIndexes(
-  CompoundIndex(name = "pair_index", def = "{'baseCurrency': 1, 'quoteCurrency': 1}", unique = true)
+    CompoundIndex(name = "pair_index", def = "{'baseCurrency': 1, 'quoteCurrency': 1}", unique = true)
 )
 class TradingPairEntity : Identifiable<UUID> {
-  override lateinit var id: UUID
-  lateinit var baseCurrency: String
-  lateinit var quoteCurrency: String
-  var minLimit: BigDecimal = BigDecimal.ZERO
+    override lateinit var id: UUID
+    lateinit var baseCurrency: String
+    lateinit var quoteCurrency: String
+    var minLimit: BigDecimal = BigDecimal.ZERO
 }

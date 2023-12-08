@@ -11,24 +11,24 @@ import java.util.*
  */
 @Repository
 class TradingPairInMemoryRepository {
-  val data: MutableMap<UUID, TradingPairEntity> = HashMap()
+    val data: MutableMap<UUID, TradingPairEntity> = HashMap()
 
-  val pairMap: MutableMap<String, UUID> = HashMap()
+    val pairMap: MutableMap<String, UUID> = HashMap()
 
-  fun upsert(item: TradingPairEntity) {
-    data[item.id] = item
-    pairMap[currencyPair(item.baseCurrency, item.quoteCurrency)] = item.id
-  }
+    fun upsert(item: TradingPairEntity) {
+        data[item.id] = item
+        pairMap[currencyPair(item.baseCurrency, item.quoteCurrency)] = item.id
+    }
 
-  fun findById(id: UUID): TradingPairEntity? {
-    return data[id]
-  }
+    fun findById(id: UUID): TradingPairEntity? {
+        return data[id]
+    }
 
-  fun existByCurrencyPair(baseCurrency: String, quoteCurrency: String): Boolean {
-    return pairMap.containsKey(currencyPair(baseCurrency, quoteCurrency))
-  }
+    fun existByCurrencyPair(baseCurrency: String, quoteCurrency: String): Boolean {
+        return pairMap.containsKey(currencyPair(baseCurrency, quoteCurrency))
+    }
 
-  fun findByCurrencyPair(baseCurrency: String, quoteCurrency: String): TradingPairEntity? {
-    return pairMap[currencyPair(baseCurrency, quoteCurrency)] ?.let { data[it] }
-  }
+    fun findByCurrencyPair(baseCurrency: String, quoteCurrency: String): TradingPairEntity? {
+        return pairMap[currencyPair(baseCurrency, quoteCurrency)]?.let { data[it] }
+    }
 }

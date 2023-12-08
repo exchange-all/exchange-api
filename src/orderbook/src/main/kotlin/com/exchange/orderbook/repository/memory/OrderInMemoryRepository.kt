@@ -11,14 +11,14 @@ import java.util.*
  */
 @Repository
 class OrderInMemoryRepository : MemoryRepositoryRollback<OrderEntity, UUID> {
-  override lateinit var segments: ThreadLocal<MutableMap<UUID, Cloneable?>>
-  override lateinit var data: MutableMap<UUID, OrderEntity>
+    override lateinit var segments: ThreadLocal<MutableMap<UUID, Cloneable?>>
+    override lateinit var data: MutableMap<UUID, OrderEntity>
 
-  fun findById(id: UUID): OrderEntity? {
-    return data[id]
-  }
+    fun findById(id: UUID): OrderEntity? {
+        return data[id]
+    }
 
-  fun upsert(item: OrderEntity) {
-    data[item.id] = item
-  }
+    fun upsert(item: OrderEntity) {
+        data[item.id] = item
+    }
 }

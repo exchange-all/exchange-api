@@ -8,13 +8,13 @@ import com.exchange.exchange.core.Event
  *
  */
 data class BalanceCreated(
-        val balanceId: String,
+    val balanceId: String,
 ) : Event()
 
 data class BalanceDeposited(
-        val balanceId: String,
+    val balanceId: String,
 ) : Event()
 
 data class BalanceWithdrawn(
-        val balanceId: String,
+    val balanceId: String,
 ) : Event()

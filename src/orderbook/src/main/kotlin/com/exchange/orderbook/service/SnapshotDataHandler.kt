@@ -21,89 +21,89 @@ import java.util.concurrent.Executors
  */
 @Component
 class SnapshotDataHandler(
-  private val offsetRepository: OffsetRepository,
-  private val balanceRepository: BalanceRepository,
-  private val orderRepository: OrderRepository
+    private val offsetRepository: OffsetRepository,
+    private val balanceRepository: BalanceRepository,
+    private val orderRepository: OrderRepository
 ) {
 
-  private val snapshotDataQueue = Executors.newSingleThreadExecutor()
+    private val snapshotDataQueue = Executors.newSingleThreadExecutor()
 
-  private var offset: Long? = null
-  private var balance: Map<UUID, BalanceEntity> = HashMap()
-  private var order: Map<UUID, OrderEntity> = HashMap()
+    private var offset: Long? = null
+    private var balance: Map<UUID, BalanceEntity> = HashMap()
+    private var order: Map<UUID, OrderEntity> = HashMap()
 
-  @Scheduled(fixedDelayString = "\${schedule.sync-database-interval}")
-  fun scheduleSnapshot() {
-    if (offset == null) return
-    snapshotDataQueue.execute { SpringContext.getBean(SnapshotDataHandler::class.java).persist() }
-  }
-
-  fun enqueue(offset: Long, data: List<SnapshotSupport>) {
-    snapshotDataQueue.execute { dequeue(offset, data) }
-  }
-
-  fun dequeue(offset: Long, data: List<SnapshotSupport>) {
-    this.offset = offset + 1
-    data.forEach {
-      when (it) {
-        is SuccessResponse -> {
-          when (it.data) {
-            is BalanceEntity -> balance.plus((it.data as BalanceEntity).id to it.data)
-            is OrderEntity -> order.plus((it.data as OrderEntity).id to it.data)
-          }
-        }
-
-        is TradingResult -> {
-          balance.plus(it.baseBalance.id to it.baseBalance)
-          balance.plus(it.quoteBalance.id to it.quoteBalance)
-          order = order.plus(it.remainOrder.id to it.remainOrder)
-        }
-      }
+    @Scheduled(fixedDelayString = "\${schedule.sync-database-interval}")
+    fun scheduleSnapshot() {
+        if (offset == null) return
+        snapshotDataQueue.execute { SpringContext.getBean(SnapshotDataHandler::class.java).persist() }
     }
-  }
 
-  /**
-   * Persist data to database. Including: offset, balance, order book.
-   */
-  @Transactional(rollbackFor = [Exception::class])
-  fun persist() {
-    if (offset == null) return
-    persistOffset()
-    persistBalance()
-    persistOrder()
-    reset()
-  }
+    fun enqueue(offset: Long, data: List<SnapshotSupport>) {
+        snapshotDataQueue.execute { dequeue(offset, data) }
+    }
 
-  fun reset() {
-    offset = null
-    balance = HashMap()
-    order = HashMap()
-  }
+    fun dequeue(offset: Long, data: List<SnapshotSupport>) {
+        this.offset = offset + 1
+        data.forEach {
+            when (it) {
+                is SuccessResponse -> {
+                    when (it.data) {
+                        is BalanceEntity -> balance.plus((it.data as BalanceEntity).id to it.data)
+                        is OrderEntity -> order.plus((it.data as OrderEntity).id to it.data)
+                    }
+                }
 
-  /**
-   * Persist offset to database.
-   */
-  private fun persistOffset() {
-    offsetRepository.getOrderBookOffset()
-      ?.let {
-        it.offset = offset!!
-        offsetRepository.save(it)
-      }
-  }
+                is TradingResult -> {
+                    balance.plus(it.baseBalance.id to it.baseBalance)
+                    balance.plus(it.quoteBalance.id to it.quoteBalance)
+                    order = order.plus(it.remainOrder.id to it.remainOrder)
+                }
+            }
+        }
+    }
 
-  /**
-   * Replace balances to database.
-   */
-  private fun persistBalance() {
-    if (balance.isEmpty()) return
-    balanceRepository.saveAll(balance.values)
-  }
+    /**
+     * Persist data to database. Including: offset, balance, order book.
+     */
+    @Transactional(rollbackFor = [Exception::class])
+    fun persist() {
+        if (offset == null) return
+        persistOffset()
+        persistBalance()
+        persistOrder()
+        reset()
+    }
 
-  /**
-   * Replace orders to database.
-   */
-  private fun persistOrder() {
-    if (order.isEmpty()) return
-    orderRepository.saveAll(order.values)
-  }
+    fun reset() {
+        offset = null
+        balance = HashMap()
+        order = HashMap()
+    }
+
+    /**
+     * Persist offset to database.
+     */
+    private fun persistOffset() {
+        offsetRepository.getOrderBookOffset()
+            ?.let {
+                it.offset = offset!!
+                offsetRepository.save(it)
+            }
+    }
+
+    /**
+     * Replace balances to database.
+     */
+    private fun persistBalance() {
+        if (balance.isEmpty()) return
+        balanceRepository.saveAll(balance.values)
+    }
+
+    /**
+     * Replace orders to database.
+     */
+    private fun persistOrder() {
+        if (order.isEmpty()) return
+        orderRepository.saveAll(order.values)
+    }
 }

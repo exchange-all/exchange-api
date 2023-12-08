@@ -13,33 +13,33 @@ import org.springframework.stereotype.Service
  */
 @Service
 class DataManager(
-  private val balanceMemoryRepository: BalanceInMemoryRepository,
-  private val balanceRepository: BalanceRepository,
-  private val matchingEngine: MatchingEngine,
-  private val orderRepository: OrderRepository,
-  private val tradingPairInMemoryRepository: TradingPairInMemoryRepository,
-  private val tradingPairRepository: TradingPairRepository
+    private val balanceMemoryRepository: BalanceInMemoryRepository,
+    private val balanceRepository: BalanceRepository,
+    private val matchingEngine: MatchingEngine,
+    private val orderRepository: OrderRepository,
+    private val tradingPairInMemoryRepository: TradingPairInMemoryRepository,
+    private val tradingPairRepository: TradingPairRepository
 ) {
-  fun restoreData() {
-    restoreBalances()
-    restoreTradingPairs()
-    restoreOrders()
-  }
-
-  private fun restoreBalances() {
-    val balances = balanceRepository.findAll()
-    balances.forEach { balanceMemoryRepository.upsert(it) }
-  }
-
-  private fun restoreTradingPairs() {
-    val tradingPairs = tradingPairRepository.findAll()
-    tradingPairs.forEach {
-      tradingPairInMemoryRepository.upsert(it)
+    fun restoreData() {
+        restoreBalances()
+        restoreTradingPairs()
+        restoreOrders()
     }
-  }
 
-  private fun restoreOrders() {
-    val orders = orderRepository.findAll()
-    matchingEngine.restoreData(orders)
-  }
+    private fun restoreBalances() {
+        val balances = balanceRepository.findAll()
+        balances.forEach { balanceMemoryRepository.upsert(it) }
+    }
+
+    private fun restoreTradingPairs() {
+        val tradingPairs = tradingPairRepository.findAll()
+        tradingPairs.forEach {
+            tradingPairInMemoryRepository.upsert(it)
+        }
+    }
+
+    private fun restoreOrders() {
+        val orders = orderRepository.findAll()
+        matchingEngine.restoreData(orders)
+    }
 }

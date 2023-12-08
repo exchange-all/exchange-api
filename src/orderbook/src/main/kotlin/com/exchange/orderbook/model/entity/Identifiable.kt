@@ -7,5 +7,5 @@ import java.io.Serializable
  * @since 2023
  */
 interface Identifiable<T : Serializable> {
-  val id: T
+    val id: T
 }

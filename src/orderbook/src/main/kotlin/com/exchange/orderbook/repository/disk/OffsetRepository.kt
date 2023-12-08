@@ -9,6 +9,6 @@ import org.springframework.data.mongodb.repository.Query
  * @since 2023
  */
 interface OffsetRepository : MongoRepository<OffsetEntity, String> {
-  @Query(value = "{ 'id': 'ORDER_BOOK' }")
-  fun getOrderBookOffset(): OffsetEntity?
+    @Query(value = "{ 'id': 'ORDER_BOOK' }")
+    fun getOrderBookOffset(): OffsetEntity?
 }

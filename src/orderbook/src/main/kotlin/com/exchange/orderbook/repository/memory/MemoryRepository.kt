@@ -5,5 +5,5 @@ package com.exchange.orderbook.repository.memory
  * @since 2023
  */
 interface MemoryRepository {
-  fun rollback()
+    fun rollback()
 }

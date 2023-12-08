@@ -8,5 +8,5 @@ import org.springframework.transaction.annotation.Propagation
  */
 
 class MemoryTransactional {
-  var propagation: Propagation? = Propagation.REQUIRED
+    var propagation: Propagation? = Propagation.REQUIRED
 }

@@ -31,19 +31,19 @@ class KafkaConfig {
     // -- Kafka Order Book Config -- //
     @Bean
     fun orderBookReplyingTemplate(
-            pf: ProducerFactory<String, CloudEvent>,
-            orderBookReplyingContainer: ConcurrentMessageListenerContainer<String, CloudEvent>,
+        pf: ProducerFactory<String, CloudEvent>,
+        orderBookReplyingContainer: ConcurrentMessageListenerContainer<String, CloudEvent>,
     ): ReplyingKafkaTemplate<String, CloudEvent, CloudEvent> {
         return ReplyingKafkaTemplate(pf, orderBookReplyingContainer)
     }
 
     @Bean
     fun orderBookReplyingContainer(
-            @Value("\${kafka.order-book.reply-topic}") topic: String,
-            @Value("\${kafka.order-book.consumer.group-id}") groupId: String,
-            environment: Environment,
-            kafkaTemplate: KafkaTemplate<String, CloudEvent>,
-            containerFactory: ConcurrentKafkaListenerContainerFactory<String, CloudEvent>,
+        @Value("\${kafka.order-book.reply-topic}") topic: String,
+        @Value("\${kafka.order-book.consumer.group-id}") groupId: String,
+        environment: Environment,
+        kafkaTemplate: KafkaTemplate<String, CloudEvent>,
+        containerFactory: ConcurrentKafkaListenerContainerFactory<String, CloudEvent>,
     ): ConcurrentMessageListenerContainer<String, CloudEvent> {
 
         /**
@@ -62,18 +62,18 @@ class KafkaConfig {
 
     @Bean
     fun orderBookRequests(
-            @Value("\${kafka.order-book.request-topic}") topic: String,
-            @Value("\${kafka.order-book.partition-count}") partitions: Int,
-            @Value("\${kafka.order-book.replication-factor}") replicationFactor: Int,
+        @Value("\${kafka.order-book.request-topic}") topic: String,
+        @Value("\${kafka.order-book.partition-count}") partitions: Int,
+        @Value("\${kafka.order-book.replication-factor}") replicationFactor: Int,
     ): NewTopic {
         return TopicBuilder.name(topic).partitions(partitions).replicas(replicationFactor).build()
     }
 
     @Bean
     fun orderBookReplies(
-            @Value("\${kafka.order-book.reply-topic}") topic: String,
-            @Value("\${kafka.order-book.partition-count}") partitions: Int,
-            @Value("\${kafka.order-book.replication-factor}") replicationFactor: Int,
+        @Value("\${kafka.order-book.reply-topic}") topic: String,
+        @Value("\${kafka.order-book.partition-count}") partitions: Int,
+        @Value("\${kafka.order-book.replication-factor}") replicationFactor: Int,
     ): NewTopic {
         return TopicBuilder.name(topic).partitions(partitions).replicas(replicationFactor).build()
     }

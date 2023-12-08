@@ -22,26 +22,26 @@ import java.util.*
  */
 @Service
 class BalanceService(
-        @Value("\${kafka.order-book.request-topic}") private val topic: String,
-        private val template: ReplyingKafkaTemplate<String, CloudEvent, CloudEvent>,
+    @Value("\${kafka.order-book.request-topic}") private val topic: String,
+    private val template: ReplyingKafkaTemplate<String, CloudEvent, CloudEvent>,
 ) {
 
     suspend fun createBalance(
-            currentUser: UserEntity,
-            createBalanceRequest: CreateBalanceRequest,
+        currentUser: UserEntity,
+        createBalanceRequest: CreateBalanceRequest,
     ): Response<CreateBalanceResponse> {
         val createBalanceCommandEvent = CloudEventBuilder.v1()
-                .withId(UUID.randomUUID().toString())
-                .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
-                .withType(BalanceCommandType.CREATE_BALANCE.type)
-                .withData(
-                        CloudEventUtils.serializeData(
-                                CreateBalanceCommand(
-                                        currentUser.id!!,
-                                        createBalanceRequest.currencyId,
-                                )
-                        )
-                ).build()
+            .withId(UUID.randomUUID().toString())
+            .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
+            .withType(BalanceCommandType.CREATE_BALANCE.type)
+            .withData(
+                CloudEventUtils.serializeData(
+                    CreateBalanceCommand(
+                        currentUser.id!!,
+                        createBalanceRequest.currencyId,
+                    )
+                )
+            ).build()
 
         val record = ProducerRecord(this.topic, createBalanceCommandEvent.id, createBalanceCommandEvent)
 
@@ -49,7 +49,7 @@ class BalanceService(
         return when (eventResult.value().type) {
             BalanceEventType.CREATE_BALANCE_SUCCESS.type -> {
                 val event = CloudEventUtils.getReplyEventData(
-                        eventResult.value(), BalanceCreated::class.java
+                    eventResult.value(), BalanceCreated::class.java
                 )
                 Response.success(CreateBalanceResponse(event!!.balanceId))
             }
@@ -63,22 +63,22 @@ class BalanceService(
     }
 
     suspend fun depositBalance(
-            currentUser: UserEntity,
-            depositRequest: DepositRequest,
+        currentUser: UserEntity,
+        depositRequest: DepositRequest,
     ): Response<DepositResponse> {
         val depositCommandEvent = CloudEventBuilder.v1()
-                .withId(UUID.randomUUID().toString())
-                .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
-                .withType(BalanceCommandType.DEPOSIT_BALANCE.type)
-                .withData(
-                        CloudEventUtils.serializeData(
-                                DepositCommand(
-                                        currentUser.id!!,
-                                        depositRequest.accountId,
-                                        depositRequest.amount,
-                                )
-                        )
-                ).build()
+            .withId(UUID.randomUUID().toString())
+            .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
+            .withType(BalanceCommandType.DEPOSIT_BALANCE.type)
+            .withData(
+                CloudEventUtils.serializeData(
+                    DepositCommand(
+                        currentUser.id!!,
+                        depositRequest.accountId,
+                        depositRequest.amount,
+                    )
+                )
+            ).build()
 
         val record = ProducerRecord(this.topic, depositCommandEvent.id, depositCommandEvent)
 
@@ -86,7 +86,7 @@ class BalanceService(
         return when (eventResult.value().type) {
             BalanceEventType.DEPOSIT_BALANCE_SUCCESS.type -> {
                 val event = CloudEventUtils.getReplyEventData(
-                        eventResult.value(), BalanceDeposited::class.java
+                    eventResult.value(), BalanceDeposited::class.java
                 )
                 Response.success(DepositResponse(event!!.balanceId))
             }
@@ -100,22 +100,22 @@ class BalanceService(
     }
 
     suspend fun withdrawBalance(
-            currentUser: UserEntity,
-            withdrawRequest: WithdrawRequest,
+        currentUser: UserEntity,
+        withdrawRequest: WithdrawRequest,
     ): Response<WithdrawResponse> {
         val withdrawCommandEvent = CloudEventBuilder.v1()
-                .withId(UUID.randomUUID().toString())
-                .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
-                .withType(BalanceCommandType.WITHDRAW_BALANCE.type)
-                .withData(
-                        CloudEventUtils.serializeData(
-                                WithdrawCommand(
-                                        currentUser.id!!,
-                                        withdrawRequest.accountId,
-                                        withdrawRequest.amount,
-                                )
-                        )
-                ).build()
+            .withId(UUID.randomUUID().toString())
+            .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
+            .withType(BalanceCommandType.WITHDRAW_BALANCE.type)
+            .withData(
+                CloudEventUtils.serializeData(
+                    WithdrawCommand(
+                        currentUser.id!!,
+                        withdrawRequest.accountId,
+                        withdrawRequest.amount,
+                    )
+                )
+            ).build()
 
         val record = ProducerRecord(this.topic, withdrawCommandEvent.id, withdrawCommandEvent)
 
@@ -123,7 +123,7 @@ class BalanceService(
         return when (eventResult.value().type) {
             BalanceEventType.WITHDRAW_BALANCE_SUCCESS.type -> {
                 val event = CloudEventUtils.getReplyEventData(
-                        eventResult.value(), BalanceWithdrawn::class.java
+                    eventResult.value(), BalanceWithdrawn::class.java
                 )
                 Response.success(WithdrawResponse(event!!.balanceId))
             }

@@ -45,9 +45,9 @@ class UserEntity : UserDetails {
 
     companion object {
         fun newUser(
-                email: String,
-                password: String,
-                roles: List<Role>,
+            email: String,
+            password: String,
+            roles: List<Role>,
         ): UserEntity {
             return UserEntity().apply {
                 this.email = email

@@ -12,29 +12,29 @@ import jakarta.validation.constraints.NotBlank
 abstract class LoginRequest
 
 data class LoginWithEmailRequest(
-        @Schema(
-                example = "testuser@gmail.com",
-                required = true,
-        )
-        @NotBlank(message = "EMAIL_IS_REQUIRED")
-        @Email(message = "EMAIL_IS_INVALID")
-        val email: String,
+    @Schema(
+        example = "testuser@gmail.com",
+        required = true,
+    )
+    @NotBlank(message = "EMAIL_IS_REQUIRED")
+    @Email(message = "EMAIL_IS_INVALID")
+    val email: String,
 
-        @NotBlank(message = "PASSWORD_IS_REQUIRED")
-        val password: String,
+    @NotBlank(message = "PASSWORD_IS_REQUIRED")
+    val password: String,
 ) : LoginRequest()
 
 abstract class RegisterRequest
 
 data class RegisterWithEmailRequest(
-        @Schema(
-                example = "testuser@gmail.com",
-                required = true,
-        )
-        @NotBlank(message = "EMAIL_IS_REQUIRED")
-        @Email(message = "EMAIL_IS_INVALID")
-        val email: String,
+    @Schema(
+        example = "testuser@gmail.com",
+        required = true,
+    )
+    @NotBlank(message = "EMAIL_IS_REQUIRED")
+    @Email(message = "EMAIL_IS_INVALID")
+    val email: String,
 
-        @NotBlank(message = "PASSWORD_IS_REQUIRED")
-        val password: String,
+    @NotBlank(message = "PASSWORD_IS_REQUIRED")
+    val password: String,
 ) : RegisterRequest()

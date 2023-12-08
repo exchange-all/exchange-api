@@ -35,49 +35,49 @@ class MockKafkaRequestReplyListener {
     @SendTo("\${kafka.order-book.reply-topic}")
     fun fakeReply(command: CloudEvent): Message<CloudEvent> {
         val responseEventBuilder = CloudEventBuilder.v1()
-                .withId(UUID.randomUUID().toString())
-                .withSource(URI.create(consumerSource))
+            .withId(UUID.randomUUID().toString())
+            .withSource(URI.create(consumerSource))
 
         when (command.type) {
             BalanceCommandType.CREATE_BALANCE.type -> {
                 val createCommand = CloudEventUtils.cloudEventToObject(command, CreateBalanceCommand::class.java)
                 responseEventBuilder.withType(BalanceEventType.CREATE_BALANCE_SUCCESS.type)
-                        .withData(
-                                CloudEventUtils.serializeData(
-                                        ReplyEvent(
-                                                createCommand!!,
-                                                BalanceCreated(UUID.randomUUID().toString())
-                                        )
-                                )
+                    .withData(
+                        CloudEventUtils.serializeData(
+                            ReplyEvent(
+                                createCommand!!,
+                                BalanceCreated(UUID.randomUUID().toString())
+                            )
                         )
+                    )
             }
 
             BalanceCommandType.DEPOSIT_BALANCE.type -> {
                 val depositCommand = CloudEventUtils.cloudEventToObject(command, DepositCommand::class.java)
 
                 responseEventBuilder.withType(BalanceEventType.DEPOSIT_BALANCE_SUCCESS.type)
-                        .withData(
-                                CloudEventUtils.serializeData(
-                                        ReplyEvent(
-                                                depositCommand!!,
-                                                BalanceDeposited(depositCommand.accountId)
-                                        )
-                                )
+                    .withData(
+                        CloudEventUtils.serializeData(
+                            ReplyEvent(
+                                depositCommand!!,
+                                BalanceDeposited(depositCommand.accountId)
+                            )
                         )
+                    )
             }
 
             BalanceCommandType.WITHDRAW_BALANCE.type -> {
                 val withdrawCommand = CloudEventUtils.cloudEventToObject(command, WithdrawCommand::class.java)
 
                 responseEventBuilder.withType(BalanceEventType.WITHDRAW_BALANCE_SUCCESS.type)
-                        .withData(
-                                CloudEventUtils.serializeData(
-                                        ReplyEvent(
-                                                withdrawCommand!!,
-                                                BalanceWithdrawn(withdrawCommand.accountId)
-                                        )
-                                )
+                    .withData(
+                        CloudEventUtils.serializeData(
+                            ReplyEvent(
+                                withdrawCommand!!,
+                                BalanceWithdrawn(withdrawCommand.accountId)
+                            )
                         )
+                    )
             }
             // -- Add more cases here --
         }

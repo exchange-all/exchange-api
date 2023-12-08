@@ -8,7 +8,7 @@ import com.exchange.exchange.core.EventType
  *
  */
 enum class BalanceEventType(
-        override val type: String,
+    override val type: String,
 ) : EventType {
     //-- Create balance context
     CREATE_BALANCE_SUCCESS("CREATE_BALANCE_SUCCESS"),

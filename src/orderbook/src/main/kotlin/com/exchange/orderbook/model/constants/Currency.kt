@@ -6,6 +6,6 @@ package com.exchange.orderbook.model.constants
  */
 
 enum class Currency {
-  USDT,
-  BTC
+    USDT,
+    BTC
 }

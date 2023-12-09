@@ -45,9 +45,6 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Any>
                     }
                 }
             }
-            .forEach {
-                println("Publishing event: ${it.value()}")
-                kafkaTemplate.send(it)
-            }
+            .forEach { kafkaTemplate.send(it) }
     }
 }

@@ -35,21 +35,24 @@ class MatchingEngine(
         orders.filter { it.status != Status.CLOSED }.forEach {
             val pair = tradingPairInMemoryRepository.findById(it.tradingPairId)
             if (pair != null) {
-                tradingPairs.putIfAbsent(
-                    currencyPair(pair.baseCurrency, pair.quoteCurrency),
+                tradingPairs.computeIfAbsent(currencyPair(pair.baseCurrency, pair.quoteCurrency)) {
                     TradingPair(pair.baseCurrency, pair.quoteCurrency)
-                )!!.addOrder(it)
+                }.addOrder(it)
             }
         }
     }
 
+    /**
+     * Add order
+     *
+     * @param order
+     */
     fun addOrder(order: OrderEntity) {
-        tradingPairInMemoryRepository.findById(order.tradingPairId)!!.let {
+        tradingPairInMemoryRepository.findById(order.tradingPairId)!!.let { tradingPair ->
             orderInMemoryRepository.upsert(order)
-            tradingPairs.putIfAbsent(
-                currencyPair(it.baseCurrency, it.quoteCurrency),
-                TradingPair(it.baseCurrency, it.quoteCurrency)
-            )!!.addOrder(order)
+            tradingPairs.computeIfAbsent(currencyPair(tradingPair.baseCurrency, tradingPair.quoteCurrency)) {
+                TradingPair(tradingPair.baseCurrency, tradingPair.quoteCurrency)
+            }.addOrder(order)
         }
     }
 
@@ -225,21 +228,20 @@ class MatchingEngine(
             bidQuoteBalance.lockAmount.subtract(tradedBaseAmount.multiply(askOrderHead.price))
 
         // add result
-        tradingResults.add(TradingResult().apply {
-            id = askOrderHead.id.toString()
-            remainOrder = askOrderHead.clone()
-            baseBalance = askBaseBalance.clone()
-            quoteBalance = askQuoteBalance.clone()
-            tradedAmount = tradedBaseAmount
-            tradedPrice = askOrderHead.price
-        })
-        tradingResults.add(TradingResult().apply {
-            id = askOrderHead.id.toString()
-            remainOrder = bidOrderHead.clone()
-            baseBalance = bidBaseBalance.clone()
-            quoteBalance = bidQuoteBalance.clone()
-            tradedAmount = tradedBaseAmount
-            tradedPrice = bidOrderHead.price
-        })
+        tradingResults.add(TradingResult(
+            askOrderHead.clone(),
+            askBaseBalance.clone(),
+            askQuoteBalance.clone(),
+            tradedBaseAmount,
+            askOrderHead.price
+        ).apply { askOrderHead.id })
+
+        tradingResults.add(TradingResult(
+            bidOrderHead.clone(),
+            bidBaseBalance.clone(),
+            bidQuoteBalance.clone(),
+            tradedBaseAmount,
+            bidOrderHead.price
+        ).apply { bidOrderHead.id })
     }
 }

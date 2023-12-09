@@ -12,7 +12,6 @@ import com.exchange.orderbook.repository.disk.OrderRepository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 import java.util.concurrent.Executors
 
 /**
@@ -29,8 +28,8 @@ class SnapshotDataHandler(
     private val snapshotDataQueue = Executors.newSingleThreadExecutor()
 
     private var offset: Long? = null
-    private var balance: Map<String, BalanceEntity> = HashMap()
-    private var order: Map<String, OrderEntity> = HashMap()
+    private var balances: MutableMap<String, BalanceEntity> = HashMap()
+    private var orders: MutableMap<String, OrderEntity> = HashMap()
 
     @Scheduled(fixedDelayString = "\${schedule.sync-database-interval}")
     fun scheduleSnapshot() {
@@ -47,16 +46,16 @@ class SnapshotDataHandler(
         data.forEach {
             when (it) {
                 is SuccessResponse -> {
-                    when (it.data) {
-                        is BalanceEntity -> balance.plus((it.data as BalanceEntity).id to it.data)
-                        is OrderEntity -> order.plus((it.data as OrderEntity).id to it.data)
+                    when (val snapshotData = it.data) {
+                        is BalanceEntity -> balances[snapshotData.id] = snapshotData
+                        is OrderEntity -> orders[snapshotData.id] = snapshotData
                     }
                 }
 
                 is TradingResult -> {
-                    balance.plus(it.baseBalance.id to it.baseBalance)
-                    balance.plus(it.quoteBalance.id to it.quoteBalance)
-                    order = order.plus(it.remainOrder.id to it.remainOrder)
+                    balances[it.baseBalance.id] = it.baseBalance
+                    balances[it.quoteBalance.id] = it.quoteBalance
+                    orders[it.remainOrder.id] = it.remainOrder
                 }
             }
         }
@@ -76,8 +75,8 @@ class SnapshotDataHandler(
 
     fun reset() {
         offset = null
-        balance = HashMap()
-        order = HashMap()
+        balances = HashMap()
+        orders = HashMap()
     }
 
     /**
@@ -95,15 +94,15 @@ class SnapshotDataHandler(
      * Replace balances to database.
      */
     private fun persistBalance() {
-        if (balance.isEmpty()) return
-        balanceRepository.saveAll(balance.values)
+        if (balances.isEmpty()) return
+        balanceRepository.saveAll(balances.values)
     }
 
     /**
      * Replace orders to database.
      */
     private fun persistOrder() {
-        if (order.isEmpty()) return
-        orderRepository.saveAll(order.values)
+        if (orders.isEmpty()) return
+        orderRepository.saveAll(orders.values)
     }
 }

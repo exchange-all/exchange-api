@@ -18,37 +18,36 @@ open class EventResponse {
 
     companion object {
         fun ok(event: IEvent, data: Cloneable): SuccessResponse {
-            return SuccessResponse().apply {
+            return SuccessResponse(event, data).apply {
                 this.id = event.id
-                this.event = event
-                this.data = data
             }
         }
 
         fun fail(event: IEvent, error: String): FailResponse {
-            return FailResponse().apply {
+            return FailResponse(event, error).apply {
                 this.id = event.id
-                this.event = event
-                this.error = error
             }
         }
     }
 }
 
-class SuccessResponse() : EventResponse(), SnapshotSupport {
-    lateinit var event: IEvent
-    lateinit var data: Cloneable
+data class SuccessResponse(
+    var event: IEvent,
+    var data: Cloneable
+) : EventResponse(), SnapshotSupport {
 }
 
-class FailResponse() : EventResponse() {
-    lateinit var event: IEvent
-    lateinit var error: String
+data class FailResponse(
+    var event: IEvent,
+    var error: String
+) : EventResponse() {
 }
 
-class TradingResult : EventResponse(), SnapshotSupport {
-    lateinit var remainOrder: OrderEntity
-    lateinit var baseBalance: BalanceEntity
-    lateinit var quoteBalance: BalanceEntity
-    lateinit var tradedAmount: BigDecimal
-    lateinit var tradedPrice: BigDecimal
+data class TradingResult(
+    val remainOrder: OrderEntity,
+    val baseBalance: BalanceEntity,
+    val quoteBalance: BalanceEntity,
+    val tradedAmount: BigDecimal,
+    val tradedPrice: BigDecimal
+) : EventResponse(), SnapshotSupport {
 }

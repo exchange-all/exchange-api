@@ -64,11 +64,11 @@ class TradingPair(
     fun addOrder(order: OrderEntity) {
         if (order.type == OrderType.SELL) {
             this.asks.add(Price(order.price))
-            this.sellOrders.putIfAbsent(Price(order.price), TreeSet(OrderPriority()))!!.add(order)
+            this.sellOrders.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
         }
         if (order.type == OrderType.BUY) {
             this.bids.add(Price(order.price))
-            this.buyOrders.putIfAbsent(Price(order.price), TreeSet(OrderPriority()))!!.add(order)
+            this.buyOrders.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
         }
     }
 }

@@ -7,6 +7,7 @@ import java.math.BigDecimal
  *
  */
 data class CreateAskLimitOrderCommand(
+    val id: String,
     val userId: String,
     val baseCurrency: String,
     val quoteCurrency: String,
@@ -15,6 +16,7 @@ data class CreateAskLimitOrderCommand(
 )
 
 data class CreateBidLimitOrderCommand(
+    val id: String,
     val userId: String,
     val baseCurrency: String,
     val quoteCurrency: String,

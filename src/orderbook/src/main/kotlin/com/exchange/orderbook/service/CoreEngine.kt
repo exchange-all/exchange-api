@@ -124,19 +124,21 @@ class CoreEngine(
                 ?: return EventResponse.fail(event, MessageError.TRADING_PAIR_NOT_FOUND)
 
         // handle asks
-        val balance = balanceInMemoryRepository.findByUserIdAndCurrency(
+        val baseBalance = balanceInMemoryRepository.findByUserIdAndCurrency(
             event.userId,
             event.baseCurrency
         )
-            ?: return EventResponse.fail(event, MessageError.BALANCE_NOT_FOUND)
+            ?: return EventResponse.fail(event, MessageError.BASE_BALANCE_NOT_FOUND)
+        balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.quoteCurrency)
+            ?: return EventResponse.fail(event, MessageError.QUOTE_BALANCE_NOT_FOUND)
 
         val totalSell = event.amount
 
-        if (balance.availableAmount < totalSell) {
+        if (baseBalance.availableAmount < totalSell) {
             return EventResponse.fail(event, MessageError.BALANCE_NOT_ENOUGH)
         }
-        balance.availableAmount = balance.availableAmount.minus(totalSell)
-        balance.lockAmount = balance.lockAmount.plus(totalSell)
+        baseBalance.availableAmount = baseBalance.availableAmount.minus(totalSell)
+        baseBalance.lockAmount = baseBalance.lockAmount.plus(totalSell)
 
         val order = OrderEntity.sell(
             event.id,
@@ -163,15 +165,18 @@ class CoreEngine(
                 ?: return EventResponse.fail(event, MessageError.TRADING_PAIR_NOT_FOUND)
 
         // handle bids
-        val balance = balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.quoteCurrency)
-            ?: return EventResponse.fail(event, MessageError.BALANCE_NOT_FOUND)
+        val quoteBalance = balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.quoteCurrency)
+            ?: return EventResponse.fail(event, MessageError.QUOTE_BALANCE_NOT_FOUND)
+
+        balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.baseCurrency)
+            ?: return EventResponse.fail(event, MessageError.BASE_BALANCE_NOT_FOUND)
 
         val totalBuy = event.amount.multiply(event.price)
-        if (balance.availableAmount < totalBuy) {
+        if (quoteBalance.availableAmount < totalBuy) {
             return EventResponse.fail(event, MessageError.BALANCE_NOT_ENOUGH)
         }
-        balance.availableAmount = balance.availableAmount.minus(totalBuy)
-        balance.lockAmount = balance.lockAmount.plus(totalBuy)
+        quoteBalance.availableAmount = quoteBalance.availableAmount.minus(totalBuy)
+        quoteBalance.lockAmount = quoteBalance.lockAmount.plus(totalBuy)
 
         val order = OrderEntity.buy(
             event.id,

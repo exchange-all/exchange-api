@@ -30,14 +30,15 @@ class BalanceService(
         currentUser: UserEntity,
         createBalanceRequest: CreateBalanceRequest,
     ): Response<CreateBalanceResponse> {
+        val id = UUID.randomUUID().toString()
         val createBalanceCommandEvent = CloudEventBuilder.v1()
-            .withId(UUID.randomUUID().toString())
+            .withId(id)
             .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
             .withType(BalanceCommandType.CREATE_BALANCE.type)
             .withData(
                 CloudEventUtils.serializeData(
                     CreateBalanceCommand(
-                        UUID.randomUUID().toString(),
+                        id,
                         currentUser.id,
                         createBalanceRequest.currency,
                     )
@@ -67,14 +68,15 @@ class BalanceService(
         currentUser: UserEntity,
         depositRequest: DepositRequest,
     ): Response<DepositResponse> {
+        val id = UUID.randomUUID().toString()
         val depositCommandEvent = CloudEventBuilder.v1()
-            .withId(UUID.randomUUID().toString())
+            .withId(id)
             .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
             .withType(BalanceCommandType.DEPOSIT_BALANCE.type)
             .withData(
                 CloudEventUtils.serializeData(
                     DepositCommand(
-                        UUID.randomUUID().toString(),
+                        id,
                         currentUser.id,
                         depositRequest.currency,
                         depositRequest.amount,
@@ -105,14 +107,15 @@ class BalanceService(
         currentUser: UserEntity,
         withdrawRequest: WithdrawRequest,
     ): Response<WithdrawResponse> {
+        val id = UUID.randomUUID().toString()
         val withdrawCommandEvent = CloudEventBuilder.v1()
-            .withId(UUID.randomUUID().toString())
+            .withId(id)
             .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
             .withType(BalanceCommandType.WITHDRAW_BALANCE.type)
             .withData(
                 CloudEventUtils.serializeData(
                     WithdrawCommand(
-                        UUID.randomUUID().toString(),
+                        id,
                         currentUser.id,
                         withdrawRequest.currency,
                         withdrawRequest.amount,

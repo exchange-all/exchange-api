@@ -31,7 +31,7 @@ class CoreEngine(
         /**
          * Result of trading
          */
-        private val tradingResults: ThreadLocal<List<EventResponse>> = ThreadLocal.withInitial { null }
+        private val tradingResults: ThreadLocal<MutableList<ExchangeEvent>> = ThreadLocal.withInitial { null }
 
         private val consumerRecord: ThreadLocal<ConsumerRecord<String, IEvent>> =
             ThreadLocal.withInitial { null }
@@ -40,7 +40,7 @@ class CoreEngine(
     /**
      * Map each event with its handler
      */
-    private val handlers: Map<Class<out IEvent>, (IEvent) -> EventResponse> =
+    private val handlers: Map<Class<out IEvent>, (IEvent) -> ExchangeEvent> =
         mapOf(
             CreateBalanceEvent::class.java to ::onCreateBalanceEvent,
             DepositBalanceEvent::class.java to ::onDepositBalanceEvent,
@@ -74,6 +74,9 @@ class CoreEngine(
         outboundListener.enqueue(records.last().offset(), results)
     }
 
+    /**
+     * Handle each event
+     */
     private fun onCreateBalanceEvent(e: IEvent): EventResponse {
         val event = e as CreateBalanceEvent
         val balance =
@@ -124,11 +127,9 @@ class CoreEngine(
                 ?: return EventResponse.fail(event, MessageError.TRADING_PAIR_NOT_FOUND)
 
         // handle asks
-        val baseBalance = balanceInMemoryRepository.findByUserIdAndCurrency(
-            event.userId,
-            event.baseCurrency
-        )
+        val baseBalance = balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.baseCurrency)
             ?: return EventResponse.fail(event, MessageError.BASE_BALANCE_NOT_FOUND)
+
         balanceInMemoryRepository.findByUserIdAndCurrency(event.userId, event.quoteCurrency)
             ?: return EventResponse.fail(event, MessageError.QUOTE_BALANCE_NOT_FOUND)
 
@@ -150,8 +151,9 @@ class CoreEngine(
         )
 
         matchingEngine.addOrder(order)
+        tradingResults.set(mutableListOf(BalanceChangedEvent(baseBalance.clone())))
         matchingEngine.matching(event.baseCurrency, event.quoteCurrency).takeIf { it.isNotEmpty() }
-            ?.let { tradingResults.set(it) }
+            ?.let { tradingResults.get().addAll(it) }
 
         return EventResponse.ok(event, order.clone())
     }
@@ -188,8 +190,9 @@ class CoreEngine(
         )
 
         matchingEngine.addOrder(order)
+        tradingResults.set(mutableListOf(BalanceChangedEvent(quoteBalance.clone())))
         matchingEngine.matching(event.baseCurrency, event.quoteCurrency).takeIf { it.isNotEmpty() }
-            ?.let { tradingResults.set(it) }
+            ?.let { tradingResults.get().addAll(it) }
         return EventResponse.ok(event, order.clone())
     }
 

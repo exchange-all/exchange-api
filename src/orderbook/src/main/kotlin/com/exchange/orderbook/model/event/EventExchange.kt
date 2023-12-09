@@ -10,10 +10,11 @@ import java.math.BigDecimal
  * @since 2023
  */
 
+interface ExchangeEvent {}
 interface SnapshotSupport {
 }
 
-open class EventResponse {
+open class EventResponse: ExchangeEvent {
     var id: String? = null
 
     companion object {
@@ -40,8 +41,13 @@ data class SuccessResponse(
 data class FailResponse(
     var event: IEvent,
     var error: String
-) : EventResponse() {
-}
+) : EventResponse() {}
+
+interface NotResponse {}
+
+data class BalanceChangedEvent(
+    val balance: BalanceEntity
+) : SnapshotSupport, ExchangeEvent, NotResponse {}
 
 data class TradingResult(
     val remainOrder: OrderEntity,
@@ -49,5 +55,4 @@ data class TradingResult(
     val quoteBalance: BalanceEntity,
     val tradedAmount: BigDecimal,
     val tradedPrice: BigDecimal
-) : EventResponse(), SnapshotSupport {
-}
+) : SnapshotSupport, ExchangeEvent {}

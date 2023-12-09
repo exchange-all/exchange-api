@@ -2,10 +2,7 @@ package com.exchange.orderbook.service
 
 import com.exchange.orderbook.model.Tuple
 import com.exchange.orderbook.model.constants.HeaderType
-import com.exchange.orderbook.model.event.EventResponse
-import com.exchange.orderbook.model.event.EventResponseType
-import com.exchange.orderbook.model.event.SuccessResponse
-import com.exchange.orderbook.model.event.TradingResult
+import com.exchange.orderbook.model.event.*
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.header.Headers
 import org.springframework.beans.factory.annotation.Value
@@ -22,15 +19,19 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Any>
     @Value("\${order-book.reply-topic}")
     private lateinit var replyOrderBookTopic: String
 
-    fun publishEvent(responses: List<Tuple<EventResponse, Headers>>) {
+    fun publishEvent(responses: List<Tuple<ExchangeEvent, Headers>>) {
         responses
             .map {
-                // ignore response for the request that does not have CE_TYPE header
-                if (it.first !is TradingResult && it.second?.headers(HeaderType.CE_TYPE)?.firstOrNull() == null) {
-                    return
+                if (it.first is NotResponse) {
+                    return@map null
                 }
 
-                ProducerRecord<String, Any>(replyOrderBookTopic, it.first!!.id, it.first).apply {
+                // ignore response for the request that does not have CE_TYPE header
+                if (it.first is FailResponse && it.second?.headers(HeaderType.CE_TYPE)?.firstOrNull() == null) {
+                    return@map null
+                }
+
+                return@map ProducerRecord<String, Any>(replyOrderBookTopic, it.first).apply {
                     if (it.second == null) { // check TradingResult
                         headers().add(HeaderType.CE_TYPE, EventResponseType.TRADING_RESULT.toByteArray())
                     } else {
@@ -45,6 +46,9 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Any>
                     }
                 }
             }
-            .forEach { kafkaTemplate.send(it) }
+            .filterNotNull()
+            .forEach { kafkaTemplate.send(it)
+                println("EventOutboundHandler.publishEvent: $it")
+            }
     }
 }

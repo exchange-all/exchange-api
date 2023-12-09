@@ -3,6 +3,7 @@ package com.exchange.orderbook.service
 import com.exchange.orderbook.SpringContext
 import com.exchange.orderbook.model.entity.BalanceEntity
 import com.exchange.orderbook.model.entity.OrderEntity
+import com.exchange.orderbook.model.event.BalanceChangedEvent
 import com.exchange.orderbook.model.event.SnapshotSupport
 import com.exchange.orderbook.model.event.SuccessResponse
 import com.exchange.orderbook.model.event.TradingResult
@@ -51,6 +52,8 @@ class SnapshotDataHandler(
                         is OrderEntity -> orders[snapshotData.id] = snapshotData
                     }
                 }
+
+                is BalanceChangedEvent -> balances[it.balance.id] = it.balance
 
                 is TradingResult -> {
                     balances[it.baseBalance.id] = it.baseBalance

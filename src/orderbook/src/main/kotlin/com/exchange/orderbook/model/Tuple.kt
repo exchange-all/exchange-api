@@ -1,7 +1,7 @@
 package com.exchange.orderbook.model
 
 /**
- * @author cafe
+ * @author thaivc
  * @since 2023
  */
 class Tuple<F, S>(

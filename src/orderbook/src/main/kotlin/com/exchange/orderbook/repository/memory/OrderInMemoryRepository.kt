@@ -12,7 +12,7 @@ import java.util.*
 @Repository
 class OrderInMemoryRepository : MemoryRepositoryRollback<OrderEntity, String> {
     override lateinit var segments: ThreadLocal<MutableMap<String, Cloneable?>>
-    override lateinit var data: MutableMap<String, OrderEntity>
+    override var data: MutableMap<String, OrderEntity> = HashMap()
 
     fun findById(id: String): OrderEntity? {
         return data[id]

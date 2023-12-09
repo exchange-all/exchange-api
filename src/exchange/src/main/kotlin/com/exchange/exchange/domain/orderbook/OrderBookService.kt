@@ -35,13 +35,15 @@ class OrderBookService(
         currentUser: UserEntity,
         createAskLimitOrderRequest: AskLimitOrderRequest
     ): Response<AskLimitOrderResponse> {
+        val id = UUID.randomUUID().toString()
         val createAskLimitCommandEvent = CloudEventBuilder.v1()
-            .withId(UUID.randomUUID().toString())
+            .withId(id)
             .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
             .withType(OrderBookCommandType.CREATE_ASK_LIMIT_ORDER.type)
             .withData(
                 CloudEventUtils.serializeData(
                     CreateAskLimitOrderCommand(
+                        id,
                         currentUser.id,
                         createAskLimitOrderRequest.baseCurrency,
                         createAskLimitOrderRequest.quoteCurrency,
@@ -79,13 +81,15 @@ class OrderBookService(
         currentUser: UserEntity,
         createBidLimitOrderRequest: BidLimitOrderRequest
     ): Response<BidLimitOrderResponse> {
+        val id = UUID.randomUUID().toString()
         val createBidLimitCommandEvent = CloudEventBuilder.v1()
-            .withId(UUID.randomUUID().toString())
+            .withId(id)
             .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
             .withType(OrderBookCommandType.CREATE_BID_LIMIT_ORDER.type)
             .withData(
                 CloudEventUtils.serializeData(
                     CreateBidLimitOrderCommand(
+                        id,
                         currentUser.id,
                         createBidLimitOrderRequest.baseCurrency,
                         createBidLimitOrderRequest.quoteCurrency,

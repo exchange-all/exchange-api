@@ -25,7 +25,7 @@ class MemoryTransactionManager(memoryRepository: Map<String, MemoryRepository>) 
         private lateinit var ROLLBACK_MAP: Map<String, () -> Unit>
 
         val ENABLE_TRANSACTION: ThreadLocal<Boolean> = ThreadLocal.withInitial { null }
-        val DATA_SEGMENT: ThreadLocal<Set<String>> = ThreadLocal.withInitial { null }
+        val DATA_SEGMENT: ThreadLocal<MutableSet<String>> = ThreadLocal.withInitial { null }
 
         /**
          * Wrap new transaction for memory repository with Propagation.REQUIRES_NEW

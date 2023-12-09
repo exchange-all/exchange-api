@@ -80,11 +80,13 @@ class OrderEntity : Identifiable<String>, Cloneable {
     override fun clone(): OrderEntity {
         val cloned = OrderEntity()
         cloned.id = this.id
+        cloned.tradingPairId = this.tradingPairId
         cloned.userId = this.userId
         cloned.amount = this.amount
         cloned.availableAmount = this.availableAmount
         cloned.price = this.price
         cloned.type = this.type
+        cloned.status = this.status
         cloned.priority = this.priority
         return cloned
     }
@@ -95,5 +97,5 @@ enum class OrderType {
 }
 
 enum class Status {
-    OPEN, CLOSED
+    OPEN, CLOSED, CANCEL
 }

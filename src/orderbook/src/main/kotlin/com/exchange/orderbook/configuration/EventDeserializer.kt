@@ -3,6 +3,7 @@ package com.exchange.orderbook.configuration
 import com.exchange.orderbook.model.constants.HeaderType
 import com.exchange.orderbook.model.event.IEvent
 import com.exchange.orderbook.model.event.UnknownEvent
+import com.exchange.orderbook.model.event.UnknownFormatEvent
 import com.exchange.orderbook.model.event.typeOf
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.kafka.common.header.Headers
@@ -20,9 +21,9 @@ class EventDeserializer : Deserializer<IEvent> {
                 String(it)
             } ?: return UnknownEvent.DEFAULT
 
-            return typeOf(eventType)?.let { jacksonObjectMapper().readValue(data, it) } ?: UnknownEvent.DEFAULT
+            return typeOf(eventType)?.let { jacksonObjectMapper().readValue(data, it) } ?: UnknownFormatEvent.DEFAULT
         } catch (e: Exception) {
-            return UnknownEvent.DEFAULT
+            return UnknownFormatEvent.of(e.message)
         }
     }
 

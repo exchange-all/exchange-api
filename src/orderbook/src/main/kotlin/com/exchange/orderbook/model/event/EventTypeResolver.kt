@@ -9,10 +9,10 @@ val eventTypeMap: Map<String, Class<out IEvent>> = mapOf(
     IEvent.CREATE_BALANCE to CreateBalanceEvent::class.java,
     IEvent.DEPOSIT_BALANCE to DepositBalanceEvent::class.java,
     IEvent.WITHDRAW_BALANCE to WithdrawBalanceEvent::class.java,
-    IEvent.ORDER_BOOK_ASK_BY_LIMIT to AskLimitOrderEvent::class.java,
-    IEvent.ORDER_BOOK_ASK_BY_MARKET to AskMarketOrderEvent::class.java,
-    IEvent.ORDER_BOOK_BID_BY_LIMIT to BidLimitOrderEvent::class.java,
-    IEvent.ORDER_BOOK_BID_BY_MARKET to BidMarketOrderEvent::class.java
+    IEvent.CREATE_ASK_LIMIT_ORDER to AskLimitOrderEvent::class.java,
+    IEvent.CREATE_BID_LIMIT_ORDER to BidLimitOrderEvent::class.java,
+    IEvent.CREATE_ASK_MARKET_ORDER to AskMarketOrderEvent::class.java,
+    IEvent.CREATE_BID_MARKET_ORDER to BidMarketOrderEvent::class.java
 )
 
 fun typeOf(name: String): Class<out IEvent>? {

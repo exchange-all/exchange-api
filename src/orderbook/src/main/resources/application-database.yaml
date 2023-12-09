@@ -1,2 +1,2 @@
 spring.data.mongodb:
-  uri: mongodb://root:root@localhost:27018/orderbook?authSource=admin
+  uri: mongodb://root:root@localhost:27017/exchange?authSource=admin

@@ -7,7 +7,6 @@ import io.cloudevents.CloudEvent
 import io.cloudevents.core.builder.CloudEventBuilder
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.header.Headers
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
@@ -21,19 +20,14 @@ import java.util.*
 @Service
 class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, CloudEvent>) {
 
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(EventOutboundHandler::class.java)
-    }
-
     @Value("\${order-book.reply-topic}")
     private lateinit var replyOrderBookTopic: String
 
     fun publishEvent(responses: List<Tuple<ExchangeEvent, Headers>>) {
         responses
             .filter {
-                // Only publish an event if it is a success response or a fail response with CE_TYPE header
-                it.first is SuccessResponse
-                        || !(it.first is FailResponse && it.second?.headers(HeaderType.CE_TYPE)?.firstOrNull() == null)
+                // Only publish an event if it is a success response or a fail response with CORRELATION_ID header
+                (it.first is SuccessResponse || (it.first is FailResponse && it.second?.headers(HeaderType.CORRELATION_ID)?.firstOrNull() != null))
             }
             .map {
                 val id = UUID.randomUUID().toString()
@@ -43,9 +37,9 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
                     .withData(CloudEventUtils.serializeData(it.first))
 
                 // Build cloud event data
-                if (it.second == null) { // check TradingResult
+                if (it.first is TradingResult) { // check TradingResult
                     eventBuilder.withType(EventResponseType.TRADING_RESULT)
-                } else {
+                } else if (it.second != null) { // check SuccessResponse
                     val requestEventType = String(it.second.headers(HeaderType.CE_TYPE).first().value())
                     val replyEventType =
                         if (it.first is SuccessResponse)
@@ -59,14 +53,11 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
 
                 return@map ProducerRecord<String, CloudEvent>(this.replyOrderBookTopic, event.id, event)
                     .apply {
-                        // Keep all original headers except CE_TYPE due to already set in CE type
+                        // Keep all original headers except CE_TYPE due to already set in CE_TYPE
                         it.second?.filter { header -> header.key() != HeaderType.CE_TYPE }
                             ?.forEach { header -> this.headers().add(header) }
                     }
             }
-            .forEach {
-                kafkaTemplate.send(it)
-                LOGGER.info("$it")
-            }
+            .forEach { kafkaTemplate.send(it) }
     }
 }

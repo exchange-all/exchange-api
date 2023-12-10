@@ -4,8 +4,8 @@ plugins {
     id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.graalvm.buildtools.native") version "0.9.28"
-    kotlin("jvm") version "1.9.20"
-    kotlin("plugin.spring") version "1.9.20"
+    kotlin("jvm") version "1.9.21"
+    kotlin("plugin.spring") version "1.9.21"
 }
 
 group = "com.exchange"
@@ -61,7 +61,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 
     // Swagger UI for Spring WebFlux
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
 
     // Cloud events dependencies
     implementation("io.cloudevents:cloudevents-spring:2.5.0")

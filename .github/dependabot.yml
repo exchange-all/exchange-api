@@ -11,13 +11,10 @@ updates:
       interval: "daily"
     reviewers:
       - "uuhnaut69"
-    assignees:
-      - "uuhnaut69"
+    
   - package-ecosystem: "gradle" # See documentation for possible values
     directory: "/src/orderbook" # Location of package manifests
     schedule:
       interval: "daily"
     reviewers:
-      - "uuhnaut69"
-    assignees:
       - "uuhnaut69"

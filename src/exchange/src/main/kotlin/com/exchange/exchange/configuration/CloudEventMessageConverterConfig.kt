@@ -1,4 +1,4 @@
-package com.exchange.exchange.config
+package com.exchange.exchange.configuration
 
 import io.cloudevents.spring.messaging.CloudEventMessageConverter
 import org.springframework.context.annotation.Bean
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
  *
  */
 @Configuration
-class CloudEventMessageConverterConfiguration {
+class CloudEventMessageConverterConfig {
 
     @Bean
     fun cloudEventMessageConverter() = CloudEventMessageConverter()

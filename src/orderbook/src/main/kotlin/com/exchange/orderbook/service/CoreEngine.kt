@@ -63,11 +63,12 @@ class CoreEngine(
                     ?: EventResponse.fail(record.value(), MessageError.EVENT_NOT_FOUND)
                 val results = mutableListOf(Tuple(result, record.headers()))
 
-                // get trading result if any
+                // get a trading result if any
                 if (tradingResults.get() != null) {
                     results.addAll(tradingResults.get().map { Tuple(it, null) })
                     tradingResults.remove()
                 }
+
                 consumerRecord.remove()
                 results
             }
@@ -121,7 +122,7 @@ class CoreEngine(
     private fun onAskLimitOrderEvent(e: IEvent): EventResponse {
         val event = e as AskLimitOrderEvent
 
-        // check trading pair
+        // check a trading pair
         val tradingPair =
             tradingPairInMemoryRepository.findByCurrencyPair(event.baseCurrency, event.quoteCurrency)
                 ?: return EventResponse.fail(event, MessageError.TRADING_PAIR_NOT_FOUND)
@@ -161,7 +162,7 @@ class CoreEngine(
     private fun onBidLimitOrderEvent(e: IEvent): EventResponse {
         val event = e as BidLimitOrderEvent
 
-        // check trading pair
+        // check a trading pair
         val tradingPair =
             tradingPairInMemoryRepository.findByCurrencyPair(event.baseCurrency, event.quoteCurrency)
                 ?: return EventResponse.fail(event, MessageError.TRADING_PAIR_NOT_FOUND)

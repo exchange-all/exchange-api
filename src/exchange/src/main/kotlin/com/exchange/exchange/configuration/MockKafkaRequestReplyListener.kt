@@ -1,4 +1,4 @@
-package com.exchange.exchange.config
+package com.exchange.exchange.configuration
 
 import com.exchange.exchange.core.CloudEventUtils
 import com.exchange.exchange.core.ReplyEvent

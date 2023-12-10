@@ -1,4 +1,4 @@
-package com.exchange.exchange.config
+package com.exchange.exchange.configuration
 
 import io.cloudevents.CloudEvent
 import org.apache.kafka.clients.admin.NewTopic
@@ -34,7 +34,9 @@ class KafkaConfig {
         pf: ProducerFactory<String, CloudEvent>,
         orderBookReplyingContainer: ConcurrentMessageListenerContainer<String, CloudEvent>,
     ): ReplyingKafkaTemplate<String, CloudEvent, CloudEvent> {
-        return ReplyingKafkaTemplate(pf, orderBookReplyingContainer)
+        val replyingKafkaTemplate =  ReplyingKafkaTemplate(pf, orderBookReplyingContainer)
+        replyingKafkaTemplate.setSharedReplyTopic(true)
+        return replyingKafkaTemplate
     }
 
     @Bean

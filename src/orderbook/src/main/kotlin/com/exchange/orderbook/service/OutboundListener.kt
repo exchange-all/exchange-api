@@ -30,7 +30,7 @@ class OutboundListener(
     }
 
     /**
-     * Dequeue data to be processed synchronously. Persist data to database and publish to kafka.
+     * Dequeue data to be processed synchronously. Persist data to the database and publish to kafka.
      *
      * @param offset
      * @param data

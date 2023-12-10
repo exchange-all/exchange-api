@@ -61,7 +61,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 
     // Swagger UI for Spring WebFlux
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
 
     // Cloud events dependencies
     implementation("io.cloudevents:cloudevents-spring:2.5.0")

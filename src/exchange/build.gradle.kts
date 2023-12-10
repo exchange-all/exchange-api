@@ -25,6 +25,8 @@ repositories {
     mavenCentral()
 }
 
+val reactorKafkaVersion = "1.3.22"
+
 dependencies {
     // Coroutines support
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -67,6 +69,10 @@ dependencies {
     implementation("io.cloudevents:cloudevents-spring:2.5.0")
     implementation("io.cloudevents:cloudevents-kafka:2.5.0")
     implementation("io.cloudevents:cloudevents-json-jackson:2.5.0")
+
+    // Reactor kafka
+    implementation("io.projectreactor.kafka:reactor-kafka:${reactorKafkaVersion}")
+
 }
 
 tasks.withType<KotlinCompile> {

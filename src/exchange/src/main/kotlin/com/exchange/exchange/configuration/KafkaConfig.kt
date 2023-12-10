@@ -2,7 +2,9 @@ package com.exchange.exchange.configuration
 
 import io.cloudevents.CloudEvent
 import org.apache.kafka.clients.admin.NewTopic
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
@@ -12,6 +14,10 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate
+import reactor.kafka.receiver.KafkaReceiver
+import reactor.kafka.receiver.ReceiverOptions
+import reactor.kafka.receiver.internals.ConsumerFactory
+import reactor.kafka.receiver.internals.DefaultKafkaReceiver
 
 
 /**
@@ -34,9 +40,29 @@ class KafkaConfig {
         pf: ProducerFactory<String, CloudEvent>,
         orderBookReplyingContainer: ConcurrentMessageListenerContainer<String, CloudEvent>,
     ): ReplyingKafkaTemplate<String, CloudEvent, CloudEvent> {
-        val replyingKafkaTemplate =  ReplyingKafkaTemplate(pf, orderBookReplyingContainer)
+        val replyingKafkaTemplate = ReplyingKafkaTemplate(pf, orderBookReplyingContainer)
         replyingKafkaTemplate.setSharedReplyTopic(true)
         return replyingKafkaTemplate
+    }
+
+    @Bean
+    fun orderBookKafkaReceiver(
+        @Value("\${kafka.order-book.reply-topic}") topic: String,
+        kafkaProperties: KafkaProperties
+    ): KafkaReceiver<String, String> {
+        val properties = mapOf(
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaProperties.bootstrapServers,
+            ConsumerConfig.GROUP_ID_CONFIG to "order-book-kafka-receiver",
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
+            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to "true",
+            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+            ConsumerConfig.ISOLATION_LEVEL_CONFIG to "read_committed",
+        )
+        return DefaultKafkaReceiver(
+            ConsumerFactory.INSTANCE,
+            ReceiverOptions.create<String, String>(properties).subscription(listOf(topic))
+        )
     }
 
     @Bean

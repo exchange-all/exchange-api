@@ -1,13 +1,14 @@
 ---
 # See: org/springframework/boot/autoconfigure/kafka/KafkaProperties.java
-spring.kafka:
-  bootstrap-servers: 127.0.0.1:19092
-  producer:
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    properties:
-      'linger.ms': 500
-      'spring.json.add.type.headers': false
+spring:
+  kafka:
+    bootstrap-servers: localhost:19092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.cloudevents.kafka.CloudEventSerializer
+      properties:
+        'linger.ms': 500
+        spring.json.add.type.headers: false
 
 ---
 order-book:
@@ -15,4 +16,3 @@ order-book:
   reply-topic: order-book-reply
   consume-poll-size: 10000
   consume-poll-duration: 100
----

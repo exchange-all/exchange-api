@@ -5,7 +5,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "maven" # See documentation for possible values
+  - package-ecosystem: "gradle" # See documentation for possible values
     directory: "/src/exchange" # Location of package manifests
     schedule:
       interval: "daily"
@@ -13,7 +13,7 @@ updates:
       - "uuhnaut69"
     assignees:
       - "uuhnaut69"
-  - package-ecosystem: "maven" # See documentation for possible values
+  - package-ecosystem: "gradle" # See documentation for possible values
     directory: "/src/orderbook" # Location of package manifests
     schedule:
       interval: "daily"

@@ -1,4 +1,4 @@
-package com.exchange.exchange.config
+package com.exchange.exchange.configuration
 
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI

@@ -55,6 +55,7 @@ class SecurityConfig {
                     // Public API
                     "/api/v1/auth/login-with-email",
                     "/api/v1/auth/register-with-email",
+                    "/sse/trading"
                 ).permitAll()
                 it.anyExchange().authenticated()
             }

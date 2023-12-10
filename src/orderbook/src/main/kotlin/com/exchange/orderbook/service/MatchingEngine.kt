@@ -68,14 +68,14 @@ class MatchingEngine(
 
         ASK_BID_PRICE_COMPARE@
         while (true) {
-            val askMinPrice = tradingPair.asks.peek()
-            val bidMaxPrice = tradingPair.bids.peek()
+            if (tradingPair.asks.isEmpty() || tradingPair.bids.isEmpty()) break@ASK_BID_PRICE_COMPARE
 
-            if (askMinPrice == null || bidMaxPrice == null) break@ASK_BID_PRICE_COMPARE
+            val askMinPrice = tradingPair.asks.firstKey()
+            val bidMaxPrice = tradingPair.bids.firstKey()
             if (askMinPrice.value > bidMaxPrice.value) break@ASK_BID_PRICE_COMPARE
 
-            val askOrders: TreeSet<OrderEntity> = tradingPair.sellOrders[askMinPrice]!!
-            val bidOrders: TreeSet<OrderEntity> = tradingPair.buyOrders[bidMaxPrice]!!
+            val askOrders: TreeSet<OrderEntity> = tradingPair.asks[askMinPrice]!!
+            val bidOrders: TreeSet<OrderEntity> = tradingPair.bids[bidMaxPrice]!!
 
             ASK_BID_AMOUNT_COMPARE@
             while (true) {
@@ -118,13 +118,11 @@ class MatchingEngine(
             }
             // check and remove asks head
             if (askOrders.isEmpty()) {
-                tradingPair.sellOrders.remove(askMinPrice)
                 tradingPair.asks.remove(askMinPrice)
             }
 
             // check and remove bids head
             if (bidOrders.isEmpty()) {
-                tradingPair.buyOrders.remove(askMinPrice)
                 tradingPair.bids.remove(askMinPrice)
             }
         }

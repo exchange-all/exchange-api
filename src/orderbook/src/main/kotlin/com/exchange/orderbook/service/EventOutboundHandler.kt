@@ -27,7 +27,8 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
         responses
             .filter {
                 // Only publish an event if it is a success response or a fail response with CORRELATION_ID header
-                (it.first is SuccessResponse || (it.first is FailResponse && it.second?.headers(HeaderType.CORRELATION_ID)?.firstOrNull() != null))
+                (it.first is SuccessResponse || (it.first is FailResponse && it.second?.headers(HeaderType.CORRELATION_ID)
+                    ?.firstOrNull() != null))
             }
             .map {
                 val id = UUID.randomUUID().toString()
@@ -53,8 +54,7 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
 
                 return@map ProducerRecord<String, CloudEvent>(this.replyOrderBookTopic, event.id, event)
                     .apply {
-                        // Keep all original headers except CE_TYPE due to already set in CE_TYPE
-                        it.second?.filter { header -> header.key() != HeaderType.CE_TYPE }
+                        it.second?.filterNot { header -> event.type == EventResponseType.TRADING_RESULT && header.key() == HeaderType.REPLY_TOPIC }
                             ?.forEach { header -> this.headers().add(header) }
                     }
             }

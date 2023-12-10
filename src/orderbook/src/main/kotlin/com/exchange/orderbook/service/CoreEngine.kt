@@ -65,7 +65,7 @@ class CoreEngine(
 
                 // get a trading result if any
                 if (tradingResults.get() != null) {
-                    results.addAll(tradingResults.get().map { Tuple(it, null) })
+                    results.addAll(tradingResults.get().map { Tuple(it, record.headers()) })
                     tradingResults.remove()
                 }
 

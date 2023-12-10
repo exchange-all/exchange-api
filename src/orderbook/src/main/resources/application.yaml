@@ -2,6 +2,7 @@
 spring.application.name: orderbook-business-processor
 server:
   port: 8085
+  shutdown: graceful
 ---
 spring:
   profiles:

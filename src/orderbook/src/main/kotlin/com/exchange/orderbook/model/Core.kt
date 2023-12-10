@@ -45,16 +45,14 @@ class TradingPair(
     var key: String = currencyPair(this.baseCurrency, this.quoteCurrency)
 
     /**
-     * Min heap, sell order with the lowest price will be on top
+     * Sell order with the lowest price will be on top
      */
-    val asks: PriorityQueue<Price> = PriorityQueue(Comparator.naturalOrder())
-    val sellOrders: MutableMap<Price, TreeSet<OrderEntity>> = HashMap()
+    val asks: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap()
 
     /**
-     * Max heap, buy order with the highest price will be on top
+     * Buy order with the highest price will be on top
      */
-    val bids: PriorityQueue<Price> = PriorityQueue(Comparator.reverseOrder())
-    val buyOrders: MutableMap<Price, TreeSet<OrderEntity>> = HashMap()
+    val bids: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap()
 
     /**
      * Add order
@@ -63,12 +61,10 @@ class TradingPair(
      */
     fun addOrder(order: OrderEntity) {
         if (order.type == OrderType.SELL) {
-            this.asks.add(Price(order.price))
-            this.sellOrders.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
+            this.asks.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
         }
         if (order.type == OrderType.BUY) {
-            this.bids.add(Price(order.price))
-            this.buyOrders.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
+            this.bids.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
         }
     }
 }

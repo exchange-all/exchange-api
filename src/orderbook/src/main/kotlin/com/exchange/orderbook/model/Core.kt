@@ -2,6 +2,7 @@ package com.exchange.orderbook.model
 
 import com.exchange.orderbook.model.entity.OrderEntity
 import com.exchange.orderbook.model.entity.OrderType
+import com.exchange.orderbook.model.entity.Status
 import java.math.BigDecimal
 import java.util.*
 
@@ -55,16 +56,29 @@ class TradingPair(
     val bids: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap(Comparator.reverseOrder())
 
     /**
+     * Order reference, that is used to cancel order
+     */
+    val orderRefs: MutableMap<String, OrderEntity> = HashMap()
+
+    /**
+     * Order tree reference, that is used to cancel order
+     */
+    val orderTreeRefs: MutableMap<String, TreeSet<OrderEntity>> = HashMap()
+
+    /**
      * Add order
      *
      * @param order
      */
     fun addOrder(order: OrderEntity) {
+        this.orderRefs[order.id] = order
         if (order.type == OrderType.SELL) {
             this.asks.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
+            this.orderTreeRefs[order.id] = this.asks[Price(order.price)]!!
         }
         if (order.type == OrderType.BUY) {
             this.bids.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
+            this.orderTreeRefs[order.id] = this.bids[Price(order.price)]!!
         }
     }
 }

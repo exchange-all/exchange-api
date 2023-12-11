@@ -58,12 +58,24 @@ data class BidLimitOrderRequest(
 
 data class CancelAskLimitOrderRequest(
     @NotNull(message = "ORDER_ID_NOT_NULL")
-    val orderId: String
+    val orderId: String,
+
+    @NotNull(message = "BASE_CURRENCY_NOT_NULL")
+    val baseCurrency: String,
+
+    @NotNull(message = "QUOTE_CURRENCY_NOT_NULL")
+    val quoteCurrency: String,
 )
 
 data class CancelBidLimitOrderRequest(
     @NotNull(message = "ORDER_ID_NOT_NULL")
-    val orderId: String
+    val orderId: String,
+
+    @NotNull(message = "BASE_CURRENCY_NOT_NULL")
+    val baseCurrency: String,
+
+    @NotNull(message = "QUOTE_CURRENCY_NOT_NULL")
+    val quoteCurrency: String,
 )
 
 //-- Response

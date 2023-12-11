@@ -138,7 +138,9 @@ class OrderBookService(
                     CancelAskLimitOrderCommand(
                         id,
                         currentUser.id,
-                        cancelAskLimitOrderRequest.orderId
+                        cancelAskLimitOrderRequest.orderId,
+                        cancelAskLimitOrderRequest.baseCurrency,
+                        cancelAskLimitOrderRequest.quoteCurrency
                     )
                 )
             )
@@ -183,7 +185,9 @@ class OrderBookService(
                     CancelBidLimitOrderCommand(
                         id,
                         currentUser.id,
-                        cancelBidLimitOrderRequest.orderId
+                        cancelBidLimitOrderRequest.orderId,
+                        cancelBidLimitOrderRequest.baseCurrency,
+                        cancelBidLimitOrderRequest.quoteCurrency
                     )
                 )
             )

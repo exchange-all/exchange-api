@@ -46,7 +46,9 @@ class CoreEngine(
             DepositBalanceEvent::class.java to ::onDepositBalanceEvent,
             WithdrawBalanceEvent::class.java to ::onWithdrawBalanceEvent,
             AskLimitOrderEvent::class.java to ::onAskLimitOrderEvent,
-            BidLimitOrderEvent::class.java to ::onBidLimitOrderEvent
+            BidLimitOrderEvent::class.java to ::onBidLimitOrderEvent,
+            CancelAskLimitOrderEvent::class.java to ::onCancelAskLimitOrderEvent,
+            CancelBidLimitOrderEvent::class.java to ::onCancelBidLimitOrderEvent
         )
 
     /**
@@ -195,6 +197,16 @@ class CoreEngine(
         matchingEngine.matching(event.baseCurrency, event.quoteCurrency).takeIf { it.isNotEmpty() }
             ?.let { tradingResults.get().addAll(it) }
         return EventResponse.ok(event, order.clone())
+    }
+
+    private fun onCancelAskLimitOrderEvent(e: IEvent): EventResponse {
+        val event = e as CancelAskLimitOrderEvent
+        TODO()
+    }
+
+    private fun onCancelBidLimitOrderEvent(e: IEvent): EventResponse {
+        val event = e as CancelBidLimitOrderEvent
+        TODO()
     }
 
 }

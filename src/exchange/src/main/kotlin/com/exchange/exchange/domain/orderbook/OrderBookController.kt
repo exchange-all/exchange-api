@@ -47,26 +47,14 @@ class OrderBookController(
     }
 
     @Operation(
-        summary = "Cancel bid limit order",
-        description = "Cancel bid limit order"
+        summary = "Cancel order",
+        description = "Cancel order"
     )
-    @PostMapping("/cancel-ask-limit-order")
-    suspend fun cancelAskLimitOrder(
+    @PostMapping("/cancel-order")
+    suspend fun cancelOrder(
         @CurrentUser currentUser: UserEntity,
-        @RequestBody @Valid cancelAskLimitOrderRequest: CancelAskLimitOrderRequest,
-    ): Response<AskLimitOrderResponse> {
-        return this.orderBookService.cancelAskLimitOrder(currentUser, cancelAskLimitOrderRequest)
-    }
-
-    @Operation(
-        summary = "Cancel bid limit order",
-        description = "Cancel bid limit order"
-    )
-    @PostMapping("/cancel-bid-limit-order")
-    suspend fun cancelBidLimitOrder(
-        @CurrentUser currentUser: UserEntity,
-        @RequestBody @Valid cancelBidLimitOrderRequest: CancelBidLimitOrderRequest,
-    ): Response<BidLimitOrderResponse> {
-        return this.orderBookService.cancelBidLimitOrder(currentUser, cancelBidLimitOrderRequest)
+        @RequestBody @Valid request: CancelOrderRequest,
+    ): Response<CancelOrderResponse> {
+        return this.orderBookService.cancelOrder(currentUser, request)
     }
 }

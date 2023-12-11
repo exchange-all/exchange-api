@@ -21,4 +21,8 @@ class OrderInMemoryRepository : MemoryRepositoryRollback<OrderEntity, String> {
     fun upsert(item: OrderEntity) {
         data[item.id] = item
     }
+
+    fun remove(item: OrderEntity) {
+        data.remove(item.id)
+    }
 }

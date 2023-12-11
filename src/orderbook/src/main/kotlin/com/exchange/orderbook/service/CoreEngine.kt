@@ -4,8 +4,11 @@ import com.exchange.orderbook.model.Tuple
 import com.exchange.orderbook.model.constants.MessageError
 import com.exchange.orderbook.model.entity.BalanceEntity
 import com.exchange.orderbook.model.entity.OrderEntity
+import com.exchange.orderbook.model.entity.OrderType
+import com.exchange.orderbook.model.entity.Status
 import com.exchange.orderbook.model.event.*
 import com.exchange.orderbook.repository.memory.BalanceInMemoryRepository
+import com.exchange.orderbook.repository.memory.OrderInMemoryRepository
 import com.exchange.orderbook.repository.memory.TradingPairInMemoryRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
@@ -22,7 +25,8 @@ class CoreEngine(
     private val balanceInMemoryRepository: BalanceInMemoryRepository,
     private val outboundListener: OutboundListener,
     private val matchingEngine: MatchingEngine,
-    private val tradingPairInMemoryRepository: TradingPairInMemoryRepository
+    private val tradingPairInMemoryRepository: TradingPairInMemoryRepository,
+    private val orderInMemoryRepository: OrderInMemoryRepository
 ) {
 
     companion object {
@@ -31,7 +35,7 @@ class CoreEngine(
         /**
          * Result of trading
          */
-        private val tradingResults: ThreadLocal<MutableList<ExchangeEvent>> = ThreadLocal.withInitial { null }
+        val tradingResults: ThreadLocal<MutableList<ExchangeEvent>> = ThreadLocal.withInitial { null }
 
         private val consumerRecord: ThreadLocal<ConsumerRecord<String, IEvent>> =
             ThreadLocal.withInitial { null }
@@ -47,8 +51,7 @@ class CoreEngine(
             WithdrawBalanceEvent::class.java to ::onWithdrawBalanceEvent,
             AskLimitOrderEvent::class.java to ::onAskLimitOrderEvent,
             BidLimitOrderEvent::class.java to ::onBidLimitOrderEvent,
-            CancelAskLimitOrderEvent::class.java to ::onCancelAskLimitOrderEvent,
-            CancelBidLimitOrderEvent::class.java to ::onCancelBidLimitOrderEvent
+            CancelOrderEvent::class.java to ::onCancelOrderEvent,
         )
 
     /**
@@ -96,6 +99,7 @@ class CoreEngine(
                 lockAmount = BigDecimal.ZERO
             }
         balanceInMemoryRepository.upsert(entity)
+        tradingResults.set(mutableListOf(BalanceChangedEvent(entity.clone())))
         return EventResponse.ok(event, entity.clone())
     }
 
@@ -107,6 +111,7 @@ class CoreEngine(
 
         balance.availableAmount = balance.availableAmount.add(event.amount)
         balanceInMemoryRepository.upsert(balance)
+        tradingResults.set(mutableListOf(BalanceChangedEvent(balance.clone())))
         return EventResponse.ok(event, balance.clone())
     }
 
@@ -118,6 +123,7 @@ class CoreEngine(
 
         balance.availableAmount = balance.availableAmount.subtract(event.amount)
         balanceInMemoryRepository.upsert(balance)
+        tradingResults.set(mutableListOf(BalanceChangedEvent(balance.clone())))
         return EventResponse.ok(event, balance.clone())
     }
 
@@ -155,6 +161,7 @@ class CoreEngine(
 
         matchingEngine.addOrder(order)
         tradingResults.set(mutableListOf(BalanceChangedEvent(baseBalance.clone())))
+        tradingResults.get().add(OrderChangedEvent(order.clone()))
         matchingEngine.matching(event.baseCurrency, event.quoteCurrency).takeIf { it.isNotEmpty() }
             ?.let { tradingResults.get().addAll(it) }
 
@@ -194,19 +201,39 @@ class CoreEngine(
 
         matchingEngine.addOrder(order)
         tradingResults.set(mutableListOf(BalanceChangedEvent(quoteBalance.clone())))
+        tradingResults.get().add(OrderChangedEvent(order.clone()))
         matchingEngine.matching(event.baseCurrency, event.quoteCurrency).takeIf { it.isNotEmpty() }
             ?.let { tradingResults.get().addAll(it) }
         return EventResponse.ok(event, order.clone())
     }
 
-    private fun onCancelAskLimitOrderEvent(e: IEvent): EventResponse {
-        val event = e as CancelAskLimitOrderEvent
-        TODO()
-    }
+    private fun onCancelOrderEvent(e: IEvent): EventResponse {
+        val event = e as CancelOrderEvent
+        val order = orderInMemoryRepository.findById(event.orderId)
+            ?: return EventResponse.fail(event, MessageError.ORDER_NOT_FOUND)
 
-    private fun onCancelBidLimitOrderEvent(e: IEvent): EventResponse {
-        val event = e as CancelBidLimitOrderEvent
-        TODO()
+        val tradingPair = tradingPairInMemoryRepository.findById(order.tradingPairId)
+            ?: return EventResponse.fail(event, MessageError.TRADING_PAIR_NOT_FOUND)
+
+        // update balance: increase availableAmount and decrease lockAmount by order.availableAmount
+        val balance: BalanceEntity =
+            if (order.type === OrderType.SELL) {
+                balanceInMemoryRepository.findByUserIdAndCurrency(order.userId, tradingPair.baseCurrency)
+                    ?: return EventResponse.fail(event, MessageError.BASE_BALANCE_NOT_FOUND)
+            } else {
+                balanceInMemoryRepository.findByUserIdAndCurrency(order.userId, tradingPair.quoteCurrency)
+                    ?: return EventResponse.fail(event, MessageError.QUOTE_BALANCE_NOT_FOUND)
+            }
+        balance.availableAmount = balance.availableAmount.plus(order.availableAmount)
+        balance.lockAmount = balance.lockAmount.minus(order.availableAmount)
+        tradingResults.set(mutableListOf(BalanceChangedEvent(balance.clone())))
+
+        // update order status and remove it from in-memory repository
+        order.status = Status.CANCEL
+        matchingEngine.removeOrder(order);
+        tradingResults.get().add(OrderChangedEvent(order.clone()))
+
+        return EventResponse.ok(event, order.clone())
     }
 
 }

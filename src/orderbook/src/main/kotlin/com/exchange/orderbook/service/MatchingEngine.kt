@@ -4,6 +4,8 @@ import com.exchange.orderbook.model.TradingPair
 import com.exchange.orderbook.model.currencyPair
 import com.exchange.orderbook.model.entity.OrderEntity
 import com.exchange.orderbook.model.entity.Status
+import com.exchange.orderbook.model.event.BalanceChangedEvent
+import com.exchange.orderbook.model.event.OrderChangedEvent
 import com.exchange.orderbook.model.event.TradingResult
 import com.exchange.orderbook.repository.memory.BalanceInMemoryRepository
 import com.exchange.orderbook.repository.memory.OrderInMemoryRepository
@@ -32,7 +34,7 @@ class MatchingEngine(
      * Load orders to memory
      */
     fun restoreData(orders: List<OrderEntity>) {
-        orders.filter { it.status != Status.CLOSED }.forEach {
+        orders.filter { it.status == Status.OPEN }.forEach {
             val pair = tradingPairInMemoryRepository.findById(it.tradingPairId)
             if (pair != null) {
                 tradingPairs.computeIfAbsent(currencyPair(pair.baseCurrency, pair.quoteCurrency)) {
@@ -53,6 +55,18 @@ class MatchingEngine(
             tradingPairs.computeIfAbsent(currencyPair(tradingPair.baseCurrency, tradingPair.quoteCurrency)) {
                 TradingPair(tradingPair.baseCurrency, tradingPair.quoteCurrency)
             }.addOrder(order)
+        }
+    }
+
+    /**
+     * Remove order from in-memory repository and matching engine
+     *
+     * @param order
+     */
+    fun removeOrder(order: OrderEntity) {
+        tradingPairInMemoryRepository.findById(order.tradingPairId)!!.let { tradingPair ->
+            orderInMemoryRepository.remove(order)
+            tradingPairs[currencyPair(tradingPair.baseCurrency, tradingPair.quoteCurrency)]?.removeOrder(order)
         }
     }
 
@@ -144,6 +158,8 @@ class MatchingEngine(
             askOrderHead.availableAmount.subtract(bidOrderHead.availableAmount)
         bidOrderHead.availableAmount = BigDecimal.ZERO
         bidOrderHead.status = Status.CLOSED
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(askOrderHead.clone()))
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidOrderHead.clone()))
 
         bidOrders.remove(bidOrderHead)
     }
@@ -163,6 +179,8 @@ class MatchingEngine(
             bidOrderHead.availableAmount.subtract(askOrderHead.availableAmount)
         askOrderHead.availableAmount = BigDecimal.ZERO
         askOrderHead.status = Status.CLOSED
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(askOrderHead.clone()))
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidOrderHead.clone()))
 
         askOrders.remove(askOrderHead)
     }
@@ -182,6 +200,8 @@ class MatchingEngine(
         bidOrderHead.availableAmount = BigDecimal.ZERO
         askOrderHead.status = Status.CLOSED
         bidOrderHead.status = Status.CLOSED
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(askOrderHead.clone()))
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidOrderHead.clone()))
 
         bidOrders.remove(bidOrderHead)
         askOrders.remove(askOrderHead)
@@ -241,5 +261,10 @@ class MatchingEngine(
             tradedBaseAmount,
             bidOrderHead.price
         ).apply { bidOrderHead.id })
+
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(askBaseBalance.clone()))
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(askQuoteBalance.clone()))
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidBaseBalance.clone()))
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidQuoteBalance.clone()))
     }
 }

@@ -15,13 +15,16 @@ import org.apache.kafka.common.serialization.Deserializer
  */
 class EventDeserializer : Deserializer<IEvent> {
 
+    companion object {
+        val mapper = jacksonObjectMapper()
+    }
     override fun deserialize(topic: String?, headers: Headers?, data: ByteArray?): IEvent {
         try {
             val eventType = headers?.headers(HeaderType.CE_TYPE)?.firstOrNull()?.value()?.let {
                 String(it)
             } ?: return UnknownEvent.DEFAULT
 
-            return typeOf(eventType)?.let { jacksonObjectMapper().readValue(data, it) } ?: UnknownFormatEvent.DEFAULT
+            return typeOf(eventType)?.let { mapper.readValue(data, it) } ?: UnknownFormatEvent.DEFAULT
         } catch (e: Exception) {
             return UnknownFormatEvent.of(e.message)
         }

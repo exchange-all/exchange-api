@@ -4,9 +4,8 @@ import com.exchange.orderbook.SpringContext
 import com.exchange.orderbook.model.entity.BalanceEntity
 import com.exchange.orderbook.model.entity.OrderEntity
 import com.exchange.orderbook.model.event.BalanceChangedEvent
+import com.exchange.orderbook.model.event.OrderChangedEvent
 import com.exchange.orderbook.model.event.SnapshotSupport
-import com.exchange.orderbook.model.event.SuccessResponse
-import com.exchange.orderbook.model.event.TradingResult
 import com.exchange.orderbook.repository.disk.BalanceRepository
 import com.exchange.orderbook.repository.disk.OffsetRepository
 import com.exchange.orderbook.repository.disk.OrderRepository
@@ -46,20 +45,8 @@ class SnapshotDataHandler(
         this.offset = offset + 1
         data.forEach {
             when (it) {
-                is SuccessResponse -> {
-                    when (val snapshotData = it.data) {
-                        is BalanceEntity -> balances[snapshotData.id] = snapshotData
-                        is OrderEntity -> orders[snapshotData.id] = snapshotData
-                    }
-                }
-
                 is BalanceChangedEvent -> balances[it.balance.id] = it.balance
-
-                is TradingResult -> {
-                    balances[it.baseBalance.id] = it.baseBalance
-                    balances[it.quoteBalance.id] = it.quoteBalance
-                    orders[it.remainOrder.id] = it.remainOrder
-                }
+                is OrderChangedEvent -> orders[it.order.id] = it.order
             }
         }
     }

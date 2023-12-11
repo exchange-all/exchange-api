@@ -47,12 +47,12 @@ class TradingPair(
     /**
      * Sell order with the lowest price will be on top
      */
-    val asks: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap()
+    val asks: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap(Comparator.naturalOrder())
 
     /**
      * Buy order with the highest price will be on top
      */
-    val bids: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap()
+    val bids: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap(Comparator.reverseOrder())
 
     /**
      * Add order

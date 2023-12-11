@@ -56,6 +56,16 @@ data class BidLimitOrderRequest(
     val amount: BigDecimal
 )
 
+data class CancelAskLimitOrderRequest(
+    @NotNull(message = "ORDER_ID_NOT_NULL")
+    val orderId: String
+)
+
+data class CancelBidLimitOrderRequest(
+    @NotNull(message = "ORDER_ID_NOT_NULL")
+    val orderId: String
+)
+
 //-- Response
 data class AskLimitOrderResponse(
     val id: String,

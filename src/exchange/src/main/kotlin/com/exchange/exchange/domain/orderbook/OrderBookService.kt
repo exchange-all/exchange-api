@@ -123,4 +123,49 @@ class OrderBookService(
         }
 
     }
+
+    suspend fun cancelOrder(
+        currentUser: UserEntity,
+        request: CancelOrderRequest
+    ): Response<CancelOrderResponse> {
+        val id = UUID.randomUUID().toString()
+        val cancelOrderCommand = CloudEventBuilder.v1()
+            .withId(id)
+            .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
+            .withType(OrderBookCommandType.CANCEL_ORDER.type)
+            .withData(
+                CloudEventUtils.serializeData(
+                    CancelOrderCommand(
+                        id,
+                        currentUser.id,
+                        request.orderId
+                    )
+                )
+            )
+            .build()
+
+        val record =
+            ProducerRecord(this.orderBookTopic, cancelOrderCommand.id, cancelOrderCommand)
+
+        val eventResult = this.template.sendAndReceive(record).await()
+        return when (eventResult.value().type) {
+            OrderBookEventType.CANCEL_ORDER_SUCCESS.type -> {
+                val event = CloudEventUtils.getReplyEventData(
+                    eventResult.value(), AskLimitOrderCancelled::class.java
+                )
+                Response.success(
+                    ObjectMapper.instance.convertValue(
+                        event!!,
+                        CancelOrderResponse::class.java
+                    )
+                )
+            }
+
+            OrderBookEventType.CANCEL_ORDER_FAILED.type -> {
+                throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
+            }
+
+            else -> throw InternalServerErrorException()
+        }
+    }
 }

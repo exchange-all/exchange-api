@@ -55,16 +55,36 @@ class TradingPair(
     val bids: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap(Comparator.reverseOrder())
 
     /**
+     * Order tree reference, that is used to remove order from matching engine
+     */
+    val orderTreeRefs: MutableMap<String, TreeSet<OrderEntity>> = HashMap()
+
+    /**
      * Add order
      *
      * @param order
      */
     fun addOrder(order: OrderEntity) {
         if (order.type == OrderType.SELL) {
-            this.asks.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
+            val tree = this.asks.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }
+            tree.add(order)
+            this.orderTreeRefs[order.id] = tree
         }
         if (order.type == OrderType.BUY) {
-            this.bids.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }.add(order)
+            val tree = this.bids.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }
+            tree.add(order)
+            this.orderTreeRefs[order.id] = tree
+        }
+    }
+
+    fun removeOrder(order: OrderEntity) {
+        if (order.type == OrderType.SELL) {
+            this.asks[Price(order.price)]?.remove(order)
+            this.orderTreeRefs.remove(order.id)
+        }
+        if (order.type == OrderType.BUY) {
+            this.bids[Price(order.price)]?.remove(order)
+            this.orderTreeRefs.remove(order.id)
         }
     }
 }

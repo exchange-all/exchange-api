@@ -45,4 +45,16 @@ class OrderBookController(
     ): Response<BidLimitOrderResponse> {
         return this.orderBookService.createBidLimitOrder(currentUser, createBidLimitOrderRequest)
     }
+
+    @Operation(
+        summary = "Cancel order",
+        description = "Cancel order"
+    )
+    @PostMapping("/cancel-order")
+    suspend fun cancelOrder(
+        @CurrentUser currentUser: UserEntity,
+        @RequestBody @Valid request: CancelOrderRequest,
+    ): Response<CancelOrderResponse> {
+        return this.orderBookService.cancelOrder(currentUser, request)
+    }
 }

@@ -13,5 +13,6 @@ class MessageError {
         const val EVENT_NOT_FOUND = "EVENT_NOT_FOUND"
         const val BALANCE_NOT_ENOUGH = "BALANCE_NOT_ENOUGH"
         const val TRADING_PAIR_NOT_FOUND = "TRADING_PAIR_NOT_FOUND"
+        const val ORDER_NOT_FOUND = "ORDER_NOT_FOUND"
     }
 }

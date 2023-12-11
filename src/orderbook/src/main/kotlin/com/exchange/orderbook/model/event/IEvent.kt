@@ -15,5 +15,6 @@ interface IEvent {
         const val CREATE_BID_LIMIT_ORDER = "CREATE_BID_LIMIT_ORDER"
         const val CREATE_ASK_MARKET_ORDER = "CREATE_ASK_MARKET_ORDER"
         const val CREATE_BID_MARKET_ORDER = "CREATE_BID_MARKET_ORDER"
+        const val CANCEL_ORDER = "CANCEL_ORDER"
     }
 }

@@ -23,3 +23,9 @@ data class CreateBidLimitOrderCommand(
     val price: BigDecimal,
     val amount: BigDecimal
 )
+
+data class CancelOrderCommand(
+    val id: String,
+    val userId: String,
+    val orderId: String
+)

@@ -59,3 +59,9 @@ class BidMarketOrderEvent(
     val quoteCurrency: String,
     val amount: BigDecimal
 ) : IEvent {}
+
+class CancelOrderEvent(
+    override val id: String,
+    val userId: String,
+    val orderId: String
+) : IEvent {}

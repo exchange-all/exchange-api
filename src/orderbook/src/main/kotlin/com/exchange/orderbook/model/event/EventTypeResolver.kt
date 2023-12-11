@@ -12,7 +12,8 @@ val eventTypeMap: Map<String, Class<out IEvent>> = mapOf(
     IEvent.CREATE_ASK_LIMIT_ORDER to AskLimitOrderEvent::class.java,
     IEvent.CREATE_BID_LIMIT_ORDER to BidLimitOrderEvent::class.java,
     IEvent.CREATE_ASK_MARKET_ORDER to AskMarketOrderEvent::class.java,
-    IEvent.CREATE_BID_MARKET_ORDER to BidMarketOrderEvent::class.java
+    IEvent.CREATE_BID_MARKET_ORDER to BidMarketOrderEvent::class.java,
+    IEvent.CANCEL_ORDER to CancelOrderEvent::class.java,
 )
 
 fun typeOf(name: String): Class<out IEvent>? {

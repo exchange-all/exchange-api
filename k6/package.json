@@ -1,0 +1,23 @@
+{
+  "name": "k6",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "seed:users": "ts-node ./src/seeds/users.seed.ts",
+    "seed:cookies": "ts-node ./src/seeds/cookies.seed.ts",
+    "seed:balances": "ts-node ./src/seeds/balances.seed.ts",
+    "stress:create-orders": "k6 run ./dist/scripts/stress/create-order.js"
+  },
+  "devDependencies": {
+    "@types/k6": "^0.48.0",
+    "@types/node": "^20.10.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "p-limit": "^5.0.0"
+  }
+}

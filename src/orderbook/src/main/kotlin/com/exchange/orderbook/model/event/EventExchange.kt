@@ -58,4 +58,4 @@ data class TradingResult(
     val quoteBalance: BalanceEntity,
     val tradedAmount: BigDecimal,
     val tradedPrice: BigDecimal
-) : SnapshotSupport, ExchangeEvent {}
+) : ExchangeEvent {}

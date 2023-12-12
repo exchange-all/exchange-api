@@ -40,13 +40,11 @@ function getAskData() {
 }
 
 export const options: Options = {
-  // stages: [
-  //   { duration: "5m", target: 300 }, // traffic ramp-up from 1 to a higher 300 users over 5 minutes.
-  //   { duration: "30m", target: 1000 }, // stay at higher 1000 users for 30 minutes
-  //   { duration: "5m", target: 0 }, // ramp-down to 0 users
-  // ],
-  vus: 2,
-  duration: "2s",
+  stages: [
+    { duration: "1m", target: 300 }, // traffic ramp-up from 1 to a higher 300 users over 1 minutes.
+    { duration: "5m", target: 1000 }, // stay at higher 1000 users for 5 minutes
+    { duration: "3m", target: 0 }, // ramp-down to 0 users
+  ],
   thresholds: {
     // Required to mark the test as passed/failed
     checks: ["rate > 0.9"], // Passing failure rate < 10%
@@ -54,7 +52,6 @@ export const options: Options = {
 };
 
 export default function () {
-  // 3. VU code
   const sessionCookie =
     cookieSeeds[Math.floor(Math.random() * cookieSeeds.length)];
 

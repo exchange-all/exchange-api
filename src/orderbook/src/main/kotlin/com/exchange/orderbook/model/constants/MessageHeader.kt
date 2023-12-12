@@ -8,5 +8,6 @@ class HeaderType {
     companion object {
         const val CE_TYPE = "ce_type"
         const val CORRELATION_ID = "kafka_correlationId"
+        const val REPLY_TOPIC = "kafka_replyTopic"
     }
 }

@@ -5,7 +5,8 @@ import { writeFileSync } from "fs";
 import { join } from "path";
 import { performance } from "perf_hooks";
 
-const API_URL = process.env.API_URL || "http://localhost:8888";
+const EXCHANGE_API_URL =
+  process.env.EXCHANGE_API_URL || "http://localhost:8888";
 
 async function main() {
   const start = performance.now();
@@ -20,7 +21,7 @@ async function main() {
 
   // Using promise.all to register all users at once
   const promises = generatedUsers.map((user) =>
-    axios.post(`${API_URL}/api/v1/auth/register-with-email`, user)
+    axios.post(`${EXCHANGE_API_URL}/api/v1/auth/register-with-email`, user)
   );
 
   await Promise.all(promises);

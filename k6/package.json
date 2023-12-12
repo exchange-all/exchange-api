@@ -7,7 +7,8 @@
     "seed:users": "ts-node ./src/seeds/users.seed.ts",
     "seed:cookies": "ts-node ./src/seeds/cookies.seed.ts",
     "seed:balances": "ts-node ./src/seeds/balances.seed.ts",
-    "stress:create-orders": "k6 run ./dist/scripts/stress/create-order.js"
+    "seed:all": "yarn seed:users && yarn seed:cookies && yarn seed:balances",
+    "stress:create-orders": "k6 run --log-output=none ./dist/scripts/stress/create-order.js"
   },
   "devDependencies": {
     "@types/k6": "^0.48.0",

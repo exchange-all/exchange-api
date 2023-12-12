@@ -5,7 +5,8 @@ import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { performance } from "perf_hooks";
 
-const API_URL = process.env.API_URL || "http://localhost:8888";
+const EXCHANGE_API_URL =
+  process.env.EXCHANGE_API_URL || "http://localhost:8888";
 
 async function main() {
   const start = performance.now();
@@ -17,7 +18,7 @@ async function main() {
   const users: any[] = JSON.parse(buffers.toString());
 
   const promises = users.map((user) =>
-    axios.post(`${API_URL}/api/v1/auth/login-with-email`, user)
+    axios.post(`${EXCHANGE_API_URL}/api/v1/auth/login-with-email`, user)
   );
 
   const responses = await Promise.all(promises);
@@ -28,7 +29,6 @@ async function main() {
   responses.forEach((response) => {
     const cookie = response.headers["set-cookie"][0];
     const session = cookie.split(";")[0];
-    console.log(session);
     cookieSessions.push(session);
   });
 

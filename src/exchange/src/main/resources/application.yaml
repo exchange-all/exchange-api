@@ -29,7 +29,11 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.cloudevents.kafka.CloudEventSerializer
+      batch-size: 200000
+      compression-type: lz4
+      acks: 1
       properties:
+        linger.ms: 100
         spring.json.add.type.headers: false
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer

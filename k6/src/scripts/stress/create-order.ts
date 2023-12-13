@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { post } from "k6/http";
+import { cookieJar, post } from "k6/http";
 import { Options } from "k6/options";
 
 const cookieSeeds = JSON.parse(open("../../data/cookies.seed.json"));
@@ -59,14 +59,17 @@ export default function () {
   const url = typeUrl[type];
   const payload = getOrderPayload[type]();
 
+  const SESSION_KEY = sessionCookie.split("=")[0];
+  const SESSION_VALUE = sessionCookie.split("=")[1];
+
+  const jar = cookieJar();
+  jar.set(url, SESSION_KEY, SESSION_VALUE);
+
   const res = post(url, JSON.stringify(payload), {
     headers: {
       "Content-Type": "application/json",
-      cookie: sessionCookie,
     },
   });
-
-  console.log(res.status);
 
   check(res, {
     "status is 200": (r) => r.status === 200,

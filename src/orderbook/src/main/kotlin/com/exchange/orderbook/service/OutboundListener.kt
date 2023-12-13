@@ -1,6 +1,5 @@
 package com.exchange.orderbook.service
 
-import com.exchange.orderbook.model.Tuple
 import com.exchange.orderbook.model.event.ExchangeEvent
 import com.exchange.orderbook.model.event.SnapshotSupport
 import org.apache.kafka.common.header.Headers
@@ -25,7 +24,7 @@ class OutboundListener(
      * @param offset
      * @param data
      */
-    fun enqueue(offset: Long, data: List<Tuple<ExchangeEvent, Headers>>) {
+    fun enqueue(offset: Long, data: List<Pair<ExchangeEvent, Headers>>) {
         outboundListenerQueue.execute { dequeue(offset, data) }
     }
 
@@ -36,7 +35,7 @@ class OutboundListener(
      * @param data
      *
      */
-    fun dequeue(offset: Long, data: List<Tuple<ExchangeEvent, Headers>>) {
+    fun dequeue(offset: Long, data: List<Pair<ExchangeEvent, Headers>>) {
         if (data.isEmpty()) return
 
         snapshotDataHandler.enqueue(offset, data.map { it.first }.filterIsInstance<SnapshotSupport>())

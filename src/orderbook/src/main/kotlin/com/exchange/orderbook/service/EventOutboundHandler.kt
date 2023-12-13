@@ -1,6 +1,5 @@
 package com.exchange.orderbook.service
 
-import com.exchange.orderbook.model.Tuple
 import com.exchange.orderbook.model.constants.HeaderType
 import com.exchange.orderbook.model.event.*
 import io.cloudevents.CloudEvent
@@ -23,12 +22,12 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
     @Value("\${order-book.reply-topic}")
     private lateinit var replyOrderBookTopic: String
 
-    fun publishEvent(responses: List<Tuple<ExchangeEvent, Headers>>) {
+    fun publishEvent(responses: List<Pair<ExchangeEvent, Headers>>) {
         responses
             .filter {
                 // Only publish an event if it is a success response or a fail response with CORRELATION_ID header
                 it.first !is NotResponse &&
-                        !(it.first is FailResponse && it.second?.headers(HeaderType.CORRELATION_ID)
+                        !(it.first is FailResponse && it.second.headers(HeaderType.CORRELATION_ID)
                             ?.firstOrNull() == null)
             }
             .map {
@@ -38,27 +37,43 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
                     .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
                     .withData(CloudEventUtils.serializeData(it.first))
 
-                // Build cloud event data
-                if (it.first is TradingResult) { // check TradingResult
-                    eventBuilder.withType(EventResponseType.TRADING_RESULT)
-                } else if (it.second != null) { // check SuccessResponse
-                    val requestEventType = String(it.second.headers(HeaderType.CE_TYPE).first().value())
-                    val replyEventType =
-                        if (it.first is SuccessResponse)
-                            EventResponseType.success(requestEventType)
-                        else
-                            EventResponseType.fail(requestEventType)
-                    eventBuilder.withType(replyEventType)
+                when (it.first) {
+                    is BalanceChangedEvent -> {
+                        eventBuilder.withType(EventResponseType.BALANCE_CHANGED)
+                    }
+                    is OrderChangedEvent -> {
+                        eventBuilder.withType(EventResponseType.ORDER_CHANGED)
+                    }
+                    is TradingResult -> {
+                        eventBuilder.withType(EventResponseType.TRADING_RESULT)
+                    }
+                    is EventResponse -> {
+                        val requestEventType = String(it.second.headers(HeaderType.CE_TYPE).first().value())
+                        val replyEventType =
+                            if (it.first is SuccessResponse)
+                                EventResponseType.success(requestEventType)
+                            else
+                                EventResponseType.fail(requestEventType)
+                        eventBuilder.withType(replyEventType)
+                    }
                 }
 
                 val event = eventBuilder.build()
 
                 return@map ProducerRecord<String, CloudEvent>(this.replyOrderBookTopic, event.id, event)
                     .apply {
-                        it.second?.filter { header ->
-                            event.type == EventResponseType.TRADING_RESULT && header.key() == HeaderType.REPLY_TOPIC
-                                    || header.key() != HeaderType.CE_TYPE
-                        }?.forEach { header -> this.headers().add(header) }
+                        it.second?.let { headers ->
+                            headers.forEach { header ->
+                                this.headers().add(header)
+                            }
+
+                            // replace CE_TYPE header
+                            headers.add(HeaderType.CE_TYPE, event.type.toByteArray())
+
+                            if (it.first is SideEffectEvent) {
+                                this.headers().remove(HeaderType.REPLY_TOPIC)
+                            }
+                        }
                     }
             }
             .forEach { kafkaTemplate.send(it) }

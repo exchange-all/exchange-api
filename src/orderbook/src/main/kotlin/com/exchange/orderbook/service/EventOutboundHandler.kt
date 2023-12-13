@@ -55,10 +55,14 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
 
                 return@map ProducerRecord<String, CloudEvent>(this.replyOrderBookTopic, event.id, event)
                     .apply {
-                        it.second?.filter { header ->
-                            event.type == EventResponseType.TRADING_RESULT && header.key() == HeaderType.REPLY_TOPIC
-                                    || header.key() != HeaderType.CE_TYPE
-                        }?.forEach { header -> this.headers().add(header) }
+                        it.second?.let { headers ->
+                            headers.forEach { header ->
+                                this.headers().add(header)
+                            }
+
+                            // replace CE_TYPE header
+                            headers.add(HeaderType.CE_TYPE, event.type.toByteArray())
+                        }
                     }
             }
             .forEach { kafkaTemplate.send(it) }

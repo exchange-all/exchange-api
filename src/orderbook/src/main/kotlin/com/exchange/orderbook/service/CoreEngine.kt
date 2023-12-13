@@ -1,6 +1,5 @@
 package com.exchange.orderbook.service
 
-import com.exchange.orderbook.model.Tuple
 import com.exchange.orderbook.model.constants.MessageError
 import com.exchange.orderbook.model.entity.BalanceEntity
 import com.exchange.orderbook.model.entity.OrderEntity
@@ -66,11 +65,11 @@ class CoreEngine(
                 // handle request
                 val result = handlers[record.value()::class.java]?.invoke(record.value())
                     ?: EventResponse.fail(record.value(), MessageError.EVENT_NOT_FOUND)
-                val results = mutableListOf(Tuple(result, record.headers()))
+                val results = mutableListOf(Pair(result, record.headers()))
 
                 // get a trading result if any
                 if (tradingResults.get() != null) {
-                    results.addAll(tradingResults.get().map { Tuple(it, record.headers()) })
+                    results.addAll(tradingResults.get().map { Pair(it, record.headers()) })
                     tradingResults.remove()
                 }
 

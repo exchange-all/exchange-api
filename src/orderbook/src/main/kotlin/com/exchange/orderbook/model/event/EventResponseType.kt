@@ -15,5 +15,7 @@ class EventResponseType {
         }
 
         const val TRADING_RESULT = "TRADING_RESULT"
+        const val BALANCE_CHANGED = "BALANCE_CHANGED"
+        const val ORDER_CHANGED = "ORDER_CHANGED"
     }
 }

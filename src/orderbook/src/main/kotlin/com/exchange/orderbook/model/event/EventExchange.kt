@@ -12,6 +12,7 @@ import java.math.BigDecimal
 
 interface ExchangeEvent {}
 interface SnapshotSupport {}
+interface SideEffectEvent {}
 
 open class EventResponse: ExchangeEvent {
     var id: String? = null
@@ -46,11 +47,11 @@ interface NotResponse {}
 
 data class BalanceChangedEvent(
     val balance: BalanceEntity
-) : SnapshotSupport, ExchangeEvent, NotResponse {}
+) : SnapshotSupport, ExchangeEvent, SideEffectEvent {}
 
 data class OrderChangedEvent(
     val order: OrderEntity
-) : SnapshotSupport, ExchangeEvent, NotResponse {}
+) : SnapshotSupport, ExchangeEvent, SideEffectEvent {}
 
 data class TradingResult(
     val remainOrder: OrderEntity,
@@ -58,4 +59,4 @@ data class TradingResult(
     val quoteBalance: BalanceEntity,
     val tradedAmount: BigDecimal,
     val tradedPrice: BigDecimal
-) : ExchangeEvent {}
+) : ExchangeEvent, SideEffectEvent {}

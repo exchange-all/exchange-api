@@ -62,17 +62,15 @@ class EventOutboundHandler(private val kafkaTemplate: KafkaTemplate<String, Clou
 
                 return@map ProducerRecord<String, CloudEvent>(this.replyOrderBookTopic, event.id, event)
                     .apply {
-                        it.second?.let { headers ->
-                            headers.forEach { header ->
-                                this.headers().add(header)
-                            }
+                        it.second.forEach { header ->
+                            this.headers().add(header)
+                        }
 
-                            // replace CE_TYPE header
-                            headers.add(HeaderType.CE_TYPE, event.type.toByteArray())
+                        // replace CE_TYPE header
+                        it.second.add(HeaderType.CE_TYPE, event.type.toByteArray())
 
-                            if (it.first is SideEffectEvent) {
-                                this.headers().remove(HeaderType.REPLY_TOPIC)
-                            }
+                        if (it.first is SideEffectEvent) {
+                            this.headers().remove(HeaderType.REPLY_TOPIC)
                         }
                     }
             }

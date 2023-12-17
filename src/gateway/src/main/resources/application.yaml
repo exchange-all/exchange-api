@@ -1,0 +1,58 @@
+server.port: 8000
+---
+spring:
+  application:
+    name: api-gateway
+---
+spring:
+  profiles:
+    include:
+      - swagger
+---
+spring:
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        instance-id: ${spring.application.name}:${random.value}
+        instanceZone: exchange
+        register: false
+        registerHealthCheck: false
+        tags: api-gateway
+      config:
+        enabled: false
+        retry:
+          enabled: true
+          initialInterval: 2
+---
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            maxAge: 3600
+---
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth-api
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+#            - SaveSession
+            - RewritePath=/auth/(?<segment>.*), /$\{segment}
+        - id: exchange-api
+          uri: lb://exchange-service
+          predicates:
+            - Path=/exchange/**
+          filters:
+            - RewritePath=/exchange/(?<segment>.*), /$\{segment}

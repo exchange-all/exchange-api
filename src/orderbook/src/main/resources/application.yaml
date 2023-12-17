@@ -8,6 +8,7 @@ spring:
     include:
       - kafka
       - database
+      - consul
 ---
 schedule:
   sync-database-interval: 500

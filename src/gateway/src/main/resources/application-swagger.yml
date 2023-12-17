@@ -1,0 +1,20 @@
+---
+# Api documentation configuration
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger
+    display-request-duration: true
+    default-models-expand-depth: -1
+    default-model-expand-depth: 100
+    disable-swagger-default-url: true
+    url: /v3/api-docs
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway
+      - url: /auth/v3/api-docs
+        name: Auth Service
+      - url: /exchange/v3/api-docs
+        name: Exchange Service

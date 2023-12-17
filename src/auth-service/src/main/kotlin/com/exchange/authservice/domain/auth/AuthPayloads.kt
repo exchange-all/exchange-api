@@ -1,4 +1,4 @@
-package com.exchange.exchange.domain.auth
+package com.exchange.authservice.domain.auth
 
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email

@@ -1,4 +1,4 @@
-package com.exchange.exchange.domain.user
+package com.exchange.authservice.domain.user
 
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.stereotype.Repository

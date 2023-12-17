@@ -25,6 +25,7 @@ repositories {
     mavenCentral()
 }
 
+extra["springCloudVersion"] = "2023.0.0"
 val reactorKafkaVersion = "1.3.22"
 
 dependencies {
@@ -73,6 +74,14 @@ dependencies {
     // Reactor kafka
     implementation("io.projectreactor.kafka:reactor-kafka:${reactorKafkaVersion}")
 
+    implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
 }
 
 tasks.withType<KotlinCompile> {

@@ -1,6 +1,6 @@
-package com.exchange.exchange.security
+package com.exchange.authservice.security
 
-import com.exchange.exchange.security.session.SessionAuthenticationConverter
+import com.exchange.authservice.security.session.SessionAuthenticationConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
@@ -53,7 +53,9 @@ class SecurityConfig {
                     "/swagger-ui/**",
                     "/swagger.json/**",
                     "/swagger",
-                    "/sse/trading"
+                    // Public API
+                    "/api/v1/auth/login-with-email",
+                    "/api/v1/auth/register-with-email",
                 ).permitAll()
                 it.anyExchange().authenticated()
             }

@@ -61,7 +61,6 @@ class CoreEngine(
 
         val consumeResults =
             records.flatMap { record ->
-                log.error("Received event: ${record.value()}")
                 consumerRecord.set(record)
                 // handle request
                 val result = handlers[record.value()::class.java]?.invoke(record.value())
@@ -75,10 +74,8 @@ class CoreEngine(
                 }
 
                 consumerRecord.remove()
-                log.error("Received size: ${results.size}")
                 return@flatMap results
             }
-        log.error("Received event: ${consumeResults.size}")
         outboundListener.enqueue(records.last().offset(), consumeResults)
     }
 

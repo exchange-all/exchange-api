@@ -1,10 +1,12 @@
 package com.exchange.orderbook.service
 
+import com.exchange.orderbook.model.entity.Status
 import com.exchange.orderbook.repository.disk.BalanceRepository
 import com.exchange.orderbook.repository.disk.OrderRepository
 import com.exchange.orderbook.repository.disk.TradingPairRepository
 import com.exchange.orderbook.repository.memory.BalanceInMemoryRepository
 import com.exchange.orderbook.repository.memory.TradingPairInMemoryRepository
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 /**
@@ -39,7 +41,7 @@ class DataManager(
     }
 
     private fun restoreOrders() {
-        val orders = orderRepository.findAll()
+        val orders = orderRepository.findByStatus(Status.OPEN, Sort.by(Sort.Direction.ASC, "priority"))
         matchingEngine.restoreData(orders)
     }
 }

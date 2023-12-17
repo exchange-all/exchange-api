@@ -47,17 +47,12 @@ class TradingPair(
     /**
      * Sell order with the lowest price will be on top
      */
-    val asks: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap(Comparator.naturalOrder())
+    val asks: TreeMap<BigDecimal, LinkedHashMap<String, OrderEntity>> = TreeMap(Comparator.naturalOrder())
 
     /**
      * Buy order with the highest price will be on top
      */
-    val bids: TreeMap<Price, TreeSet<OrderEntity>> = TreeMap(Comparator.reverseOrder())
-
-    /**
-     * Order tree reference, that is used to remove order from matching engine
-     */
-    val orderTreeRefs: MutableMap<String, TreeSet<OrderEntity>> = HashMap()
+    val bids: TreeMap<BigDecimal, LinkedHashMap<String, OrderEntity>> = TreeMap(Comparator.reverseOrder())
 
     /**
      * Add order
@@ -65,26 +60,24 @@ class TradingPair(
      * @param order
      */
     fun addOrder(order: OrderEntity) {
-        if (order.type == OrderType.SELL) {
-            val tree = this.asks.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }
-            tree.add(order)
-            this.orderTreeRefs[order.id] = tree
+        val bucket = when (order.type) {
+            OrderType.SELL -> this.asks
+            OrderType.BUY -> this.bids
         }
-        if (order.type == OrderType.BUY) {
-            val tree = this.bids.computeIfAbsent(Price(order.price)) { TreeSet(OrderPriority()) }
-            tree.add(order)
-            this.orderTreeRefs[order.id] = tree
-        }
+        val linkedHashMap = bucket.computeIfAbsent(order.price) { LinkedHashMap() }
+        linkedHashMap[order.id] = order
     }
 
     fun removeOrder(order: OrderEntity) {
-        if (order.type == OrderType.SELL) {
-            this.asks[Price(order.price)]?.remove(order)
-            this.orderTreeRefs.remove(order.id)
+        val bucket = when (order.type) {
+            OrderType.SELL -> this.asks
+            OrderType.BUY -> this.bids
         }
-        if (order.type == OrderType.BUY) {
-            this.bids[Price(order.price)]?.remove(order)
-            this.orderTreeRefs.remove(order.id)
+        bucket[order.price]?.let {
+            it.remove(order.id)
+            if (it.isEmpty()) {
+                bucket.remove(order.price)
+            }
         }
     }
 }

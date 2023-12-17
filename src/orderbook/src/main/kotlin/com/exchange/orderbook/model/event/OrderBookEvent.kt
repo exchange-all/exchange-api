@@ -6,27 +6,27 @@ import java.math.BigDecimal
  * @author thaivc
  * @since 2023
  */
-class CreateBalanceEvent(
+data class CreateBalanceEvent(
     override val id: String,
     val userId: String,
     val currency: String
 ) : IEvent {}
 
-class DepositBalanceEvent(
+data class DepositBalanceEvent(
     override val id: String,
     val userId: String,
     val currency: String,
     val amount: BigDecimal
 ) : IEvent {}
 
-class WithdrawBalanceEvent(
+data class WithdrawBalanceEvent(
     override val id: String,
     val userId: String,
     val currency: String,
     val amount: BigDecimal
 ) : IEvent {}
 
-class AskLimitOrderEvent(
+data class AskLimitOrderEvent(
     override val id: String,
     val userId: String,
     val baseCurrency: String,
@@ -35,7 +35,7 @@ class AskLimitOrderEvent(
     val amount: BigDecimal
 ) : IEvent {}
 
-class AskMarketOrderEvent(
+data class AskMarketOrderEvent(
     override val id: String,
     val userId: String,
     val baseCurrency: String,
@@ -43,7 +43,7 @@ class AskMarketOrderEvent(
     val amount: BigDecimal
 ) : IEvent {}
 
-class BidLimitOrderEvent(
+data class BidLimitOrderEvent(
     override val id: String,
     val userId: String,
     val baseCurrency: String,
@@ -52,7 +52,7 @@ class BidLimitOrderEvent(
     val amount: BigDecimal
 ) : IEvent {}
 
-class BidMarketOrderEvent(
+data class BidMarketOrderEvent(
     override val id: String,
     val userId: String,
     val baseCurrency: String,
@@ -60,7 +60,7 @@ class BidMarketOrderEvent(
     val amount: BigDecimal
 ) : IEvent {}
 
-class CancelOrderEvent(
+data class CancelOrderEvent(
     override val id: String,
     val userId: String,
     val orderId: String

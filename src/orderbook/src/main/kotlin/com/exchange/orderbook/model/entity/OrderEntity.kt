@@ -1,6 +1,8 @@
 package com.exchange.orderbook.model.entity
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.IndexDirection
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.math.BigDecimal
 
@@ -21,6 +23,7 @@ class OrderEntity : Identifiable<String>, Cloneable {
     lateinit var status: Status
 
     // The priority of the order. The higher the priority, the more likely the order will be matched.
+    @Indexed(direction = IndexDirection.ASCENDING)
     var priority: Long = 0
 
     override fun equals(other: Any?): Boolean {

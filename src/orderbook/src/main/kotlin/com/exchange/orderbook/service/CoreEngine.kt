@@ -59,8 +59,9 @@ class CoreEngine(
     fun consumeEvents(records: ConsumerRecords<String, IEvent>) {
         if (records.isEmpty) return
 
-        val results =
+        val consumeResults =
             records.flatMap { record ->
+                log.error("Received event: ${record.value()}")
                 consumerRecord.set(record)
                 // handle request
                 val result = handlers[record.value()::class.java]?.invoke(record.value())
@@ -74,9 +75,11 @@ class CoreEngine(
                 }
 
                 consumerRecord.remove()
-                results
+                log.error("Received size: ${results.size}")
+                return@flatMap results
             }
-        outboundListener.enqueue(records.last().offset(), results)
+        log.error("Received event: ${consumeResults.size}")
+        outboundListener.enqueue(records.last().offset(), consumeResults)
     }
 
     /**

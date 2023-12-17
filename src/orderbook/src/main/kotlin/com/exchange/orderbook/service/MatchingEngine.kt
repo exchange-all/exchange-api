@@ -4,6 +4,7 @@ import com.exchange.orderbook.model.TradingPair
 import com.exchange.orderbook.model.currencyPair
 import com.exchange.orderbook.model.entity.OrderEntity
 import com.exchange.orderbook.model.entity.Status
+import com.exchange.orderbook.model.entity.TradingPairEntity
 import com.exchange.orderbook.model.event.BalanceChangedEvent
 import com.exchange.orderbook.model.event.OrderChangedEvent
 import com.exchange.orderbook.model.event.TradingResult
@@ -11,7 +12,7 @@ import com.exchange.orderbook.repository.memory.BalanceInMemoryRepository
 import com.exchange.orderbook.repository.memory.OrderInMemoryRepository
 import com.exchange.orderbook.repository.memory.TradingPairInMemoryRepository
 import org.springframework.stereotype.Component
-import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 /**
@@ -78,6 +79,7 @@ class MatchingEngine(
      */
     fun matching(baseCurrency: String, quoteCurrency: String): List<TradingResult> {
         val tradingPair = tradingPairs[currencyPair(baseCurrency, quoteCurrency)] ?: return emptyList()
+        val currencyPair = tradingPairInMemoryRepository.findByCurrencyPair(baseCurrency, quoteCurrency)!!
         val tradingResults: MutableList<TradingResult> = mutableListOf()
 
         ASK_BID_PRICE_COMPARE@
@@ -86,138 +88,39 @@ class MatchingEngine(
 
             val askMinPrice = tradingPair.asks.firstKey()
             val bidMaxPrice = tradingPair.bids.firstKey()
-            if (askMinPrice.value > bidMaxPrice.value) break@ASK_BID_PRICE_COMPARE
+            if (askMinPrice > bidMaxPrice) break@ASK_BID_PRICE_COMPARE
 
-            val askOrders: TreeSet<OrderEntity> = tradingPair.asks[askMinPrice]!!
-            val bidOrders: TreeSet<OrderEntity> = tradingPair.bids[bidMaxPrice]!!
+            val askOrders = tradingPair.asks[askMinPrice]!!
+            val bidOrders = tradingPair.bids[bidMaxPrice]!!
 
             ASK_BID_AMOUNT_COMPARE@
             while (true) {
                 if (askOrders.isEmpty() || bidOrders.isEmpty())
                     break@ASK_BID_AMOUNT_COMPARE
 
-                val askOrderHead: OrderEntity = askOrders.first()
-                val bidOrderHead: OrderEntity = bidOrders.first()
-                val askSell = askOrderHead.availableAmount
-                val bidBuy = bidOrderHead.availableAmount
-
-                when {
-                    (askSell > bidBuy) -> handleAskOverBid(
-                        askOrders,
-                        bidOrders,
-                        askOrderHead,
-                        bidOrderHead,
-                        tradingPair,
-                        tradingResults
-                    )
-
-                    (askSell < bidBuy) -> handleBidOverAsk(
-                        askOrders,
-                        bidOrders,
-                        askOrderHead,
-                        bidOrderHead,
-                        tradingPair,
-                        tradingResults
-                    )
-
-                    else -> handleAskEqualsBid(
-                        askOrders,
-                        bidOrders,
-                        askOrderHead,
-                        bidOrderHead,
-                        tradingPair,
-                        tradingResults
-                    )
-                }
-            }
-            // check and remove asks head
-            if (askOrders.isEmpty()) {
-                tradingPair.asks.remove(askMinPrice)
-            }
-
-            // check and remove bids head
-            if (bidOrders.isEmpty()) {
-                tradingPair.bids.remove(askMinPrice)
+                val askOrderHead: OrderEntity = askOrders.entries.first().value
+                val bidOrderHead: OrderEntity = bidOrders.entries.first().value
+                this.updateBalances(askOrderHead, bidOrderHead, tradingPair, currencyPair ,tradingResults)
             }
         }
         return tradingResults
-    }
-
-    private fun handleAskOverBid(
-        askOrders: TreeSet<OrderEntity>,
-        bidOrders: TreeSet<OrderEntity>,
-        askOrderHead: OrderEntity,
-        bidOrderHead: OrderEntity,
-        tradingPair: TradingPair,
-        tradingResults: MutableList<TradingResult>
-    ) {
-        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
-
-        // update ask-order and bid-order
-        askOrderHead.availableAmount =
-            askOrderHead.availableAmount.subtract(bidOrderHead.availableAmount)
-        bidOrderHead.availableAmount = BigDecimal.ZERO
-        bidOrderHead.status = Status.CLOSED
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(askOrderHead.clone()))
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidOrderHead.clone()))
-
-        bidOrders.remove(bidOrderHead)
-    }
-
-    private fun handleBidOverAsk(
-        askOrders: TreeSet<OrderEntity>,
-        bidOrders: TreeSet<OrderEntity>,
-        askOrderHead: OrderEntity,
-        bidOrderHead: OrderEntity,
-        tradingPair: TradingPair,
-        tradingResults: MutableList<TradingResult>
-    ) {
-        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
-
-        // update ask-order and bid-order
-        bidOrderHead.availableAmount =
-            bidOrderHead.availableAmount.subtract(askOrderHead.availableAmount)
-        askOrderHead.availableAmount = BigDecimal.ZERO
-        askOrderHead.status = Status.CLOSED
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(askOrderHead.clone()))
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidOrderHead.clone()))
-
-        askOrders.remove(askOrderHead)
-    }
-
-    private fun handleAskEqualsBid(
-        askOrders: TreeSet<OrderEntity>,
-        bidOrders: TreeSet<OrderEntity>,
-        askOrderHead: OrderEntity,
-        bidOrderHead: OrderEntity,
-        tradingPair: TradingPair,
-        tradingResults: MutableList<TradingResult>
-    ) {
-        updateBalances(askOrderHead, bidOrderHead, tradingPair, tradingResults)
-
-        // update ask-order and bid-order
-        askOrderHead.availableAmount = BigDecimal.ZERO
-        bidOrderHead.availableAmount = BigDecimal.ZERO
-        askOrderHead.status = Status.CLOSED
-        bidOrderHead.status = Status.CLOSED
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(askOrderHead.clone()))
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidOrderHead.clone()))
-
-        bidOrders.remove(bidOrderHead)
-        askOrders.remove(askOrderHead)
     }
 
     private fun updateBalances(
         askOrderHead: OrderEntity,
         bidOrderHead: OrderEntity,
         tradingPair: TradingPair,
+        currencyPair: TradingPairEntity,
         tradingResults: MutableList<TradingResult>
     ) {
         // determine traded amount
-        val tradedBaseAmount = minOf(
-            askOrderHead.availableAmount,
-            bidOrderHead.availableAmount
+
+        val tradedQuoteAmount = minOf(
+            askOrderHead.availableAmount.multiply(askOrderHead.price),
+            bidOrderHead.availableAmount.multiply(bidOrderHead.price)
         )
+        val tradedAskBaseAmount = tradedQuoteAmount.divide(askOrderHead.price, RoundingMode.HALF_UP)
+        val tradedBidBaseAmount = tradedQuoteAmount.divide(bidOrderHead.price, RoundingMode.HALF_UP)
 
         // add quote-currency availableAmount and subtract base-currency lockedAmount for ask
         val askQuoteBalance = balanceInMemoryRepository.findByUserIdAndCurrency(
@@ -229,8 +132,8 @@ class MatchingEngine(
             tradingPair.baseCurrency
         )!!
         askQuoteBalance.availableAmount =
-            askQuoteBalance.availableAmount.add(tradedBaseAmount.multiply(askOrderHead.price))
-        askBaseBalance.lockAmount = askBaseBalance.lockAmount.subtract(tradedBaseAmount)
+            askQuoteBalance.availableAmount.add(tradedQuoteAmount)
+        askBaseBalance.lockAmount = askBaseBalance.lockAmount.subtract(tradedAskBaseAmount)
 
         // add base-currency availableAmount and subtract quote-currency lockedAmount for ask
         val bidBaseBalance = balanceInMemoryRepository.findByUserIdAndCurrency(
@@ -241,30 +144,46 @@ class MatchingEngine(
             bidOrderHead.userId,
             tradingPair.quoteCurrency
         )!!
-        bidBaseBalance.availableAmount = bidBaseBalance.availableAmount.add(tradedBaseAmount)
+        bidBaseBalance.availableAmount = bidBaseBalance.availableAmount.add(tradedBidBaseAmount)
         bidQuoteBalance.lockAmount =
-            bidQuoteBalance.lockAmount.subtract(tradedBaseAmount.multiply(askOrderHead.price))
+            bidQuoteBalance.lockAmount.subtract(tradedQuoteAmount)
+
+        askOrderHead.availableAmount = askOrderHead.availableAmount.subtract(tradedAskBaseAmount)
+        bidOrderHead.availableAmount = bidOrderHead.availableAmount.subtract(tradedBidBaseAmount)
+
+        if (askOrderHead.availableAmount <= currencyPair.minLimit) {
+            askOrderHead.status = Status.CLOSED
+            tradingPair.removeOrder(askOrderHead)
+        }
+        if (bidOrderHead.availableAmount <= currencyPair.minLimit) {
+            askOrderHead.status = Status.CLOSED
+            tradingPair.removeOrder(bidOrderHead)
+        }
 
         // add result
-        tradingResults.add(TradingResult(
+        val askResult = TradingResult(
             askOrderHead.clone(),
             askBaseBalance.clone(),
             askQuoteBalance.clone(),
-            tradedBaseAmount,
+            tradedAskBaseAmount,
             askOrderHead.price
-        ).apply { askOrderHead.id })
+        ).apply { askOrderHead.id }
+        tradingResults.add(askResult)
 
-        tradingResults.add(TradingResult(
+        val bidResult = TradingResult(
             bidOrderHead.clone(),
             bidBaseBalance.clone(),
             bidQuoteBalance.clone(),
-            tradedBaseAmount,
+            tradedBidBaseAmount,
             bidOrderHead.price
-        ).apply { bidOrderHead.id })
+        ).apply { bidOrderHead.id }
+        tradingResults.add(bidResult)
 
-        CoreEngine.tradingResults.get().add(BalanceChangedEvent(askBaseBalance.clone()))
-        CoreEngine.tradingResults.get().add(BalanceChangedEvent(askQuoteBalance.clone()))
-        CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidBaseBalance.clone()))
-        CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidQuoteBalance.clone()))
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(askResult.baseBalance))
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(askResult.quoteBalance))
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidResult.baseBalance))
+        CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidResult.quoteBalance))
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(askResult.remainOrder.clone()))
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidResult.remainOrder.clone()))
     }
 }

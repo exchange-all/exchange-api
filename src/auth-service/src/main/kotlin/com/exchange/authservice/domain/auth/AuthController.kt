@@ -1,9 +1,9 @@
-package com.exchange.exchange.domain.auth
+package com.exchange.authservice.domain.auth
 
-import com.exchange.exchange.core.Response
-import com.exchange.exchange.domain.user.UserEntity
-import com.exchange.exchange.security.CurrentUser
-import com.exchange.exchange.security.session.SessionUtils
+import com.exchange.authservice.core.Response
+import com.exchange.authservice.domain.user.UserEntity
+import com.exchange.authservice.security.CurrentUser
+import com.exchange.authservice.security.session.SessionUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid

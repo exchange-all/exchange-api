@@ -4,4 +4,4 @@
 wrk.method = "POST"
 wrk.body = '{"price": 1, "amount": 1, "baseCurrency": "BTC", "quoteCurrency": "USDT"}'
 wrk.headers["Content-Type"] = "application/json"
-wrk.headers["Cookie"] = "SESSION=af6b1eac-11b9-4cc7-9e20-4c6111403ee9" -- replace with your session cookie
+wrk.headers["Cookie"] = "SESSION=12704b4d-6af7-4582-a138-af9dd7936503" -- replace with your session cookie

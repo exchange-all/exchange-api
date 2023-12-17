@@ -1,10 +1,10 @@
-package com.exchange.exchange.domain.auth
+package com.exchange.authservice.domain.auth
 
-import com.exchange.exchange.domain.user.Role
-import com.exchange.exchange.domain.user.UserEntity
-import com.exchange.exchange.domain.user.UserRepository
-import com.exchange.exchange.exception.BadRequestException
-import com.exchange.exchange.exception.UnauthorizedException
+import com.exchange.authservice.domain.user.Role
+import com.exchange.authservice.domain.user.UserEntity
+import com.exchange.authservice.domain.user.UserRepository
+import com.exchange.authservice.exception.BadRequestException
+import com.exchange.authservice.exception.UnauthorizedException
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory

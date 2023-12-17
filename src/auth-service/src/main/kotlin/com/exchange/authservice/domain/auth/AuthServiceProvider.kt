@@ -1,6 +1,6 @@
-package com.exchange.exchange.domain.auth
+package com.exchange.authservice.domain.auth
 
-import com.exchange.exchange.domain.user.UserEntity
+import com.exchange.authservice.domain.user.UserEntity
 
 /**
  *

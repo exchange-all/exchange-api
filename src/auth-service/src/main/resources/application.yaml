@@ -1,0 +1,39 @@
+server:
+  port: 8800
+  shutdown: graceful
+  compression:
+    enabled: true
+---
+spring:
+  application:
+    name: auth-service
+---
+spring:
+  profiles:
+    include:
+      - consul
+---
+# Api documentation configuration
+springdoc:
+  swagger-ui:
+    path: /swagger
+    display-request-duration: true
+    default-models-expand-depth: -1
+    default-model-expand-depth: 100
+    syntaxHighlight:
+      activated: true
+  api-docs:
+    path: /v3/api-docs
+  open-api:
+    servers[0]:
+      url: http://localhost:8000/auth
+      description: Gateway
+    servers[1]:
+      url: http://localhost:8800
+      description: Auth Service
+---
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://root:root@localhost:27017/exchange?authSource=admin

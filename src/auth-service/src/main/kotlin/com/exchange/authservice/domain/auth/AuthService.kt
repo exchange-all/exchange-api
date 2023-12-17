@@ -1,7 +1,7 @@
-package com.exchange.exchange.domain.auth
+package com.exchange.authservice.domain.auth
 
-import com.exchange.exchange.domain.user.UserEntity
-import com.exchange.exchange.exception.UnauthorizedException
+import com.exchange.authservice.domain.user.UserEntity
+import com.exchange.authservice.exception.UnauthorizedException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 

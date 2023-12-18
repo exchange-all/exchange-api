@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "1.9.21"
     kotlin("plugin.spring") version "1.9.21"
 }
 
@@ -31,7 +31,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 
     // Swagger UI for Spring WebFlux
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
 }
 
 dependencyManagement {

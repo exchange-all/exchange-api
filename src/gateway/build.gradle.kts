@@ -31,7 +31,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 
     // Swagger UI for Spring WebFlux
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
 }
 
 dependencyManagement {

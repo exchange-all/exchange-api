@@ -37,3 +37,10 @@ updates:
       - "uuhnaut69"
       - "gc-garcol"
 
+  - package-ecosystem: "gradle" # See documentation for possible values
+    directory: "/src/flink/trading-stream-agg" # Location of package manifests
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "uuhnaut69"
+      - "gc-garcol"

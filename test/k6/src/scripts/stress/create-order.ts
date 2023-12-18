@@ -5,9 +5,9 @@ import { Options } from "k6/options";
 const cookieSeeds = JSON.parse(open("../../data/cookies.seed.json"));
 
 const CREATE_BID_API_URL =
-  "http://localhost:8888/api/v1/order-book/create-bid-limit-order";
+  "http://localhost:8000/api/v1/order-book/create-bid-limit-order";
 const CREATE_ASK_API_URL =
-  "http://localhost:8888/api/v1/order-book/create-ask-limit-order";
+  "http://localhost:8000/api/v1/order-book/create-ask-limit-order";
 
 const types = ["bid", "ask"];
 
@@ -25,8 +25,8 @@ function getBidData() {
   return {
     baseCurrency: "BTC",
     quoteCurrency: "USDT",
-    price: 1,
-    amount: 1,
+    price: Math.floor(getRandomPrice(40000, 45000)),
+    amount: getRandomPrice(0.0001, 3),
   };
 }
 
@@ -34,9 +34,13 @@ function getAskData() {
   return {
     baseCurrency: "BTC",
     quoteCurrency: "USDT",
-    price: 1,
-    amount: 1,
+    price: Math.floor(getRandomPrice(40000, 45000)),
+    amount: getRandomPrice(0.0001, 3),
   };
+}
+
+function getRandomPrice(min: number, max: number) {
+  return Math.random() * (max - min) + min;
 }
 
 export const options: Options = {

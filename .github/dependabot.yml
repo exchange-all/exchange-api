@@ -11,6 +11,7 @@ updates:
       interval: "daily"
     reviewers:
       - "uuhnaut69"
+      - "gc-garcol"
     
   - package-ecosystem: "gradle" # See documentation for possible values
     directory: "/src/orderbook" # Location of package manifests
@@ -18,3 +19,21 @@ updates:
       interval: "daily"
     reviewers:
       - "uuhnaut69"
+      - "gc-garcol"
+
+  - package-ecosystem: "gradle" # See documentation for possible values
+    directory: "/src/auth-service" # Location of package manifests
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "uuhnaut69"
+      - "gc-garcol"
+
+  - package-ecosystem: "gradle" # See documentation for possible values
+    directory: "/src/gateway" # Location of package manifests
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "uuhnaut69"
+      - "gc-garcol"
+

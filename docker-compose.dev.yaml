@@ -125,3 +125,7 @@ services:
       - "8600:8600/tcp"
       - "8600:8600/udp"
     command: "agent"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 5s
+      timeout: 5s

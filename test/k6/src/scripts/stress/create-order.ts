@@ -5,9 +5,9 @@ import { Options } from "k6/options";
 const cookieSeeds = JSON.parse(open("../../data/cookies.seed.json"));
 
 const CREATE_BID_API_URL =
-  "http://localhost:8000/api/v1/order-book/create-bid-limit-order";
+  "http://localhost:8000/exchange/api/v1/order-book/create-bid-limit-order";
 const CREATE_ASK_API_URL =
-  "http://localhost:8000/api/v1/order-book/create-ask-limit-order";
+  "http://localhost:8000/exchange/api/v1/order-book/create-ask-limit-order";
 
 const types = ["bid", "ask"];
 
@@ -45,9 +45,9 @@ function getRandomPrice(min: number, max: number) {
 
 export const options: Options = {
   stages: [
-    { duration: "1m", target: 300 }, // traffic ramp-up from 1 to a higher 300 users over 1 minutes.
-    { duration: "5m", target: 1000 }, // stay at higher 1000 users for 5 minutes
-    { duration: "3m", target: 0 }, // ramp-down to 0 users
+    { duration: "1m", target: 100 }, // traffic ramp-up from 1 to a higher 100 users over 1 minutes.
+    { duration: "3m", target: 500 }, // stay at higher 500 users for 3 minutes
+    { duration: "1m", target: 0 }, // ramp-down to 0 users
   ],
   thresholds: {
     // Required to mark the test as passed/failed

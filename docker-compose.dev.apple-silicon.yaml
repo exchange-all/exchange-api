@@ -128,3 +128,17 @@ services:
       - "8600:8600/tcp"
       - "8600:8600/udp"
     command: "agent"
+
+  questdb:
+    container_name: questdb
+    image: questdb/questdb:latest
+    ports:
+      - "9000:9000"
+      - "9009:9009"
+      - "8812:8812"
+      - "9003:9003"
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/health" ]
+      interval: 5s
+      timeout: 5s

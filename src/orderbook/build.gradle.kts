@@ -30,12 +30,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springframework.kafka:spring-kafka")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -43,6 +41,10 @@ dependencies {
     implementation("io.cloudevents:cloudevents-spring:2.5.0")
     implementation("io.cloudevents:cloudevents-kafka:2.5.0")
     implementation("io.cloudevents:cloudevents-json-jackson:2.5.0")
+
+    // Tracing
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp:1.32.0")
 
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 

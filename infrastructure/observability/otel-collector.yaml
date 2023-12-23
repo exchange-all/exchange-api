@@ -1,0 +1,38 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+        cors:
+          allowed_origins:
+            - "*"
+
+# https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/setup/export/opentelemetry-collector/
+exporters:
+  logging:
+    loglevel: debug
+  otlp/trace/grpc:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+  otlp/trace/http:
+    endpoint: tempo:4318
+    tls:
+      insecure: true
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/trace/grpc]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]

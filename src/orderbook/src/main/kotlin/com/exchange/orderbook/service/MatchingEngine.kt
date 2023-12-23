@@ -183,7 +183,7 @@ class MatchingEngine(
         CoreEngine.tradingResults.get().add(BalanceChangedEvent(askResult.quoteBalance))
         CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidResult.baseBalance))
         CoreEngine.tradingResults.get().add(BalanceChangedEvent(bidResult.quoteBalance))
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(askResult.remainOrder.clone()))
-        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidResult.remainOrder.clone()))
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(askResult.remainOrder))
+        CoreEngine.tradingResults.get().add(OrderChangedEvent(bidResult.remainOrder))
     }
 }

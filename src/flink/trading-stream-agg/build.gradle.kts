@@ -21,7 +21,7 @@ configurations {
 }
 
 val flinkVersion = "1.18.0"
-val flinkKafkaVersion = "1.17.2"
+val flinkKafkaVersion = "3.0.2-1.18"
 val lombokVersion = "1.18.30"
 val jacksonVersion = "2.16.0"
 val log4jVersion = "2.22.0"

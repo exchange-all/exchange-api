@@ -6,7 +6,7 @@ import { join } from "path";
 import { performance } from "perf_hooks";
 
 const EXCHANGE_API_URL =
-  process.env.EXCHANGE_API_URL || "http://localhost:8888";
+  process.env.EXCHANGE_API_URL || "http://localhost:8000";
 
 async function main() {
   const start = performance.now();
@@ -18,7 +18,7 @@ async function main() {
   const users: any[] = JSON.parse(buffers.toString());
 
   const promises = users.map((user) =>
-    axios.post(`${EXCHANGE_API_URL}/api/v1/auth/login-with-email`, user)
+    axios.post(`${EXCHANGE_API_URL}/auth/api/v1/auth/login-with-email`, user)
   );
 
   const responses = await Promise.all(promises);

@@ -13,18 +13,20 @@ async function main() {
   const generatedUsers = [];
 
   for (let i = 0; i < +process.env.USER_SEED_TARGET; i++) {
-    generatedUsers.push({
+    const user = {
       email: `testuser${i}@gmail.com`,
       password: "1234abcd",
-    });
+    };
+    try {
+      const response = await axios.post(
+        `${EXCHANGE_API_URL}/auth/api/v1/auth/register-with-email`,
+        user
+      );
+      if (response.status === 200) {
+        generatedUsers.push(user);
+      }
+    } catch (err) {}
   }
-
-  // Using promise.all to register all users at once
-  const promises = generatedUsers.map((user) =>
-    axios.post(`${EXCHANGE_API_URL}/api/v1/auth/register-with-email`, user)
-  );
-
-  await Promise.all(promises);
 
   // Write to file
   const filePath = join(__dirname, "..", "data", "users.seed.json");

@@ -53,7 +53,7 @@ dependencies {
     implementation("io.cloudevents:cloudevents-json-jackson:$cloudEventKafkaVersion")
 
     // Test dependencies
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 }

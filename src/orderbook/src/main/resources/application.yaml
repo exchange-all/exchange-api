@@ -9,6 +9,7 @@ spring:
       - kafka
       - database
       - consul
+      - tracing
 ---
 schedule:
   sync-database-interval: 500

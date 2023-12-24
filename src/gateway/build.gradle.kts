@@ -32,6 +32,13 @@ dependencies {
 
     // Swagger UI for Spring WebFlux
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
+
+    // Tracing
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp:1.32.0")
+
+//    runtimeOnly("io.opentelemetry:opentelemetry-exporter-otlp-common:1.33.0")
+
 }
 
 dependencyManagement {

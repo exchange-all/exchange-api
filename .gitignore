@@ -40,3 +40,8 @@ out/
 **/next/
 ./src/exchange-web/node_modules/
 ./src/exchange-web/next/
+**/opentelemetry-javaagent.jar
+**/.env
+
+infrastructure/observability/tempo-data/
+**/tempo-data/

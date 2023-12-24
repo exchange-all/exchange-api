@@ -1,12 +1,19 @@
 package com.exchange.job.order;
 
 import com.exchange.job.common.TradingResult;
+import com.exchange.job.common.WindowSize;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
  * @author uuhnaut69
  */
 public class TradingResultAggregator implements AggregateFunction<TradingResult, TradingResultAccumulator, TradingResultAccumulator> {
+
+    private final WindowSize windowSize;
+
+    public TradingResultAggregator(WindowSize windowSize) {
+        this.windowSize = windowSize;
+    }
 
     @Override
     public TradingResultAccumulator createAccumulator() {
@@ -18,6 +25,10 @@ public class TradingResultAggregator implements AggregateFunction<TradingResult,
             TradingResult value,
             TradingResultAccumulator accumulator
     ) {
+        if (accumulator.getWindowSize() == null) {
+            accumulator.setWindowSize(this.windowSize);
+        }
+
         if (accumulator.getTimestamp() == null) {
             accumulator.setTimestamp(value.getTimestamp());
         }

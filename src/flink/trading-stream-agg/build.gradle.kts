@@ -21,7 +21,7 @@ configurations {
 }
 
 val flinkVersion = "1.18.0"
-val flinkKafkaVersion = "1.17.2"
+val flinkKafkaVersion = "3.0.2-1.18"
 val lombokVersion = "1.18.30"
 val jacksonVersion = "2.16.0"
 val log4jVersion = "2.22.0"
@@ -58,7 +58,7 @@ dependencies {
     implementation("io.cloudevents:cloudevents-json-jackson:$cloudEventKafkaVersion")
 
     // Test dependencies
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 }

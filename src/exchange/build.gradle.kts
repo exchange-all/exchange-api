@@ -38,7 +38,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
@@ -54,7 +53,6 @@ dependencies {
     // MongoDB
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // Test dependencies
@@ -74,6 +72,12 @@ dependencies {
     // Reactor kafka
     implementation("io.projectreactor.kafka:reactor-kafka:${reactorKafkaVersion}")
 
+    // tracing
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp:1.32.0")
+
+
+    // consul
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 
 }

@@ -16,7 +16,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 @PublicEvolving
 public class CloudEventDeserializerSchema implements KafkaDeserializationSchema<Tuple2<CloudEvent, Long>> {
 
-    private CloudEventDeserializer cloudEventDeserializer;
+    private transient CloudEventDeserializer cloudEventDeserializer;
 
     @Override
     public void open(DeserializationSchema.InitializationContext context) throws Exception {

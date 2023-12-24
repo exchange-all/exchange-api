@@ -130,16 +130,17 @@ services:
       interval: 5s
       timeout: 5s
 
-  questdb:
-    container_name: questdb
-    image: questdb/questdb:latest
+  timescaledb:
+    container_name: timescaledb
+    image: timescale/timescaledb:latest-pg16-bitnami
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: exchange
     ports:
-      - "9000:9000"
-      - "9009:9009"
-      - "8812:8812"
-      - "9003:9003"
+      - "5433:5432"
     restart: on-failure
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/health" ]
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 5s
       timeout: 5s

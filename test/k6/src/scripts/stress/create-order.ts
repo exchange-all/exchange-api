@@ -25,8 +25,8 @@ function getBidData() {
   return {
     baseCurrency: "BTC",
     quoteCurrency: "USDT",
-    price: Math.floor(getRandomPrice(40000, 45000)),
-    amount: getRandomPrice(0.0001, 3),
+    price: Math.floor(getRandomPrice(35000, 47000)),
+    amount: getRandomPrice(0.0001, 5.5),
   };
 }
 
@@ -34,8 +34,8 @@ function getAskData() {
   return {
     baseCurrency: "BTC",
     quoteCurrency: "USDT",
-    price: Math.floor(getRandomPrice(40000, 45000)),
-    amount: getRandomPrice(0.0001, 3),
+    price: Math.floor(getRandomPrice(35000, 47000)),
+    amount: getRandomPrice(0.0001, 5.5),
   };
 }
 

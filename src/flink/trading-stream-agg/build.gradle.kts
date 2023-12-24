@@ -26,16 +26,21 @@ val lombokVersion = "1.18.30"
 val jacksonVersion = "2.16.0"
 val log4jVersion = "2.22.0"
 var cloudEventKafkaVersion = "2.5.0"
+val jdbcPostgresVersion = "42.7.1"
 
 dependencies {
-    // Flink java API
+    // Flink dependencies
     implementation("org.apache.flink:flink-java:$flinkVersion")
-    // Flink Kafka client
+    implementation("org.apache.flink:flink-streaming-java:$flinkVersion")
+    implementation("org.apache.flink:flink-table-api-java-bridge:$flinkVersion")
     implementation("org.apache.flink:flink-clients:$flinkVersion")
-    // Flink Kafka web UI for local development
-    implementation("org.apache.flink:flink-runtime-web:$flinkVersion")
+
     // Flink Kafka connector
     implementation("org.apache.flink:flink-connector-kafka:$flinkKafkaVersion")
+    // JDBC driver for Postgres
+    implementation("org.postgresql:postgresql:$jdbcPostgresVersion")
+
+    implementation("org.apache.flink:flink-connector-jdbc:3.1.1-1.17")
 
     // Logging
     implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")

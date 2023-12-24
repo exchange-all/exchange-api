@@ -1,7 +1,7 @@
 package com.exchange.job;
 
 import com.exchange.job.common.OrderBookEventType;
-import com.exchange.job.common.WindowType;
+import com.exchange.job.common.WindowSize;
 import com.exchange.job.order.TradingResultAggregator;
 import com.exchange.job.order.TradingResultMapper;
 import com.exchange.job.serde.CloudEventDeserializerSchema;
@@ -63,10 +63,10 @@ public class TradingStreamAggregation {
                 .name("Partitioning by Trading Pair Id")
                 .keyBy(data -> data.getRemainOrder().getTradingPairId());
 
-        Arrays.stream(WindowType.values()).forEach(windowType -> {
+        Arrays.stream(WindowSize.values()).forEach(windowSize -> {
                     var windowedTradingResultDataStream = reKeyedTradingResultDataStream
-                            .window(TumblingProcessingTimeWindows.of(getWindowTypeTimeMap().get(windowType)))
-                            .aggregate(new TradingResultAggregator(windowType))
+                            .window(TumblingProcessingTimeWindows.of(getWindowSizeTimeMap().get(windowSize)))
+                            .aggregate(new TradingResultAggregator(windowSize))
                             .setParallelism(1);
 
                     windowedTradingResultDataStream
@@ -75,7 +75,7 @@ public class TradingStreamAggregation {
                                             "(window_type, trading_pair_id, open_price, close_price, high_price, low_price, timestamp) " +
                                             "VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                                     (statement, aggResult) -> {
-                                        statement.setString(1, aggResult.getWindowType().getValue());
+                                        statement.setString(1, aggResult.getWindowSize().getValue());
                                         statement.setString(2, aggResult.getTradingPairId());
                                         statement.setBigDecimal(3, aggResult.getOpenPrice());
                                         statement.setBigDecimal(4, aggResult.getClosePrice());
@@ -96,7 +96,7 @@ public class TradingStreamAggregation {
                                             .build()
                             ))
                             .setParallelism(1)
-                            .name(String.format("Sink %s Windowed Trading Result to Database", windowType.getValue()));
+                            .name(String.format("Sink %s Windowed Trading Result to Database", windowSize.getValue()));
                 }
         );
 
@@ -108,24 +108,24 @@ public class TradingStreamAggregation {
      *
      * @return Map of WindowType and Time
      */
-    private static Map<WindowType, Time> getWindowTypeTimeMap() {
-        var windowTypeMap = new EnumMap<WindowType, Time>(WindowType.class);
-        windowTypeMap.put(WindowType.ONE_SECOND, Time.seconds(1));
-        windowTypeMap.put(WindowType.ONE_MINUTE, Time.minutes(1));
-        windowTypeMap.put(WindowType.THREE_MINUTE, Time.minutes(3));
-        windowTypeMap.put(WindowType.FIVE_MINUTE, Time.minutes(5));
-        windowTypeMap.put(WindowType.FIFTEEN_MINUTE, Time.minutes(15));
-        windowTypeMap.put(WindowType.THIRTY_MINUTE, Time.minutes(30));
-        windowTypeMap.put(WindowType.ONE_HOUR, Time.hours(1));
-        windowTypeMap.put(WindowType.TWO_HOUR, Time.hours(2));
-        windowTypeMap.put(WindowType.FOUR_HOUR, Time.hours(4));
-        windowTypeMap.put(WindowType.SIX_HOUR, Time.hours(6));
-        windowTypeMap.put(WindowType.EIGHT_HOUR, Time.hours(8));
-        windowTypeMap.put(WindowType.TWELVE_HOUR, Time.hours(12));
-        windowTypeMap.put(WindowType.ONE_DAY, Time.days(1));
-        windowTypeMap.put(WindowType.THREE_DAY, Time.days(3));
-        windowTypeMap.put(WindowType.ONE_WEEK, Time.days(7));
-        windowTypeMap.put(WindowType.ONE_MONTH, Time.days(30));
-        return windowTypeMap;
+    private static Map<WindowSize, Time> getWindowSizeTimeMap() {
+        var windowSizeTimeMap = new EnumMap<WindowSize, Time>(WindowSize.class);
+        windowSizeTimeMap.put(WindowSize.ONE_SECOND, Time.seconds(1));
+        windowSizeTimeMap.put(WindowSize.ONE_MINUTE, Time.minutes(1));
+        windowSizeTimeMap.put(WindowSize.THREE_MINUTE, Time.minutes(3));
+        windowSizeTimeMap.put(WindowSize.FIVE_MINUTE, Time.minutes(5));
+        windowSizeTimeMap.put(WindowSize.FIFTEEN_MINUTE, Time.minutes(15));
+        windowSizeTimeMap.put(WindowSize.THIRTY_MINUTE, Time.minutes(30));
+        windowSizeTimeMap.put(WindowSize.ONE_HOUR, Time.hours(1));
+        windowSizeTimeMap.put(WindowSize.TWO_HOUR, Time.hours(2));
+        windowSizeTimeMap.put(WindowSize.FOUR_HOUR, Time.hours(4));
+        windowSizeTimeMap.put(WindowSize.SIX_HOUR, Time.hours(6));
+        windowSizeTimeMap.put(WindowSize.EIGHT_HOUR, Time.hours(8));
+        windowSizeTimeMap.put(WindowSize.TWELVE_HOUR, Time.hours(12));
+        windowSizeTimeMap.put(WindowSize.ONE_DAY, Time.days(1));
+        windowSizeTimeMap.put(WindowSize.THREE_DAY, Time.days(3));
+        windowSizeTimeMap.put(WindowSize.ONE_WEEK, Time.days(7));
+        windowSizeTimeMap.put(WindowSize.ONE_MONTH, Time.days(30));
+        return windowSizeTimeMap;
     }
 }

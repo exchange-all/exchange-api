@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum WindowType {
+public enum WindowSize {
     ONE_SECOND("ONE_SECOND"),
     ONE_MINUTE("ONE_MINUTE"),
     THREE_MINUTE("THREE_MINUTE"),

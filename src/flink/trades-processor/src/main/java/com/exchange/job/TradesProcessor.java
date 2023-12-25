@@ -2,9 +2,7 @@ package com.exchange.job;
 
 import com.exchange.job.common.OrderBookEventType;
 import com.exchange.job.common.WindowSize;
-import com.exchange.job.order.TradingResultAccumulator;
-import com.exchange.job.order.TradingResultAggregator;
-import com.exchange.job.order.TradingResultMapper;
+import com.exchange.job.order.*;
 import com.exchange.job.serde.CloudEventDeserializerSchema;
 import io.cloudevents.CloudEvent;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -32,7 +30,7 @@ import java.util.Map;
 /**
  * @author uuhnaut69
  */
-public class TradingStreamAggregation {
+public class TradesProcessor {
 
     /**
      * Main method for running Trading Stream Aggregation
@@ -68,6 +66,7 @@ public class TradingStreamAggregation {
                 .name("Partitioning by Trading Pair Id")
                 .keyBy(data -> data.getRemainOrder().getTradingPairId());
 
+        // Process and sink windowed trading result to Database and Kafka
         Arrays.stream(WindowSize.values())
                 // Filter window size that is configured
                 .filter(windowSize -> getWindowSizeTimeMap().containsKey(windowSize))
@@ -84,7 +83,7 @@ public class TradingStreamAggregation {
                             windowedTradingResultDataStream
                                     .addSink(JdbcSink.sink(
                                             "INSERT INTO windowed_trades " +
-                                                    "(window_type, trading_pair_id, open_price, close_price, high_price, low_price, timestamp) " +
+                                                    "(window_type, trading_pair_id, open_price, close_price, high_price, low_price, window_timestamp) " +
                                                     "VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                                             (statement, aggResult) -> {
                                                 statement.setString(1, aggResult.getWindowSize().getValue());
@@ -117,6 +116,7 @@ public class TradingStreamAggregation {
                                             .setValueSerializationSchema(new JsonSerializationSchema<TradingResultAccumulator>())
                                             .build()
                                     )
+                                    .setTransactionalIdPrefix(String.format("windowed-trades-%s", windowSize.getValue().toLowerCase()))
                                     .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
                                     .build();
 
@@ -127,7 +127,60 @@ public class TradingStreamAggregation {
                         }
                 );
 
-        env.execute("Trading Stream Aggregation");
+        final var tradingHistoryDataStream = tradingResultDataStream
+                .name("Mapping to Trading History Pojo")
+                .map(new TradingHistoryMapper());
+
+        // Process and sink trading history to Database and Kafka
+        tradingHistoryDataStream
+                .addSink(JdbcSink.sink(
+                        "INSERT INTO trades_histories " +
+                                "(user_id, trading_pair_id, order_id, amount, available_amount, price, type, status, traded_amount, traded_price, traded_at) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (statement, tradingHistory) -> {
+                            statement.setString(1, tradingHistory.getUserId());
+                            statement.setString(2, tradingHistory.getTradingPairId());
+                            statement.setString(3, tradingHistory.getOrderId());
+                            statement.setBigDecimal(4, tradingHistory.getAmount());
+                            statement.setBigDecimal(5, tradingHistory.getAvailableAmount());
+                            statement.setBigDecimal(6, tradingHistory.getPrice());
+                            statement.setString(7, tradingHistory.getType().getValue());
+                            statement.setString(8, tradingHistory.getStatus().getValue());
+                            statement.setBigDecimal(9, tradingHistory.getTradedAmount());
+                            statement.setBigDecimal(10, tradingHistory.getTradedPrice());
+                            statement.setLong(11, tradingHistory.getTradedAt());
+                        },
+                        JdbcExecutionOptions.builder()
+                                .withBatchSize(1000)
+                                .withBatchIntervalMs(200)
+                                .withMaxRetries(5)
+                                .build(),
+                        new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
+                                .withUrl(parameterTool.get("jdbc.url", "jdbc:postgresql://localhost:5433/exchange"))
+                                .withDriverName(parameterTool.get("jdbc.driver-class-name", "org.postgresql.Driver"))
+                                .withUsername(parameterTool.get("jdbc.username", "postgres"))
+                                .withPassword(parameterTool.get("jdbc.password", "postgres"))
+                                .build()
+                ))
+                .setParallelism(1)
+                .name("Sink Trading History to Database");
+
+        final var tradingHistoryKafkaSink = KafkaSink.<TradingHistory>builder()
+                .setBootstrapServers(parameterTool.get("kafka.bootstrap-servers", "localhost:19092"))
+                .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+                        .setTopic("market-data.trades-histories")
+                        .setValueSerializationSchema(new JsonSerializationSchema<TradingHistory>())
+                        .build()
+                )
+                .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
+                .setTransactionalIdPrefix("trades-histories")
+                .build();
+
+        tradingHistoryDataStream.sinkTo(tradingHistoryKafkaSink)
+                .name("Sink Trading History to Kafka")
+                .setParallelism(1);
+
+        env.execute("Trades Processor");
     }
 
     /**

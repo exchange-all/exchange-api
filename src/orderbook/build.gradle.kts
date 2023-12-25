@@ -44,7 +44,7 @@ dependencies {
 
     // Tracing
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    implementation("io.opentelemetry:opentelemetry-exporter-otlp:1.33.0")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp:1.32.0")
 
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
 

@@ -23,7 +23,7 @@ configurations {
 val flinkVersion = "1.18.0"
 val flinkKafkaVersion = "3.0.2-1.18"
 val lombokVersion = "1.18.30"
-val jacksonVersion = "2.16.0"
+val jacksonVersion = "2.16.1"
 val log4jVersion = "2.22.0"
 var cloudEventKafkaVersion = "2.5.0"
 val jdbcPostgresVersion = "42.7.1"

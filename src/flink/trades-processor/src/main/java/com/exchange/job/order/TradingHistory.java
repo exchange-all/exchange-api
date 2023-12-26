@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class TradingHistory {
 
+    private String id;
+
     private String userId;
 
     private String tradingPairId;

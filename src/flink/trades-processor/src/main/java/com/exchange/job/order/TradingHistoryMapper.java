@@ -10,6 +10,7 @@ public class TradingHistoryMapper implements MapFunction<TradingResult, TradingH
     @Override
     public TradingHistory map(TradingResult value) throws Exception {
         return new TradingHistory(
+                value.getId(),
                 value.getRemainOrder().getUserId(),
                 value.getRemainOrder().getTradingPairId(),
                 value.getRemainOrder().getId(),

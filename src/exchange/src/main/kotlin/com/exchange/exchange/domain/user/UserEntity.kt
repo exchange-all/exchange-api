@@ -1,11 +1,6 @@
 package com.exchange.exchange.domain.user
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.mongodb.core.index.Indexed
-import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.Instant
@@ -17,13 +12,10 @@ import java.util.*
  * @author uuhnaut69
  *
  */
-@Document("users")
 class UserEntity : UserDetails {
 
-    @Id
     lateinit var id: String
 
-    @Indexed(unique = true)
     lateinit var email: String
 
     private lateinit var password: String
@@ -38,10 +30,8 @@ class UserEntity : UserDetails {
 
     private var enabled: Boolean = true
 
-    @CreatedDate
     var createdAt: Instant? = null
 
-    @LastModifiedDate
     var updatedAt: Instant? = null
 
     companion object {

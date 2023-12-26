@@ -7,6 +7,7 @@ import com.exchange.job.serde.CloudEventDeserializerSchema;
 import io.cloudevents.CloudEvent;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
@@ -42,7 +43,7 @@ public class TradesProcessor {
         final var parameterTool = ParameterTool.fromArgs(args);
         final var env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        final var kafkaSource = KafkaSource.<Tuple2<CloudEvent, Long>>builder()
+        final var kafkaSource = KafkaSource.<Tuple3<String, CloudEvent, Long>>builder()
                 .setBootstrapServers(parameterTool.get("kafka.bootstrap-servers", "localhost:19092"))
                 .setTopics(parameterTool.get("kafka.topics", "order-book-reply"))
                 .setGroupId(parameterTool.get("kafka.group-id", "flink-trading-stream-agg"))
@@ -58,7 +59,7 @@ public class TradesProcessor {
 
         final var tradingResultDataStream = orderBookDataStream
                 .name("Filtering Trading Result")
-                .filter(data -> data.f0.getType().equals(OrderBookEventType.TRADING_RESULT.getValue()))
+                .filter(data -> data.f1.getType().equals(OrderBookEventType.TRADING_RESULT.getValue()))
                 .name("Mapping to Trading Result Pojo")
                 .map(new TradingResultMapper());
 
@@ -135,20 +136,21 @@ public class TradesProcessor {
         tradingHistoryDataStream
                 .addSink(JdbcSink.sink(
                         "INSERT INTO trades_histories " +
-                                "(user_id, trading_pair_id, order_id, amount, available_amount, price, type, status, traded_amount, traded_price, traded_at) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                "(id, user_id, trading_pair_id, order_id, amount, available_amount, price, type, status, traded_amount, traded_price, traded_at) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                         (statement, tradingHistory) -> {
-                            statement.setString(1, tradingHistory.getUserId());
-                            statement.setString(2, tradingHistory.getTradingPairId());
-                            statement.setString(3, tradingHistory.getOrderId());
-                            statement.setBigDecimal(4, tradingHistory.getAmount());
-                            statement.setBigDecimal(5, tradingHistory.getAvailableAmount());
-                            statement.setBigDecimal(6, tradingHistory.getPrice());
-                            statement.setString(7, tradingHistory.getType().getValue());
-                            statement.setString(8, tradingHistory.getStatus().getValue());
-                            statement.setBigDecimal(9, tradingHistory.getTradedAmount());
-                            statement.setBigDecimal(10, tradingHistory.getTradedPrice());
-                            statement.setLong(11, tradingHistory.getTradedAt());
+                            statement.setString(1, tradingHistory.getId());
+                            statement.setString(2, tradingHistory.getUserId());
+                            statement.setString(3, tradingHistory.getTradingPairId());
+                            statement.setString(4, tradingHistory.getOrderId());
+                            statement.setBigDecimal(5, tradingHistory.getAmount());
+                            statement.setBigDecimal(6, tradingHistory.getAvailableAmount());
+                            statement.setBigDecimal(7, tradingHistory.getPrice());
+                            statement.setString(8, tradingHistory.getType().getValue());
+                            statement.setString(9, tradingHistory.getStatus().getValue());
+                            statement.setBigDecimal(10, tradingHistory.getTradedAmount());
+                            statement.setBigDecimal(11, tradingHistory.getTradedPrice());
+                            statement.setLong(12, tradingHistory.getTradedAt());
                         },
                         JdbcExecutionOptions.builder()
                                 .withBatchSize(1000)

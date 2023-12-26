@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class TradingResult implements Event {
 
+    private String id;
+
     private BigDecimal tradedPrice;
 
     private BigDecimal tradedAmount;

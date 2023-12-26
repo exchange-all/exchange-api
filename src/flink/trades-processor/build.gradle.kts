@@ -43,7 +43,6 @@ dependencies {
     // JDBC driver for Postgres
     implementation("org.postgresql:postgresql:$jdbcPostgresVersion")
 
-
     // Logging
     implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")

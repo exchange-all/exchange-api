@@ -6,7 +6,7 @@ import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.connectors.kafka.KafkaDeserializationSchema;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -14,7 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
  * @author uuhnaut69
  */
 @PublicEvolving
-public class CloudEventDeserializerSchema implements KafkaDeserializationSchema<Tuple2<CloudEvent, Long>> {
+public class CloudEventDeserializerSchema implements KafkaDeserializationSchema<Tuple3<String, CloudEvent, Long>> {
 
     private transient CloudEventDeserializer cloudEventDeserializer;
 
@@ -24,13 +24,14 @@ public class CloudEventDeserializerSchema implements KafkaDeserializationSchema<
     }
 
     @Override
-    public boolean isEndOfStream(Tuple2<CloudEvent, Long> nextElement) {
+    public boolean isEndOfStream(Tuple3<String, CloudEvent, Long> nextElement) {
         return false;
     }
 
     @Override
-    public Tuple2<CloudEvent, Long> deserialize(ConsumerRecord<byte[], byte[]> consumerRecord) throws Exception {
-        return Tuple2.of(
+    public Tuple3<String, CloudEvent, Long> deserialize(ConsumerRecord<byte[], byte[]> consumerRecord) throws Exception {
+        return Tuple3.of(
+                new String(consumerRecord.key()),
                 cloudEventDeserializer.deserialize(
                         consumerRecord.topic(),
                         consumerRecord.headers(),
@@ -42,7 +43,7 @@ public class CloudEventDeserializerSchema implements KafkaDeserializationSchema<
 
 
     @Override
-    public TypeInformation<Tuple2<CloudEvent, Long>> getProducedType() {
+    public TypeInformation<Tuple3<String, CloudEvent, Long>> getProducedType() {
         return TypeInformation.of(new TypeHint<>() {
         });
     }

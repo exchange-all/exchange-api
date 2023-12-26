@@ -29,6 +29,7 @@ val log4jVersion = "2.22.0"
 var cloudEventKafkaVersion = "2.5.0"
 val jdbcPostgresVersion = "42.7.1"
 val flinkJdbcVersion = "3.1.1-1.17"
+val redissonVersion = "3.25.2"
 
 dependencies {
     // Flink dependencies
@@ -42,6 +43,8 @@ dependencies {
 
     // JDBC driver for Postgres
     implementation("org.postgresql:postgresql:$jdbcPostgresVersion")
+
+    implementation("org.redisson:redisson:$redissonVersion")
 
     // Logging
     implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")

@@ -7,7 +7,7 @@ package com.exchange.exchange.domain.market
 object MarketDataConfig {
 
     const val WINDOWED_TRADES_EVENT_TYPE = "WINDOWED-TRADES"
-    const val TRADES_HISTORY_EVENT_TYPE = "TRADES-HISTORIES"
+    const val TRADES_HISTORIES_EVENT_TYPE = "TRADES-HISTORIES"
 
     const val TRADES_HISTORIES_TOPIC = "market-data.trades-histories"
 

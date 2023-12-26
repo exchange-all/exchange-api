@@ -4,6 +4,7 @@ import com.exchange.job.common.OrderBookEventType;
 import com.exchange.job.common.WindowSize;
 import com.exchange.job.order.*;
 import com.exchange.job.serde.CloudEventDeserializerSchema;
+import com.exchange.job.sink.RedisPubSubSink;
 import io.cloudevents.CloudEvent;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -125,6 +126,11 @@ public class TradesProcessor {
                                     .sinkTo(kafkaSink)
                                     .setParallelism(1)
                                     .name(String.format("Sink %s Windowed Trading Result to Kafka", windowSize.getValue()));
+
+                            windowedTradingResultDataStream
+                                    .addSink(new RedisPubSubSink<>(kafkaOutputTopic))
+                                    .setParallelism(1)
+                                    .name(String.format("Sink %s Windowed Trading Result to Redis", windowSize.getValue()));
                         }
                 );
 
@@ -181,6 +187,11 @@ public class TradesProcessor {
         tradingHistoryDataStream.sinkTo(tradingHistoryKafkaSink)
                 .name("Sink Trading History to Kafka")
                 .setParallelism(1);
+
+        tradingHistoryDataStream
+                .addSink(new RedisPubSubSink<>("market-data.trades-histories"))
+                .setParallelism(1)
+                .name("Sink Trading History to Redis");
 
         env.execute("Trades Processor");
     }

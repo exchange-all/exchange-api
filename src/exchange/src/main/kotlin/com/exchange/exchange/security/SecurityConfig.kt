@@ -53,7 +53,7 @@ class SecurityConfig {
                     "/swagger-ui/**",
                     "/swagger.json/**",
                     "/swagger",
-                    "/sse/trading"
+                    "/api/v1/market-data/**"
                 ).permitAll()
                 it.anyExchange().authenticated()
             }

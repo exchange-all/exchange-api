@@ -1,5 +1,6 @@
 package com.exchange.exchange.configuration
 
+import com.exchange.exchange.domain.market.MarketDataConfig
 import io.cloudevents.CloudEvent
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -47,21 +48,28 @@ class KafkaConfig {
 
     @Bean
     fun orderBookKafkaReceiver(
-        @Value("\${kafka.order-book.reply-topic}") topic: String,
+        @Value("\${exchange-service}") consumerGroup: String,
         kafkaProperties: KafkaProperties
     ): KafkaReceiver<String, String> {
         val properties = mapOf(
             ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaProperties.bootstrapServers,
-            ConsumerConfig.GROUP_ID_CONFIG to "order-book-kafka-receiver",
+            ConsumerConfig.GROUP_ID_CONFIG to consumerGroup,
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to "true",
             ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
             ConsumerConfig.ISOLATION_LEVEL_CONFIG to "read_committed",
         )
+
+        val subscribedTopics = mutableListOf<String>()
+        subscribedTopics.add(MarketDataConfig.TRADES_HISTORIES_TOPIC)
+        MarketDataConfig.windowSizeConfigTopicMap.entries.forEach {
+            subscribedTopics.add(it.value)
+        }
+
         return DefaultKafkaReceiver(
             ConsumerFactory.INSTANCE,
-            ReceiverOptions.create<String, String>(properties).subscription(listOf(topic))
+            ReceiverOptions.create<String, String>(properties).subscription(subscribedTopics)
         )
     }
 
@@ -73,15 +81,6 @@ class KafkaConfig {
         kafkaTemplate: KafkaTemplate<String, CloudEvent>,
         containerFactory: ConcurrentKafkaListenerContainerFactory<String, CloudEvent>,
     ): ConcurrentMessageListenerContainer<String, CloudEvent> {
-
-        /**
-         * If the application is running in standalone mode, the reply template is set to the
-         * [KafkaTemplate] created in this method, that is used for sending mock replies.
-         */
-        environment.activeProfiles.contains("standalone").let {
-            containerFactory.setReplyTemplate(kafkaTemplate)
-        }
-
         val container = containerFactory.createContainer(topic)
         container.containerProperties.setGroupId(groupId)
         container.isAutoStartup = false

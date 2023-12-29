@@ -7,21 +7,6 @@ volumes:
     driver: local
 
 services:
-  balance-db:
-    container_name: balance-db
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: balance
-    ports:
-      - "5432:5432"
-    restart: on-failure
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
-      interval: 5s
-      timeout: 5s
-
   redpanda:
     container_name: redpanda
     image: redpandadata/redpanda:v23.2.17

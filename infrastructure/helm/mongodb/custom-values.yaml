@@ -1,8 +1,7 @@
 # https://artifacthub.io/packages/helm/bitnami/mongodb
-architecture: replicaset
+architecture: standalone
 auth:
-  rootPassword: "exchange-mongodb-pwd@abc."
+  rootPassword: "1234_4321"
   usernames: ["exchange-user"]
-  passwords: ["exchange-mongodb-pwd@abc."]
+  passwords: ["1234_4321"]
   databases: ["exchange"]
-  replicaSetKey: "exchange-mongodb-pwd@abc."

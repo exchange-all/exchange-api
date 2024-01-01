@@ -115,3 +115,21 @@ readiness:
   successThreshold: 1
   timeoutSeconds: 30
   periodSeconds: 30
+
+envs:
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_0_ID
+    value: auth-svc
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_0_URI
+    value: auth-svc.default.svc.cluster.local:8800
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0
+    value: Path=/auth/**
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_0_FILTERS_0
+    value: RewritePath=/auth/(?<segment>.*), /$\{segment}
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_1_ID
+    value: exchange-svc
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_1_URI
+    value: exchange-svc.default.svc.cluster.local:8888
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0
+    value: Path=/exchange/**
+  - name: SPRING_CLOUD_GATEWAY_ROUTES_1_FILTERS_0
+    value: RewritePath=/exchange/(?<segment>.*), /$\{segment}

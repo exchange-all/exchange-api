@@ -21,13 +21,6 @@ springdoc:
     default-model-expand-depth: 100
   api-docs:
     path: /v3/api-docs
-  open-api:
-    servers[0]:
-      url: http://localhost:8000/exchange
-      description: Gateway
-    servers[1]:
-      url: http://localhost:8888
-      description: Exchange Service
 ---
 spring:
   data:

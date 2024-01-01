@@ -24,13 +24,6 @@ springdoc:
       activated: true
   api-docs:
     path: /v3/api-docs
-  open-api:
-    servers[0]:
-      url: http://localhost:8000/auth
-      description: Gateway
-    servers[1]:
-      url: http://localhost:8800
-      description: Auth Service
 ---
 spring:
   data:

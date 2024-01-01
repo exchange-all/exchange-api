@@ -8,6 +8,11 @@ fi
 # Add redpanda repo if not already added
 if ! helm repo list | grep redpanda >/dev/null; then
   helm repo add redpanda https://charts.redpanda.com
+  helm repo update
+fi
+
+# Add jetstack repo if not already added
+if ! helm repo list | grep jetstack >/dev/null; then
   helm repo add jetstack https://charts.jetstack.io
   helm repo update
 fi

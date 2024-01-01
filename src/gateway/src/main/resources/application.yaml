@@ -12,23 +12,6 @@ spring:
 ---
 spring:
   cloud:
-    consul:
-      host: localhost
-      port: 8500
-      discovery:
-        instance-id: ${spring.application.name}:${random.value}
-        instanceZone: exchange
-        register: false
-        registerHealthCheck: false
-        tags: api-gateway
-      config:
-        enabled: false
-        retry:
-          enabled: true
-          initialInterval: 2
----
-spring:
-  cloud:
     gateway:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
@@ -45,14 +28,13 @@ spring:
     gateway:
       routes:
         - id: auth-api
-          uri: lb://auth-service
+          uri: http://localhost:8800
           predicates:
             - Path=/auth/**
           filters:
-#            - SaveSession
             - RewritePath=/auth/(?<segment>.*), /$\{segment}
         - id: exchange-api
-          uri: lb://exchange-service
+          uri: http://localhost:8888
           predicates:
             - Path=/exchange/**
           filters:

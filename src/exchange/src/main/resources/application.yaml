@@ -10,7 +10,6 @@ spring:
 spring:
   profiles:
     include:
-      - consul
       - tracing
 ---
 # Api documentation configuration

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "exchange-svc.fullname" . }}-test-connection"
+  labels:
+    {{- include "exchange-svc.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "exchange-svc.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

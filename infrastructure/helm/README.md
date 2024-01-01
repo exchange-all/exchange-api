@@ -27,3 +27,11 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 ```bash
 helm repo update
 ```
+
+4. Load local images into minikube
+
+```bash
+minikube docker-env
+eval $(minikube -p minikube docker-env)
+minikube image load <image-name>
+```

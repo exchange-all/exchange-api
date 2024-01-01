@@ -1,6 +1,6 @@
 # https://artifacthub.io/packages/helm/bitnami/redis
 architecture: standalone
 master:
-  password: "exchange-redis-pwd@abc."
+  password: "1234_4321"
 persistence:
   enabled: true

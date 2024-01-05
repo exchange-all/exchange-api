@@ -31,103 +31,70 @@ class OrderBookService(
         private val LOGGER = LoggerFactory.getLogger(OrderBookService::class.java)
     }
 
-    suspend fun createAskLimitOrder(
+    /**
+     * Create new order
+     *
+     * @param currentUser
+     * @param createOrderRequest
+     * @return [Response] of [CreateOrderResponse]
+     */
+    suspend fun createNewOrder(
         currentUser: UserEntity,
-        createAskLimitOrderRequest: AskLimitOrderRequest
-    ): Response<AskLimitOrderResponse> {
+        createOrderRequest: CreateOrderRequest
+    ): Response<CreateOrderResponse> {
         val id = UUID.randomUUID().toString()
-        val createAskLimitCommandEvent = CloudEventBuilder.v1()
+        val createOrderCommand = CloudEventBuilder.v1()
             .withId(id)
             .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
-            .withType(OrderBookCommandType.CREATE_ASK_LIMIT_ORDER.type)
+            .withType(createOrderRequest.type.type)
             .withData(
                 CloudEventUtils.serializeData(
-                    CreateAskLimitOrderCommand(
+                    CreateOrderCommand(
                         id,
                         currentUser.id,
-                        createAskLimitOrderRequest.baseCurrency,
-                        createAskLimitOrderRequest.quoteCurrency,
-                        createAskLimitOrderRequest.price,
-                        createAskLimitOrderRequest.amount
+                        createOrderRequest.baseCurrency,
+                        createOrderRequest.quoteCurrency,
+                        createOrderRequest.price,
+                        createOrderRequest.amount
                     )
                 )
             ).build()
 
-        val record = ProducerRecord(this.orderBookTopic, createAskLimitCommandEvent.id, createAskLimitCommandEvent)
+        val record = ProducerRecord(this.orderBookTopic, createOrderCommand.id, createOrderCommand)
 
         val eventResult = this.template.sendAndReceive(record).await()
+
         return when (eventResult.value().type) {
-            OrderBookEventType.CREATE_ASK_LIMIT_ORDER_SUCCESS.type -> {
-                val event = CloudEventUtils.getReplyEventData(
-                    eventResult.value(), AskLimitOrderCreated::class.java
-                )
-                Response.success(
-                    ObjectMapper.instance.convertValue(
-                        event!!,
-                        AskLimitOrderResponse::class.java
-                    )
-                )
-            }
-
-            OrderBookEventType.CREATE_ASK_LIMIT_ORDER_FAILED.type -> {
-                throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
-            }
-
-            else -> throw InternalServerErrorException()
-        }
-    }
-
-    suspend fun createBidLimitOrder(
-        currentUser: UserEntity,
-        createBidLimitOrderRequest: BidLimitOrderRequest
-    ): Response<BidLimitOrderResponse> {
-        val id = UUID.randomUUID().toString()
-        val createBidLimitCommandEvent = CloudEventBuilder.v1()
-            .withId(id)
-            .withSource(URI.create(CloudEventUtils.EVENT_SOURCE))
-            .withType(OrderBookCommandType.CREATE_BID_LIMIT_ORDER.type)
-            .withData(
-                CloudEventUtils.serializeData(
-                    CreateBidLimitOrderCommand(
-                        id,
-                        currentUser.id,
-                        createBidLimitOrderRequest.baseCurrency,
-                        createBidLimitOrderRequest.quoteCurrency,
-                        createBidLimitOrderRequest.price,
-                        createBidLimitOrderRequest.amount
-                    )
-                )
-            ).build()
-
-        val record = ProducerRecord(this.orderBookTopic, createBidLimitCommandEvent.id, createBidLimitCommandEvent)
-
-        val eventResult = this.template.sendAndReceive(record).await()
-        return when (eventResult.value().type) {
+            OrderBookEventType.CREATE_ASK_LIMIT_ORDER_SUCCESS.type,
             OrderBookEventType.CREATE_BID_LIMIT_ORDER_SUCCESS.type -> {
                 val event = CloudEventUtils.getReplyEventData(
-                    eventResult.value(), BidLimitOrderCreated::class.java
+                    eventResult.value(), OrderCreated::class.java
                 )
                 Response.success(
                     ObjectMapper.instance.convertValue(
                         event!!,
-                        BidLimitOrderResponse::class.java
+                        CreateOrderResponse::class.java
                     )
                 )
             }
 
+            OrderBookEventType.CREATE_ASK_LIMIT_ORDER_FAILED.type,
             OrderBookEventType.CREATE_BID_LIMIT_ORDER_FAILED.type -> {
                 throw BadRequestException(CloudEventUtils.getReplyEventError(eventResult.value())!!)
             }
 
             else -> throw InternalServerErrorException()
         }
-
     }
 
-    suspend fun cancelOrder(
-        currentUser: UserEntity,
-        request: CancelOrderRequest
-    ): Response<CancelOrderResponse> {
+    /**
+     * Cancel order
+     *
+     * @param currentUser
+     * @param request
+     * @return [Response] of [CancelOrderResponse]
+     */
+    suspend fun cancelOrder(currentUser: UserEntity, request: CancelOrderRequest): Response<CancelOrderResponse> {
         val id = UUID.randomUUID().toString()
         val cancelOrderCommand = CloudEventBuilder.v1()
             .withId(id)
@@ -144,8 +111,7 @@ class OrderBookService(
             )
             .build()
 
-        val record =
-            ProducerRecord(this.orderBookTopic, cancelOrderCommand.id, cancelOrderCommand)
+        val record = ProducerRecord(this.orderBookTopic, cancelOrderCommand.id, cancelOrderCommand)
 
         val eventResult = this.template.sendAndReceive(record).await()
         return when (eventResult.value().type) {

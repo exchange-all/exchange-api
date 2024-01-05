@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * @author uuhnaut69
  */
-public class TradesProcessor {
+public class TradeProcessor {
 
     /**
      * Main method for running Trading Stream Aggregation
@@ -141,7 +141,7 @@ public class TradesProcessor {
         // Process and sink trading history to Database and Kafka
         tradingHistoryDataStream
                 .addSink(JdbcSink.sink(
-                        "INSERT INTO trades_histories " +
+                        "INSERT INTO trade_histories " +
                                 "(id, user_id, trading_pair_id, order_id, amount, available_amount, price, type, status, traded_amount, traded_price, traded_at) " +
                                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                         (statement, tradingHistory) -> {
@@ -176,12 +176,12 @@ public class TradesProcessor {
         final var tradingHistoryKafkaSink = KafkaSink.<TradingHistory>builder()
                 .setBootstrapServers(parameterTool.get("kafka.bootstrap-servers", "localhost:19092"))
                 .setRecordSerializer(KafkaRecordSerializationSchema.builder()
-                        .setTopic("market-data.trades-histories")
+                        .setTopic("market-data.trade-histories")
                         .setValueSerializationSchema(new JsonSerializationSchema<TradingHistory>())
                         .build()
                 )
                 .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
-                .setTransactionalIdPrefix("trades-histories")
+                .setTransactionalIdPrefix("trade-histories")
                 .build();
 
         tradingHistoryDataStream.sinkTo(tradingHistoryKafkaSink)
@@ -189,7 +189,7 @@ public class TradesProcessor {
                 .setParallelism(1);
 
         tradingHistoryDataStream
-                .addSink(new RedisPubSubSink<>("market-data.trades-histories"))
+                .addSink(new RedisPubSubSink<>("market-data.trade-histories"))
                 .setParallelism(1)
                 .name("Sink Trading History to Redis");
 

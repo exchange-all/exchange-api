@@ -6,16 +6,7 @@ import java.math.BigDecimal
  * @author uuhnaut69
  *
  */
-data class CreateAskLimitOrderCommand(
-    val id: String,
-    val userId: String,
-    val baseCurrency: String,
-    val quoteCurrency: String,
-    val price: BigDecimal,
-    val amount: BigDecimal
-)
-
-data class CreateBidLimitOrderCommand(
+data class CreateOrderCommand(
     val id: String,
     val userId: String,
     val baseCurrency: String,

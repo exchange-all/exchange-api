@@ -9,7 +9,7 @@ object MarketDataConfig {
     const val WINDOWED_TRADES_EVENT_TYPE = "WINDOWED-TRADES"
     const val TRADES_HISTORIES_EVENT_TYPE = "TRADES-HISTORIES"
 
-    const val TRADES_HISTORIES_TOPIC = "market-data.trades-histories"
+    const val TRADE_HISTORIES_TOPIC = "market-data.trade-histories"
 
     val windowSizeConfigTopicMap = mapOf(
         WindowSize.ONE_SECOND to "market-data.windowed-trades-1s",

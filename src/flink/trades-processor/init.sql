@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "windowed_trades"
     PRIMARY KEY (window_type, trading_pair_id, window_timestamp)
 );
 
-CREATE TABLE IF NOT EXISTS "trades_histories"
+CREATE TABLE IF NOT EXISTS "trade_histories"
 (
     id               VARCHAR(255) PRIMARY KEY NOT NULL,
     user_id          VARCHAR(255)             NOT NULL,

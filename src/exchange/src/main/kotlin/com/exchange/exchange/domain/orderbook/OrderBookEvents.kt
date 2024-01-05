@@ -7,7 +7,7 @@ import java.math.BigDecimal
  * @author uuhnaut69
  *
  */
-data class AskLimitOrderCreated(
+data class OrderCreated(
     val id: String,
     val userId: String,
     val tradingPairId: String,

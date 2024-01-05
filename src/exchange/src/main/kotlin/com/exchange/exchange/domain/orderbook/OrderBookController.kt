@@ -23,27 +23,15 @@ class OrderBookController(
 ) {
 
     @Operation(
-        summary = "Create ask limit order",
-        description = "Create ask limit order"
+        summary = "Create new order",
+        description = "Create new order"
     )
-    @PostMapping("/create-ask-limit-order")
-    suspend fun createAskLimitOrder(
+    @PostMapping("/create-order")
+    suspend fun createNewOrder(
         @CurrentUser currentUser: UserEntity,
-        @RequestBody @Valid createAskLimitOrderRequest: AskLimitOrderRequest,
-    ): Response<AskLimitOrderResponse> {
-        return this.orderBookService.createAskLimitOrder(currentUser, createAskLimitOrderRequest)
-    }
-
-    @Operation(
-        summary = "Create bid limit order",
-        description = "Create bid limit order"
-    )
-    @PostMapping("/create-bid-limit-order")
-    suspend fun createBidLimitOrder(
-        @CurrentUser currentUser: UserEntity,
-        @RequestBody @Valid createBidLimitOrderRequest: BidLimitOrderRequest,
-    ): Response<BidLimitOrderResponse> {
-        return this.orderBookService.createBidLimitOrder(currentUser, createBidLimitOrderRequest)
+        @RequestBody @Valid createOrderRequest: CreateOrderRequest,
+    ): Response<CreateOrderResponse> {
+        return this.orderBookService.createNewOrder(currentUser, createOrderRequest)
     }
 
     @Operation(

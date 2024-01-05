@@ -25,14 +25,14 @@ class MarketService(
     /**
      * Subscribe market window trades.
      *
-     * @param windowSize the window size
+     * @param granularity the window size
      * @return the SSE flux
      */
     fun subscribeMarketWindowTrades(
         tradingPairId: String,
-        windowSize: WindowSize
+        granularity: WindowSize
     ): Flux<ServerSentEvent<WindowedTrade>> {
-        return this.reactiveRedisOperations.listenToChannel(MarketDataConfig.windowSizeConfigTopicMap[windowSize])
+        return this.reactiveRedisOperations.listenToChannel(MarketDataConfig.windowSizeConfigTopicMap[granularity])
             .map { objectMapper.readValue(it.message, WindowedTrade::class.java) }
             .filter { it.tradingPairId == tradingPairId }
             .doOnNext { LOGGER.debug("Received message: {}", it) }
@@ -45,14 +45,14 @@ class MarketService(
     }
 
     /**
-     * Subscribe trades histories.
+     * Subscribe trade histories.
      *
      * @return the SSE flux
      */
-    fun subscribeTradesHistories(
+    fun subscribeTradeHistories(
         tradingPairId: String,
     ): Flux<ServerSentEvent<TradingHistory>> {
-        return this.reactiveRedisOperations.listenToChannel(MarketDataConfig.TRADES_HISTORIES_TOPIC)
+        return this.reactiveRedisOperations.listenToChannel(MarketDataConfig.TRADE_HISTORIES_TOPIC)
             .map { objectMapper.readValue(it.message, TradingHistory::class.java) }
             .filter { it.tradingPairId == tradingPairId }
             .doOnNext { LOGGER.debug("Received message: {}", it) }

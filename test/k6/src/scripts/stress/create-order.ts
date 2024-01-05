@@ -4,17 +4,7 @@ import { Options } from "k6/options";
 
 const cookieSeeds = JSON.parse(open("../../data/cookies.seed.json"));
 
-const CREATE_BID_API_URL =
-  "http://localhost:8000/exchange/api/v1/order-book/create-bid-limit-order";
-const CREATE_ASK_API_URL =
-  "http://localhost:8000/exchange/api/v1/order-book/create-ask-limit-order";
-
-const types = ["bid", "ask"];
-
-const typeUrl = {
-  bid: CREATE_BID_API_URL,
-  ask: CREATE_ASK_API_URL,
-};
+const types = ["CREATE_ASK_LIMIT_ORDER", "CREATE_BID_LIMIT_ORDER"];
 
 const getOrderPayload = {
   bid: getBidData,
@@ -60,7 +50,7 @@ export default function () {
     cookieSeeds[Math.floor(Math.random() * cookieSeeds.length)];
 
   const type = types[Math.floor(Math.random() * types.length)];
-  const url = typeUrl[type];
+  const url = "http://localhost:8000/exchange/api/v1/order-book/create-order";
   const payload = getOrderPayload[type]();
 
   const SESSION_KEY = sessionCookie.split("=")[0];

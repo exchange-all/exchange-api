@@ -29,7 +29,7 @@ val reactorKafkaVersion = "1.3.22"
 
 dependencies {
     // Coroutines support
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
     // Core dependencies
     implementation("org.springframework.boot:spring-boot-starter-actuator")

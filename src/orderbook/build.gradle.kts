@@ -19,7 +19,7 @@ repositories {
 }
 
 val coroutinesVersion = "1.7.3"
-val junitVersion = "5.10.1"
+val junitVersion = "5.10.2"
 
 extra["springCloudVersion"] = "2023.0.0"
 

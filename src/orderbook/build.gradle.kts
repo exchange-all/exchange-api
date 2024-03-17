@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "3.2.2"
+    id("org.springframework.boot") version "3.2.3"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.22"
-    kotlin("plugin.spring") version "1.9.22"
+    kotlin("plugin.spring") version "1.9.23"
 }
 
 group = "com.exchange"
@@ -19,7 +19,7 @@ repositories {
 }
 
 val coroutinesVersion = "1.8.0"
-val junitVersion = "5.10.1"
+val junitVersion = "5.10.2"
 
 extra["springCloudVersion"] = "2023.0.0"
 

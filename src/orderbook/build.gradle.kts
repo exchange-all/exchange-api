@@ -18,7 +18,7 @@ repositories {
     mavenCentral()
 }
 
-val coroutinesVersion = "1.7.3"
+val coroutinesVersion = "1.8.0"
 val junitVersion = "5.10.2"
 
 extra["springCloudVersion"] = "2023.0.0"

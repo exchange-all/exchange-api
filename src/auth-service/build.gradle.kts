@@ -42,7 +42,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 
     // Swagger UI for Spring WebFlux
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.4.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0")
 
     // Tracing
     implementation("io.micrometer:micrometer-tracing-bridge-otel")

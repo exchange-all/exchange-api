@@ -39,7 +39,7 @@ dependencies {
 
     // Cloud events dependencies
     implementation("io.cloudevents:cloudevents-spring:2.5.0")
-    implementation("io.cloudevents:cloudevents-kafka:2.5.0")
+    implementation("io.cloudevents:cloudevents-kafka:4.0.1")
     implementation("io.cloudevents:cloudevents-json-jackson:2.5.0")
 
     // Tracing

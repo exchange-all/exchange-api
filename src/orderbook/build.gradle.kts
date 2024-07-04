@@ -38,7 +38,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // Cloud events dependencies
-    implementation("io.cloudevents:cloudevents-spring:2.5.0")
+    implementation("io.cloudevents:cloudevents-spring:4.0.1")
     implementation("io.cloudevents:cloudevents-kafka:2.5.0")
     implementation("io.cloudevents:cloudevents-json-jackson:2.5.0")
 
